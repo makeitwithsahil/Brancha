@@ -1,510 +1,576 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useViewportScroll,
-  useTransform,
-} from "framer-motion";
-import Lottie from "react-lottie-player";
-import blobAnim from "./blob.json"; // Lottie blob animation
-import "./App.css";
+import { useState, useEffect, useLayoutEffect, useCallback, lazy, Suspense } from "react";
+import { motion, AnimatePresence, LazyMotion, domAnimation } from "framer-motion";
+import { Sun, Moon } from "lucide-react";
+import "./App.css"; // Import your global styles
 
+// Portfolio Items with optimized image loading
 const portfolioItems = [
-  { src: "/images/design1.webp", alt: "Design 1" },
-  { src: "/images/design2.webp", alt: "Design 2" },
-  { src: "/images/design3.webp", alt: "Design 3" },
-  { src: "/images/design4.webp", alt: "Design 4" },
-  { src: "/images/design5.webp", alt: "Design 5" },
-  { src: "/images/design6.webp", alt: "Design 6" },
+  { src: "/images/design1.webp", alt: "Design 1", width: 800, height: 800 },
+  { src: "/images/design2.webp", alt: "Design 2", width: 800, height: 800 },
+  { src: "/images/design3.webp", alt: "Design 3", width: 800, height: 800 },
+  { src: "/images/design4.webp", alt: "Design 4", width: 800, height: 800 },
+  { src: "/images/design5.webp", alt: "Design 5", width: 800, height: 800 },
+  { src: "/images/design6.webp", alt: "Design 6", width: 800, height: 800 },
 ];
 
-const sectionVariant = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
-  exit: { opacity: 0, y: -50, transition: { duration: 0.5, ease: "easeIn" } },
-};
+// Reusable Section with optimized animations and intersection observer
+const Section = ({ id, title, subtitle, children }) => (
+  <motion.section
+    id={id}
+    className="w-full max-w-6xl px-6 py-20 mx-auto text-center scroll-mt-24"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "100px" }}
+    transition={{ 
+      duration: 0.5, 
+      ease: [0.16, 1, 0.3, 1],
+      delay: 0.1
+    }}
+  >
+    <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">{title}</h2>
+    {subtitle && <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-6">{subtitle}</p>}
+    <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center">Loading...</div>}>
+      {children}
+    </Suspense>
+  </motion.section>
+);
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [status, setStatus] = useState("idle");
-  const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const { scrollYProgress } = useViewportScroll();
-  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const parallaxY = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
-
-  const magicCursorRef = useRef(null);
-  useEffect(() => {
-    const move = (e) => {
-      const dot = magicCursorRef.current;
-      if (dot) dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    };
-    window.addEventListener("mousemove", move);
-    setTimeout(() => setLoading(false), 1500);
-    return () => window.removeEventListener("mousemove", move);
+  // Theme preference with debounce and system preference listener
+  const applyTheme = useCallback((isDark) => {
+    const root = document.documentElement;
+    root.classList.toggle("dark", isDark);
+    root.style.colorScheme = isDark ? "dark" : "light";
   }, []);
 
-  const toggleTheme = () => {
-    setDarkMode((p) => !p);
-    document.documentElement.classList.toggle("dark");
-  };
+  // Load Theme Preference
+  useLayoutEffect(() => {
+    setMounted(true);
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleSystemThemeChange = (e) => {
+      const isDark = e.matches;
+      setDarkMode(isDark);
+      applyTheme(isDark);
+    };
+
+    try {
+      const session = sessionStorage.getItem("theme");
+      const local = localStorage.getItem("theme");
+      const prefersDark = mediaQuery.matches;
+
+      const theme = session ?? local ?? (prefersDark ? "dark" : "light");
+      const isDark = theme === "dark";
+      setDarkMode(isDark);
+      applyTheme(isDark);
+    } catch (e) {
+      console.error("Error accessing storage:", e);
+    }
+
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+  }, [applyTheme]);
+
+  // Save theme preference with storage error handling
+  useEffect(() => {
+    if (!mounted) return;
+    
+    try {
+      const mode = darkMode ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+      sessionStorage.setItem("theme", mode);
+      applyTheme(darkMode);
+    } catch (e) {
+      console.error("Error saving theme preference:", e);
+    }
+  }, [darkMode, applyTheme, mounted]);
+
+  const toggleDarkMode = useCallback(() => {
+    setDarkMode(prev => !prev);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("loading");
     const formData = new FormData(e.target);
+    
     try {
       const res = await fetch("https://formspree.io/f/xyzjlzrl", {
         method: "POST",
         body: formData,
         headers: { Accept: "application/json" },
       });
-      if (!res.ok) throw new Error();
+      
+      if (!res.ok) throw new Error("Failed to submit form");
       setStatus("success");
       e.target.reset();
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setStatus("error");
+    } finally {
       setTimeout(() => setStatus("idle"), 3000);
-    } catch {
-      alert("Error sending message. Try again.");
-      setStatus("idle");
     }
   };
 
+  // Close mobile menu when clicking on nav links
+  const handleNavClick = useCallback(() => {
+    setMenuOpen(false);
+  }, []);
+
+  if (!mounted) {
+    // Return a blank div during SSR to avoid hydration mismatch
+    return <div className="min-h-screen bg-white dark:bg-neutral-900" />;
+  }
+
   return (
-    <div className="relative bg-white dark:bg-gray-900 text-black dark:text-white font-sans scroll-smooth">
-      {/* Preloader */}
-      <AnimatePresence>
-        {loading && (
-          <motion.div
-            className="fixed inset-0 bg-white flex items-center justify-center z-50"
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            >
-              <svg width="48" height="48" fill="#FF6B6B">
-                <circle
-                  cx="24"
-                  cy="24"
-                  r="16"
-                  stroke="#333"
-                  strokeWidth="4"
-                  fill="none"
-                />
-              </svg>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Magic cursor dot */}
-      <div
-        ref={magicCursorRef}
-        className="pointer-events-none fixed top-0 left-0 w-4 h-4 rounded-full bg-pink-500 opacity-50 transform -translate-x-1/2 -translate-y-1/2 mix-blend-plus"
-      />
-
-      {/* Scroll Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 h-1 bg-pink-500 z-40 origin-left"
-        style={{ scaleX }}
-      />
-
-      {/* Theme Toggle */}
-      <motion.button
-        className="fixed bottom-4 right-4 p-3 bg-pink-600 text-white rounded-full shadow-lg z-30"
-        onClick={toggleTheme}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        {darkMode ? "🌙" : "☀️"}
-      </motion.button>
-
-      {/* Navbar */}
-      <motion.nav
-        className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-sm z-50 flex justify-between items-center px-6 py-4 text-sm font-medium"
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <motion.span
-          className="text-[#FF6B6B] font-bold text-lg cursor-pointer"
-          whileHover={{ scale: 1.05 }}
+    <LazyMotion features={domAnimation}>
+      <div className="min-h-screen bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 font-sans scroll-smooth">
+        {/* Navbar */}
+        <motion.nav
+          className="sticky top-0 left-0 right-0 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-lg shadow-sm z-50 flex justify-between items-center px-6 py-4 text-sm font-medium"
+          initial={{ y: -80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          Brancha
-        </motion.span>
-        <div className="hidden md:flex space-x-4">
-          {["services", "portfolio", "about", "process", "contact"].map(
-            (item) => (
+          <motion.span 
+            className="text-[#FF6B6B] font-bold text-lg cursor-pointer" 
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            Brancha
+          </motion.span>
+
+          <div className="hidden md:flex space-x-6 uppercase tracking-wide">
+            {["services", "portfolio", "about", "process", "contact"].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item}`}
-                whileHover={{ y: -2, color: "#FF6B6B" }}
+                onClick={handleNavClick}
+                whileHover={{ y: -2 }}
                 transition={{ type: "spring", stiffness: 300 }}
+                className="text-neutral-700 dark:text-neutral-300 hover:text-[#FF6B6B] transition-colors"
               >
-                {item.charAt(0).toUpperCase() + item.slice(1)}
+                {item}
               </motion.a>
-            )
-          )}
-        </div>
-        <div className="md:hidden">
-          <button onClick={() => setMenuOpen(!menuOpen)}>
-            <svg
-              className="w-6 h-6 text-[#FF6B6B]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+            ))}
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <motion.button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full bg-white dark:bg-neutral-700 shadow hover:scale-105 transition"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {menuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              {darkMode ? (
+                <Sun className="w-5 h-5 text-yellow-400" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <Moon className="w-5 h-5 text-gray-700" />
               )}
-            </svg>
-          </button>
-        </div>
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div
-              className="absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-md flex flex-col px-6 py-4 md:hidden z-40"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
+            </motion.button>
+
+            {/* Mobile menu button */}
+            <motion.button 
+              className="md:hidden"
+              onClick={() => setMenuOpen(!menuOpen)}
+              whileTap={{ scale: 0.9 }}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
-              {["services", "portfolio", "about", "process", "contact"].map(
-                (id) => (
+              <svg className="w-6 h-6 text-[#FF6B6B]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                {menuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </motion.button>
+          </div>
+
+          <AnimatePresence>
+            {menuOpen && (
+              <motion.div
+                className="absolute top-full left-0 w-full bg-white dark:bg-neutral-800 px-6 py-4 flex flex-col md:hidden z-40 shadow-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {["services", "portfolio", "about", "process", "contact"].map((id) => (
                   <motion.a
                     key={id}
                     href={`#${id}`}
-                    className="py-2 border-b border-neutral-200 dark:border-gray-700"
-                    whileHover={{ color: "#FF6B6B" }}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={handleNavClick}
+                    whileHover={{ x: 4 }}
+                    className="py-2 border-b border-neutral-200 dark:border-neutral-700 uppercase text-neutral-700 dark:text-neutral-300 hover:text-[#FF6B6B] transition"
                   >
-                    {id.charAt(0).toUpperCase() + id.slice(1)}
+                    {id}
                   </motion.a>
-                )
-              )}
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.nav>
+
+        {/* Header */}
+        <motion.header
+          className="min-h-screen flex flex-col justify-center items-center -mt-10 px-6 sm:px-8 pt-36 pb-24 text-center bg-white dark:bg-neutral-900 transition-colors duration-300"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="max-w-4xl mx-auto">
+            <motion.h1
+              className="text-[2.5rem] sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-neutral-900 dark:text-white"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              Branding that builds trust.
+            </motion.h1>
+
+            <motion.p
+              className="mt-5 text-lg sm:text-xl text-neutral-600 dark:text-neutral-300 leading-relaxed"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              We craft visuals and websites that speak to your audience — turning first impressions into lasting connections. Professional, modern, and made to convert.
+            </motion.p>
+
+            <motion.div
+              className="mt-10 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Primary CTA */}
+              <motion.a
+                href="#contact"
+                className="inline-block px-7 py-3.5 rounded-full bg-[#FC696A] text-white font-semibold text-sm sm:text-base shadow-sm hover:shadow-lg transition-all duration-300 hover:bg-[#e85a5a] focus:outline-none focus:ring-2 focus:ring-[#FC696A] focus:ring-offset-2"
+                whileHover={{ scale: 1.045 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                Get a Free Sample
+              </motion.a>
+
+              {/* Secondary CTA */}
+              <motion.a
+                href="#portfolio"
+                className="inline-block px-7 py-3.5 rounded-full border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-100 font-medium text-sm sm:text-base bg-white dark:bg-neutral-900 hover:border-[#FC696A] hover:text-[#FC696A] transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#FC696A] focus:ring-offset-2"
+                whileHover={{ scale: 1.035 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                Explore Our Work
+              </motion.a>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
+          </div>
 
-      {/* Hero Section */}
-      <motion.header className="relative min-h-screen flex flex-col justify-center items-center pt-28 px-4 text-center overflow-hidden">
-        <motion.div
-          style={{ y: parallaxY }}
-          className="absolute inset-0 opacity-30 pointer-events-none"
-        >
-          <Lottie
-            loop
-            animationData={blobAnim}
-            play
-            style={{ width: 600, height: 600 }}
-          />
-        </motion.div>
+          <motion.div
+            className="mt-14 w-full max-w-3xl border-t border-neutral-200 dark:border-neutral-700 pt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.6 }}
+          >
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+              Trusted by cafés, salons, creators and small businesses that want better design, not bloated agencies. You get quality, fast — without fluff.
+            </p>
+          </motion.div>
+        </motion.header>
 
-        <motion.h1
-          className="text-4xl md:text-6xl font-bold mb-4 tracking-tight z-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        >
-          Branding that connects.
-        </motion.h1>
-        <motion.p
-          className="text-lg md:text-xl mb-6 text-neutral-700 dark:text-neutral-300 z-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
-        >
-          Websites that work.
-        </motion.p>
-        <motion.a
-          href="#contact"
-          className="px-6 py-3 rounded-full bg-[#FF6B6B] text-white font-semibold shadow-lg z-10"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
-        >
-          Get a Free Sample
-        </motion.a>
-      </motion.header>
-
-      {/* Services Section */}
-      <AnimatePresence exitBeforeEnter>
-        <motion.section
-          key="services"
+        {/* Services */}
+        <Section
           id="services"
-          className="w-full max-w-6xl px-6 py-20 mx-auto text-center"
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: true, amount: 0.3 }}
+          title="Our Services"
+          subtitle="Creative solutions tailored for local businesses — built to attract, convert, and grow."
         >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-            What We Do
-          </h2>
-          <p className="text-lg text-neutral-600 mb-6">
-            Helping cafés, salons & shops grow online
-          </p>
-          <div className="grid md:grid-cols-3 gap-6 text-left">
+          <motion.div
+            className="grid md:grid-cols-3 gap-6 text-left"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "50px" }}
+            variants={{ 
+              visible: { 
+                transition: { 
+                  staggerChildren: 0.15,
+                  delayChildren: 0.2
+                } 
+              } 
+            }}
+          >
             {[
               {
-                title: "Posters",
-                desc:
-                  "Grab attention online & offline with stunning visuals.",
+                title: "Custom Posters",
+                desc: "High-quality promotional posters designed to fit your brand's voice — perfect for in-store, social media, and ads. Fully customized, print-ready, and optimized for visibility.",
               },
               {
-                title: "Websites",
-                desc:
-                  "Modern, responsive websites that build trust.",
+                title: "Professional Websites",
+                desc: "Responsive, fast-loading websites that make your business look modern and credible. Includes one-page designs, service showcases, and contact integration — everything needed to convert visitors.",
               },
               {
-                title: "Social Media",
-                desc:
-                  "Design + strategy that keeps your brand active.",
+                title: "Social Media Design",
+                desc: "Consistent, eye-catching post designs that match your brand and engage your audience. From story templates to monthly post packs — we keep your content looking sharp.",
+              },
+              {
+                title: "Brand Identity",
+                desc: "We create the visual foundation of your brand — logos, colors, fonts, and templates — so every touchpoint looks cohesive, premium, and memorable.",
+              },
+              {
+                title: "Ongoing Design Support",
+                desc: "Need 5–10+ posters every month? We offer monthly contracts for continuous creative support — ideal for cafés, gyms, salons, and shops with regular promotions.",
+              },
+              {
+                title: "Growth Strategy Guidance",
+                desc: "Beyond design — we help you decide what to post, how often, and where to show up. Focused on results and brand alignment, not just aesthetics.",
               },
             ].map((s, i) => (
               <motion.div
                 key={i}
-                className="p-6 bg-neutral-50 dark:bg-gray-800 rounded-lg shadow"
-                whileHover={{
-                  y: -6,
-                  scale: 1.03,
-                  boxShadow: "0 12px 20px rgba(0,0,0,0.06)",
+                className="p-6 bg-neutral-50 dark:bg-neutral-800 rounded-xl shadow transition-all will-change-transform"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 },
                 }}
-                transition={{ type: "spring", stiffness: 250, damping: 18 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                whileHover={{ 
+                  scale: 1.02, 
+                  y: -4,
+                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
+                }}
               >
-                <h3 className="text-xl font-semibold mb-2">{s.title}</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  {s.desc}
-                </p>
+                <h3 className="text-lg font-semibold mb-2 text-[#FF6B6B]">{s.title}</h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
-          </div>
-        </motion.section>
-      </AnimatePresence>
+          </motion.div>
+        </Section>
 
-      {/* Portfolio Section */}
-      <AnimatePresence exitBeforeEnter>
-        <motion.section
-          key="portfolio"
-          id="portfolio"
-          className="w-full max-w-6xl px-6 py-20 mx-auto text-center"
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-            Work Samples
-          </h2>
-          <p className="text-lg text-neutral-600 mb-6">
-            Real designs. Real impact.
-          </p>
+        {/* Portfolio */}
+        <Section id="portfolio" title="Work Samples" subtitle="Selected projects crafted for real businesses.">
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-            variants={{
-              visible: { transition: { staggerChildren: 0.15 } },
-            }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true, margin: "50px" }}
+            variants={{ 
+              visible: { 
+                transition: { 
+                  staggerChildren: 0.1,
+                  delayChildren: 0.2
+                } 
+              } 
+            }}
           >
             {portfolioItems.map((item, i) => (
               <motion.div
                 key={i}
-                className="rounded overflow-hidden shadow-sm bg-neutral-100 dark:bg-gray-800 aspect-square"
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0 },
+                className="relative group overflow-hidden rounded-xl bg-white dark:bg-neutral-800 shadow-lg border border-neutral-200 dark:border-neutral-700 will-change-transform"
+                variants={{ 
+                  hidden: { opacity: 0, y: 30 }, 
+                  visible: { 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { 
+                      duration: 0.5, 
+                      ease: "easeOut" 
+                    } 
+                  } 
                 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.015 }}
               >
                 <img
                   src={item.src}
                   alt={item.alt}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  width={item.width}
+                  height={item.height}
+                  className="w-full h-full object-cover aspect-square transition-transform duration-500 ease-in-out group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-sm font-medium">{item.alt}</p>
+                </div>
               </motion.div>
             ))}
           </motion.div>
-        </motion.section>
-      </AnimatePresence>
+        </Section>
 
-      {/* About Section */}
-      <AnimatePresence exitBeforeEnter>
-        <motion.section
-          key="about"
-          id="about"
-          className="w-full max-w-6xl px-6 py-20 mx-auto text-center"
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-            Why Brancha?
-          </h2>
-          <p className="text-lg max-w-2xl mx-auto text-neutral-700 dark:text-neutral-300 leading-relaxed">
-            We’re not just another agency. We partner with you to create designs
-            that not only look good, but also work — online, in print, and
-            everywhere your brand lives.
-          </p>
-        </motion.section>
-      </AnimatePresence>
+        {/* About */}
+        <Section id="about" title="Why Brancha?" subtitle="More than design. A business partner.">
+          <motion.div
+            className="max-w-3xl mx-auto text-lg text-neutral-700 dark:text-neutral-400 leading-relaxed space-y-6 text-left"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <p>
+              We're not just designers — we're problem solvers. We dive deep into your brand, your audience,
+              and your goals to create visuals and digital experiences that actually move the needle.
+            </p>
+            <p>
+              Our focus isn't just on aesthetics. Every poster, page, and post is crafted to attract attention,
+              spark curiosity, and drive real-world results — from increased foot traffic to stronger online
+              presence.
+            </p>
+            <p>
+              Brancha is built for cafés, salons, shops and small local businesses that want to stand out
+              and win — without wasting time or money on generic templates or boring designs.
+            </p>
+          </motion.div>
+        </Section>
 
-      {/* Process Section */}
-      <AnimatePresence exitBeforeEnter>
-        <motion.section
-          key="process"
-          id="process"
-          className="w-full max-w-6xl px-6 py-20 mx-auto text-center"
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-            How It Works
-          </h2>
-          <p className="text-lg text-neutral-600 mb-6">
-            Simple, clear steps to launch your brand
-          </p>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-left text-sm text-neutral-700 dark:text-neutral-300">
+        {/* Process */}
+        <Section id="process" title="How It Works" subtitle="A simple, effective process that builds trust.">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-left text-sm text-neutral-700 dark:text-neutral-400">
             {[
-              "1. Chat: DM us @getbrancha on Instagram.",
-              "2. Free Sample: We send a design tailored to you.",
-              "3. Feedback: You approve or ask for tweaks.",
-              "4. Delivery: Final files or live website in hand.",
-            ].map((text, i) => (
+              {
+                step: "1",
+                title: "Initial Contact",
+                detail:
+                  "Start by sending us a direct message on Instagram @getbrancha. It's quick and straightforward.",
+              },
+              {
+                step: "2",
+                title: "Free Design Sample",
+                detail:
+                  "We create and send you a personalized poster design sample — completely free, with no obligation.",
+              },
+              {
+                step: "3",
+                title: "Feedback & Approval",
+                detail:
+                  "Review the design and share your thoughts. We revise it if needed to match your brand perfectly.",
+              },
+              {
+                step: "4",
+                title: "Package or Service Deal",
+                detail:
+                  "Once you're satisfied, you can purchase a poster pack or sign up for a service contract tailored to your needs.",
+              },
+            ].map((s, i) => (
               <motion.div
                 key={i}
-                className="p-4"
-                whileHover={{ y: -2 }}
-                transition={{ type: "spring", stiffness: 200 }}
+                className="p-5 rounded-xl bg-neutral-100 dark:bg-neutral-800 shadow-sm will-change-transform"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                whileHover={{ 
+                  y: -4,
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+                }}
               >
-                {text}
+                <h4 className="font-semibold mb-1 text-[#FF6B6B]">{`${s.step}. ${s.title}`}</h4>
+                <p className="leading-relaxed">{s.detail}</p>
               </motion.div>
             ))}
           </div>
-        </motion.section>
-      </AnimatePresence>
+        </Section>
 
-      {/* Contact Section */}
-      <AnimatePresence exitBeforeEnter>
-        <motion.section
-          key="contact"
-          id="contact"
-          className="w-full max-w-6xl px-6 py-20 mx-auto text-center"
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="visible"
-          exit="exit"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-            Let’s Work Together
-          </h2>
-          <p className="text-lg text-neutral-600 mb-6">
-            Send a message or request a sample.
-          </p>
+        {/* Contact */}
+        <Section id="contact" title="Let's Work Together" subtitle="Send a message or request a sample.">
           <motion.form
             onSubmit={handleSubmit}
-            className="max-w-xl mx-auto space-y-4 text-left relative"
+            className="max-w-xl mx-auto space-y-5 text-left relative bg-white/40 dark:bg-neutral-700/40 backdrop-blur-md border border-neutral-200 dark:border-neutral-600 rounded-2xl p-8 shadow-lg"
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <input
               name="name"
               placeholder="Your Name"
               required
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+              className="w-full px-4 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] transition"
             />
             <input
               name="email"
               type="email"
               placeholder="Your Email"
               required
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+              className="w-full px-4 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] transition"
             />
             <textarea
               name="message"
               placeholder="Your Message"
               required
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 h-32"
+              className="w-full px-4 py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] transition h-32 resize-none"
             />
+
             <motion.button
               type="submit"
-              disabled={status === "loading"}
-              className={`w-full bg-[#FF6B6B] text-white py-2 rounded-full font-semibold ${
-                status === "loading" ? "opacity-70 cursor-not-allowed" : ""
+              disabled={status !== "idle"}
+              className={`w-full text-sm bg-[#FF6B6B] text-white py-3 rounded-full font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 ${
+                status !== "idle" ? "opacity-70 cursor-not-allowed" : ""
               }`}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              whileHover={status === "idle" ? { scale: 1.04 } : {}}
+              whileTap={status === "idle" ? { scale: 0.96 } : {}}
+              transition={{ type: "spring", stiffness: 280, damping: 18 }}
             >
-              {status === "loading"
-                ? "Sending…"
-                : status === "success"
-                ? "Sent!"
-                : "Send Message"}
+              {status === "loading" 
+                ? "Sending..." 
+                : status === "success" 
+                  ? "Sent!" 
+                  : status === "error"
+                    ? "Error - Try Again"
+                    : "Send Message"}
             </motion.button>
+
             <AnimatePresence>
               {status === "success" && (
                 <motion.div
-                  className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-800 bg-opacity-90 rounded"
+                  className="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-neutral-800/90 backdrop-blur-md rounded-2xl"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  <span className="text-2xl font-semibold text-[#FF6B6B]">
-                    ✓ Thank you!
+                  <span className="text-xl font-semibold text-[#FF6B6B] tracking-wide">
+                    ✓ Message Delivered!
+                  </span>
+                </motion.div>
+              )}
+              {status === "error" && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-neutral-800/90 backdrop-blur-md rounded-2xl"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <span className="text-xl font-semibold text-red-500 tracking-wide">
+                    ✗ Failed to send. Please try again.
                   </span>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.form>
-          <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-            Or message us on{" "}
+
+          <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-400 text-center">
+            Prefer chatting? DM us on{" "}
             <a
               href="https://instagram.com/getbrancha"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#FF6B6B] underline"
+              className="text-[#FF6B6B] underline hover:text-[#e75e5e] transition-colors"
             >
               Instagram
-            </a>.
+            </a>
+            .
           </p>
-        </motion.section>
-      </AnimatePresence>
+        </Section>
 
-      {/* Footer */}
-      <footer className="text-center py-6 text-sm text-neutral-400 dark:text-neutral-500">
-        © 2025 Brancha Agency. All rights reserved.
-      </footer>
-    </div>
+        {/* Footer */}
+        <footer className="text-center py-6 text-sm text-neutral-400 dark:text-neutral-500">
+          © {new Date().getFullYear()} Brancha Agency. All rights reserved.
+        </footer>
+      </div>
+    </LazyMotion>
   );
 }

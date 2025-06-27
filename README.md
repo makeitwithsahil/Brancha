@@ -1,12 +1,44 @@
-# React + Vite
+# 🌟 Brancha – Creative Design Agency Website (Built by Us)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Brancha** is a professional design agency helping cafés, salons, and local businesses stand out with modern websites, posters, and social media content.
 
-Currently, two official plugins are available:
+This is the official **website template** for our agency — handcrafted with React, Tailwind CSS, and Framer Motion to give a smooth, premium, and responsive user experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🔥 Live Preview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+> Visit Us: [brancha.vercel.app](https://brancha.vercel.app)
+
+---
+
+## ✨ What This Website Includes
+
+- 🎯 Custom section scroll with smooth transitions
+- 🌙 Theme toggle (dark/light) with localStorage
+- 🎞️ Framer Motion animations on hover & scroll
+- 📸 Portfolio grid with image placeholders
+- 📨 Contact form (Formspree integration)
+- ✅ Mobile-first, clean, fast UI
+
+---
+
+## 🛠 Tech Stack
+
+| Tech             | Purpose                        |
+|------------------|--------------------------------|
+| React            | Component-based frontend       |
+| Tailwind CSS     | Utility-first styling          |
+| Framer Motion    | Animations                     |
+| Lucide Icons     | Iconography                    |
+| Formspree        | Backendless contact form       |
+
+---
+
+## 🧑‍🎨 About Us – Brancha Agency
+
+> We help **cafés, salons, shops, and small businesses** get noticed online — through stunning **posters**, responsive **websites**, and consistent **social media design**.
+
+👉 DM us on Instagram for a **free sample**: [@getbrancha](https://instagram.com/getbrancha)
+
+---

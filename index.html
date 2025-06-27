@@ -1,31 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brancha | Premium Design for Local Businesses</title>
-    <meta name="description" content="Brancha helps cafés, salons, and local shops grow online with stunning design, websites, and social media strategy." />
-    <meta name="keywords" content="Brancha, design agency, posters, websites, social media, branding, café marketing, salon promotion" />
+
+    <!-- SEO Meta -->
+    <meta
+      name="description"
+      content="Posters, websites & social media strategy for cafés, salons & shops."
+    />
+    <meta
+      name="keywords"
+      content="Brancha, design, branding, café posters, salon websites, local business marketing"
+    />
     <meta name="author" content="Brancha Agency" />
     <link rel="canonical" href="https://brancha.vercel.app" />
 
-    <!-- Social share meta -->
-    <meta property="og:title" content="Brancha | Premium Design for Local Businesses" />
-    <meta property="og:description" content="Posters, websites & social strategy — designed to connect." />
+    <!-- Open Graph -->
+    <meta
+      property="og:title"
+      content="Brancha | Premium Design for Local Businesses"
+    />
+    <meta
+      property="og:description"
+      content="Posters, websites & social strategy — designed to connect."
+    />
     <meta property="og:image" content="https://brancha.vercel.app/cover.png" />
-    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://brancha.vercel.app" />
+    <meta property="og:type" content="website" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Brancha | Premium Design for Local Businesses" />
-    <meta name="twitter:description" content="Posters, websites & social strategy — designed to connect." />
+    <meta
+      name="twitter:title"
+      content="Brancha | Premium Design for Local Businesses"
+    />
+    <meta
+      name="twitter:description"
+      content="Posters, websites & social strategy — designed to connect."
+    />
     <meta name="twitter:image" content="https://brancha.vercel.app/cover.png" />
 
-    <link href="https://fonts.bunny.net/css?family=satoshi:400,500,700" rel="stylesheet" />
+    <!-- Favicon & PWA -->
     <link rel="icon" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/pwa-icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#FF6B6B" />
+
+    <!-- Fonts (optimized loading) -->
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link
+      rel="preload"
+      href="https://fonts.bunny.net/css?family=satoshi:400,500,700&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.bunny.net/css?family=satoshi:400,500,700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Critical CSS (inlined) -->
+    <style>
+      /* Critical animations and base styles */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Performance optimized transitions */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Only animate transform and opacity for performance */
+      * {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      .will-change {
+        will-change: transform, opacity;
+      }
+
+      /* Initial fade-in */
+      #root {
+        opacity: 0;
+        animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: 0.2s;
+      }
+    </style>
+
+    <!-- Preload critical resources -->
+    <link
+      rel="preload"
+      as="image"
+      href="/images/design1.webp"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/design2.webp"
+      fetchpriority="high"
+    />
+    <link rel="preload" as="script" href="/src/main.jsx" fetchpriority="high" />
+
+    <!-- Non-critical CSS (loaded after render) -->
+    <script>
+      /* Load Tailwind after page becomes interactive */
+      function loadTailwind() {
+        const script = document.createElement("script");
+        script.src = "https://cdn.tailwindcss.com";
+        script.onload = function () {
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                transitionProperty: {
+                  spacing: "margin, padding",
+                },
+              },
+            },
+          };
+        };
+        document.body.appendChild(script);
+      }
+
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(loadTailwind);
+      } else {
+        window.addEventListener("load", loadTailwind);
+      }
+    </script>
   </head>
-  <body class="bg-white text-black">
-    <div id="root"></div>
+
+  <body
+    class="bg-white text-black scroll-smooth scroll-pt-24 transition-colors duration-300"
+  >
+    <div id="root" class="will-change"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Theme detection (non-blocking) -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const d = document.documentElement;
+        const s = sessionStorage.getItem("darkMode");
+        const l = localStorage.getItem("darkMode");
+        const m = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const isDark =
+          s !== null ? s === "true" : l !== null ? l === "true" : m;
+        d.classList.toggle("dark", isDark);
+        d.style.colorScheme = isDark ? "dark" : "light";
+      });
+    </script>
   </body>
 </html>

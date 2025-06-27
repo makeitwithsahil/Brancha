@@ -1,6 +1,107 @@
-@import url('https://fonts.bunny.net/css?family=satoshi:400,500,700');
+/* App.css */
+/* Font loading optimized with preconnect and font-display */
+@import url("https://fonts.bunny.net/css?family=satoshi:400,500,700&display=swap");
 
+:root {
+  --transition-duration: 0.4s;
+  --transition-timing: cubic-bezier(0.16, 1, 0.3, 1);
+  --scroll-margin: 6rem;
+}
+
+/* Base styles with performance optimizations */
 body {
-  font-family: 'Satoshi', sans-serif;
-  scroll-behavior: smooth;
+  font-family: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: 
+    background-color var(--transition-duration) var(--transition-timing), 
+    color var(--transition-duration) var(--transition-timing);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling with prefers-reduced-motion respect */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Section spacing with logical properties */
+section {
+  scroll-margin-block-start: var(--scroll-margin);
+}
+
+/* Input styles with modern focus states */
+.input-style {
+  --input-bg-light: #f9fafb;
+  --input-bg-dark: #1f2937;
+  --input-text-light: #111827;
+  --input-text-dark: #f3f4f6;
+  --input-border-light: #d1d5db;
+  --input-border-dark: #374151;
+  --input-focus: #ff6b6b;
+  --input-focus-ring: rgba(255, 107, 107, 0.2);
+
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  background-color: var(--input-bg-light);
+  color: var(--input-text-light);
+  font-size: 0.875rem;
+  border: 1px solid var(--input-border-light);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition:
+    background-color var(--transition-duration) var(--transition-timing),
+    border-color var(--transition-duration) var(--transition-timing),
+    box-shadow 0.2s var(--transition-timing);
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .input-style:not(.light) {
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+    border-color: var(--input-border-dark);
+  }
+}
+
+.dark .input-style {
+  background-color: var(--input-bg-dark);
+  color: var(--input-text-dark);
+  border-color: var(--input-border-dark);
+}
+
+/* Focus styles with accessibility considerations */
+.input-style:focus-visible {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+  outline: none;
+}
+
+/* Reduced motion alternative */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-family: serif;
+  }
+  
+  .input-style {
+    background: white !important;
+    color: black !important;
+    border: 1px solid black !important;
+  }
 }
