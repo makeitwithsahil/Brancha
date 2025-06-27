@@ -1,0 +1,6 @@
+@import url('https://fonts.bunny.net/css?family=satoshi:400,500,700');
+
+body {
+  font-family: 'Satoshi', sans-serif;
+  scroll-behavior: smooth;
+}
