@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: './', // ✅ This is crucial for Instagram and other WebViews
   plugins: [
     react(),
     VitePWA({
