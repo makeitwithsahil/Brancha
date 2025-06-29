@@ -63,26 +63,12 @@
       />
     </noscript>
 
-    <!-- Critical CSS (inlined) -->
+    <!-- Critical CSS (cleaned) -->
     <style>
-      /* Critical animations and base styles */
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Performance optimized transitions */
       html {
         scroll-behavior: smooth;
       }
 
-      /* Only animate transform and opacity for performance */
       * {
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
@@ -90,13 +76,6 @@
 
       .will-change {
         will-change: transform, opacity;
-      }
-
-      /* Initial fade-in */
-      #root {
-        opacity: 0;
-        animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        animation-delay: 0.2s;
       }
     </style>
 
@@ -117,7 +96,6 @@
 
     <!-- Non-critical CSS (loaded after render) -->
     <script>
-      /* Load Tailwind after page becomes interactive */
       function loadTailwind() {
         const script = document.createElement("script");
         script.src = "https://cdn.tailwindcss.com";
@@ -147,10 +125,10 @@
   <body
     class="bg-white text-black scroll-smooth scroll-pt-24 transition-colors duration-300"
   >
-    <div id="root" class="will-change"></div>
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Theme detection (non-blocking) -->
+    <!-- Theme detection -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const d = document.documentElement;
