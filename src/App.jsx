@@ -1,7 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useCallback, lazy, Suspense } from "react";
 import { motion, AnimatePresence, LazyMotion, domAnimation } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
-import InstagramPopup from './components/InstagramPopup';
 import "./App.css"; // Import your global styles
 
 // Portfolio Items with optimized image loading
@@ -130,7 +129,6 @@ export default function App() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <InstagramPopup />
       <div className="min-h-screen bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 font-sans scroll-smooth">
         {/* Navbar */}
         <motion.nav
