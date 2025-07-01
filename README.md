@@ -1,4 +1,4 @@
-# 🌟 Brancha – Creative Design Agency Website (Built by Us)
+# 🌟 Brancha – Creative Design Agency Website
 
 **Brancha** is a professional design agency helping cafés, salons, and local businesses stand out with modern websites, posters, and social media content.
 
