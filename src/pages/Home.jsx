@@ -26,27 +26,32 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('Website');
 
   const services = [
-    {
-      title: 'Website Design & Development',
-      description: 'Custom websites that reflect your brand and convert visitors into customers.'
-    },
-    {
-      title: 'Brand Identity',
-      description: 'Cohesive visual systems that establish recognition and trust.'
-    },
-    {
-      title: 'Social Media Design',
-      description: 'Engaging graphics that maintain consistency across all platforms.'
-    },
-    {
-      title: 'Marketing Collateral',
-      description: 'Brochures, flyers, and promotional materials that communicate clearly.'
-    },
-    {
-      title: 'Ongoing Support',
-      description: 'Regular updates and refinements to keep your presence current.'
-    }
-  ];
+  {
+    title: 'Website Design & Development',
+    description: 'Custom websites that reflect your brand and convert visitors into customers.'
+  },
+  {
+    title: 'Brand Identity',
+    description: 'Cohesive visual systems that establish recognition and trust.'
+  },
+  {
+    title: 'Social Media Design',
+    description: 'Engaging graphics that maintain consistency across all platforms.'
+  },
+  {
+    title: 'Marketing Collateral',
+    description: 'Brochures, flyers, and promotional materials that communicate clearly.'
+  },
+  {
+    title: 'SEO & Website Optimisation',
+    description: 'On-page improvements that help your website perform better and load faster.'
+  },
+  {
+    title: 'Ongoing Support',
+    description: 'Regular updates and refinements to keep your presence current.'
+  }
+];
+
 
   const process = [
     {
