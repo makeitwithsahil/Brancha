@@ -52,7 +52,6 @@ export default function Home() {
   }
 ];
 
-
   const process = [
     {
       number: '01',
