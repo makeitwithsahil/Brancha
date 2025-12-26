@@ -144,7 +144,7 @@ export default function Portfolio() {
       </section>
 
       {/* Filter Section */}
-      <section className="py-6 sm:py-8 md:py-10 lg:py-12 border-y border-neutral-100 bg-neutral-50/50 sticky top-0 z-40 backdrop-blur-sm">
+      <section className="py-6 sm:py-8 md:py-10 lg:py-12 border-y border-neutral-100 bg-neutral-50/50 sticky top-0 z-30 backdrop-blur-sm">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
           <motion.div
             className="flex flex-wrap justify-center gap-2 sm:gap-3"
