@@ -39,10 +39,6 @@ export default function Home() {
       description: 'Engaging graphics that maintain consistency across all platforms.'
     },
     {
-      title: 'Print & Packaging',
-      description: 'Professional materials that leave a lasting impression.'
-    },
-    {
       title: 'Marketing Collateral',
       description: 'Brochures, flyers, and promotional materials that communicate clearly.'
     },
