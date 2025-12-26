@@ -370,7 +370,7 @@ export default function Contact() {
                 </h3>
                 <div className="flex gap-4">
                   <motion.a
-                    href="https://linkedin.com/company/brancha"
+                    href="https://www.linkedin.com/company/brancha/"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1, y: -2 }}

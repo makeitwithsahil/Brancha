@@ -131,7 +131,7 @@ export default function Footer() {
 
   const socialLinks = [
     { name: 'Instagram', url: 'https://www.instagram.com/getbrancha/', icon: <Instagram className="w-5 h-5" /> },
-    { name: 'LinkedIn', url: 'https://linkedin.com/company/getbrancha', icon: <Linkedin className="w-5 h-5" /> },
+    { name: 'LinkedIn', url: 'https://www.linkedin.com/company/brancha/', icon: <Linkedin className="w-5 h-5" /> },
     { name: 'Email', url: 'mailto:workwithbrancha@gmail.com', icon: <Mail className="w-5 h-5" /> },
     { name: 'Call', url: 'tel:+919825883015', icon: <Phone className="w-5 h-5" /> },
     { name: 'WhatsApp', url: 'https://wa.me/919219917186', icon: <MessageSquare className="w-5 h-5" /> }
