@@ -6,18 +6,18 @@ const fadeInUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-50px' },
-  transition: { 
-    duration: 0.8, 
-    ease: [0.16, 1, 0.3, 1] 
+  transition: {
+    duration: 0.8,
+    ease: [0.16, 1, 0.3, 1]
   }
 };
 
 const staggerContainer = {
-  whileInView: { 
-    transition: { 
+  whileInView: {
+    transition: {
       staggerChildren: 0.12,
-      delayChildren: 0.1 
-    } 
+      delayChildren: 0.1
+    }
   },
   viewport: { once: true, margin: '-50px' }
 };
@@ -30,19 +30,44 @@ export default function Portfolio() {
 
   const projects = [
     {
-      id: 4,
-      title: 'Modern Brand Identity',
-      category: 'Designs',
-      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
-      description: 'Complete brand identity system including logo design, color palette, typography guidelines, and brand collateral. Created to establish a strong, memorable presence in the tech industry.',
-      client: 'InnovateTech',
+      id: 1,
+      title: 'Bravish Healthcare Website',
+      category: 'Website',
+      image: '/bravish-cover.webp',
+      description: 'A modern, responsive pharmaceutical website designed to build trust, improve accessibility, and support business growth. The project focused on clean UI, clear product presentation, and a smooth enquiry-driven user experience aligned with healthcare standards.',
+      client: 'Bravish Healthcare',
       year: '2025',
-      services: ['Brand Strategy', 'Logo Design', 'Visual Identity', 'Brand Guidelines'],
-      results: '95% brand recognition in target market',
-      websiteUrl: null
+      services: [
+        'Website Design & Development',
+        'UI/UX Design',
+        'Product Listing Structure',
+        'Mobile Optimization',
+        'SEO Setup'
+      ],
+      results: 'Improved digital credibility and streamlined product enquiries',
+      websiteUrl: 'https://www.bravishhealthcare.com'
+    },
+
+    {
+      id: 2,
+      title: 'Techzon Computer Academy Website',
+      category: 'Website',
+      image: '/techzon-cover.webp',
+      description: 'A modern educational website designed to showcase professional computer courses, build trust with students, and drive enquiries. The project focused on clear course presentation, strong visual hierarchy, and a smooth, mobile-first user experience.',
+      client: 'Techzon Computer Academy',
+      year: '2025',
+      services: [
+        'Website Design & Development',
+        'UI/UX Design',
+        'Course Structure & Layout',
+        'Mobile Optimization',
+        'Contact & Enquiry Flow Setup'
+      ],
+      results: 'Improved online presence and increased student enquiries',
+      websiteUrl: 'https://www.techzon-computer-academy.in'
     },
     {
-      id: 5,
+      id: 3,
       title: 'Minimalist UI Kit',
       category: 'Designs',
       image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=600&fit=crop',
@@ -53,20 +78,9 @@ export default function Portfolio() {
       results: 'Adopted by 50+ designers, 30% faster design time',
       websiteUrl: null
     },
+
     {
-      id: 7,
-      title: 'Urban Architecture Series',
-      category: 'Shoot',
-      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop',
-      description: 'Professional architectural photography showcasing modern urban developments. Captured during golden hour with emphasis on geometric patterns and natural lighting.',
-      client: 'Urban Developers Group',
-      year: '2025',
-      services: ['Architectural Photography', 'Post-Processing', 'HDR Imaging', 'Drone Shots'],
-      results: 'Featured in 3 architecture magazines',
-      websiteUrl: null
-    },
-    {
-      id: 8,
+      id: 4,
       title: 'Product Launch Campaign',
       category: 'Shoot',
       image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop',
@@ -78,7 +92,7 @@ export default function Portfolio() {
       websiteUrl: null
     },
     {
-      id: 9,
+      id: 5,
       title: 'Fashion Editorial Shoot',
       category: 'Shoot',
       image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=600&fit=crop',
@@ -91,8 +105,8 @@ export default function Portfolio() {
     }
   ];
 
-  const filteredProjects = activeCategory === 'All' 
-    ? projects 
+  const filteredProjects = activeCategory === 'All'
+    ? projects
     : projects.filter(project => project.category === activeCategory);
 
   return (
@@ -122,7 +136,7 @@ export default function Portfolio() {
               </span>
             </motion.div>
 
-            <motion.h1 
+            <motion.h1
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-neutral-900 mb-4 sm:mb-6 tracking-tight leading-[1.05] px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -131,7 +145,7 @@ export default function Portfolio() {
               Projects that <span className="italic font-normal">matter</span>
             </motion.h1>
 
-            <motion.p 
+            <motion.p
               className="text-sm sm:text-base md:text-lg lg:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -199,7 +213,7 @@ export default function Portfolio() {
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
+
                     {/* Category Badge */}
                     <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
                       <span className="px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-sans font-semibold tracking-wide text-white bg-neutral-900/80 backdrop-blur-sm rounded-full">
@@ -242,7 +256,7 @@ export default function Portfolio() {
                         <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-400 flex-shrink-0 mt-1" />
                       )}
                     </div>
-                    
+
                     <p className="text-xs sm:text-sm font-sans text-neutral-600 leading-relaxed mb-3 sm:mb-4 line-clamp-2">
                       {project.description}
                     </p>
@@ -336,7 +350,7 @@ export default function Portfolio() {
               >
                 <X className="w-5 h-5" />
               </button>
-              
+
               {/* Project Image */}
               <div className="aspect-video sm:aspect-[21/10] bg-neutral-900 relative">
                 <img
@@ -345,7 +359,7 @@ export default function Portfolio() {
                   className="w-full h-full object-cover opacity-90"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0" />
-                
+
                 {/* Category Badge on Image */}
                 <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
                   <span className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-sans font-semibold tracking-wide text-white bg-neutral-900/80 backdrop-blur-sm rounded-full">
@@ -353,7 +367,7 @@ export default function Portfolio() {
                   </span>
                 </div>
               </div>
-              
+
               {/* Modal Content */}
               <div className="p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
                 {/* Meta Information */}
@@ -376,7 +390,7 @@ export default function Portfolio() {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-neutral-900 mb-4 sm:mb-6 tracking-tight leading-tight">
                   {selectedProject.title}
                 </h2>
-                
+
                 {/* Description */}
                 <p className="text-sm sm:text-base md:text-lg text-neutral-600 leading-relaxed mb-6 sm:mb-8">
                   {selectedProject.description}
@@ -387,7 +401,7 @@ export default function Portfolio() {
                   <div className="text-[10px] sm:text-xs font-sans font-semibold tracking-wider text-neutral-500 uppercase mb-3 sm:mb-4">Services Provided</div>
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.services.map((service, i) => (
-                      <span 
+                      <span
                         key={i}
                         className="text-xs sm:text-sm font-sans text-neutral-700 px-3 sm:px-4 py-1.5 sm:py-2 bg-neutral-100 rounded-lg border border-neutral-200"
                       >
@@ -403,7 +417,7 @@ export default function Portfolio() {
                     <div className="text-[10px] sm:text-xs font-sans font-semibold tracking-wider text-neutral-500 uppercase mb-3 sm:mb-4">Technologies Used</div>
                     <div className="flex flex-wrap gap-2">
                       {selectedProject.technologies.map((tech, i) => (
-                        <span 
+                        <span
                           key={i}
                           className="text-xs sm:text-sm font-sans text-neutral-700 px-3 sm:px-4 py-1.5 sm:py-2 bg-neutral-100 rounded-lg border border-neutral-200"
                         >
@@ -433,13 +447,13 @@ export default function Portfolio() {
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   )}
-                  <button 
+                  <button
                     onClick={() => window.location.href = '/contact'}
                     className="px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-neutral-400 hover:bg-neutral-50 hover:scale-[1.02] active:scale-[0.98]"
                   >
                     Discuss Your Project
                   </button>
-                  <button 
+                  <button
                     onClick={() => setSelectedProject(null)}
                     className="sm:hidden px-6 py-3 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-neutral-400 hover:bg-neutral-50 active:scale-[0.98]"
                   >
@@ -489,13 +503,13 @@ export default function Portfolio() {
               Let's discuss how strategic design and development can drive measurable results for your business.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-              <button 
+              <button
                 onClick={() => window.location.href = '/contact'}
                 className="group px-8 sm:px-10 py-3 sm:py-3.5 md:py-4 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-xl shadow-[#FF6B6B]/20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-2xl hover:shadow-[#FF6B6B]/30 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Schedule a Consultation
               </button>
-              <button 
+              <button
                 onClick={() => window.location.href = '/services'}
                 className="group px-8 sm:px-10 py-3 sm:py-3.5 md:py-4 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-neutral-400 hover:bg-neutral-50 hover:scale-[1.02] active:scale-[0.98]"
               >
