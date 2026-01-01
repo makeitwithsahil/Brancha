@@ -139,7 +139,7 @@ export default function Contact() {
           service: formData.service,
           budget: formData.budget,
           message: formData.message,
-          to: "workwithbrancha@gmail.com",
+          to: "support@brancha.in",
           from_name: "Brancha Contact Form"
         }),
       });
@@ -263,7 +263,7 @@ export default function Contact() {
             whileInView="whileInView"
           >
             <motion.a
-              href="mailto:workwithbrancha@gmail.com"
+              href="mailto:support@brancha.in"
               variants={fadeInUp}
               className="group relative bg-white rounded-3xl p-6 sm:p-8 border-2 border-neutral-200 hover:border-[#FF6B6B] shadow-lg shadow-neutral-900/5 hover:shadow-xl hover:shadow-[#FF6B6B]/10 transition-all duration-300"
             >
@@ -273,7 +273,7 @@ export default function Contact() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg sm:text-xl font-light text-neutral-900 mb-2 tracking-tight">Email Us</h3>
-                  <p className="text-sm sm:text-base text-neutral-600 break-all">workwithbrancha@gmail.com</p>
+                  <p className="text-sm sm:text-base text-neutral-600 break-all">support@brancha.in</p>
                 </div>
               </div>
             </motion.a>
