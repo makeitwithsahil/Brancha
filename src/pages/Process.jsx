@@ -7,6 +7,8 @@ import {
   Clock, Target, ArrowRight, Sparkles,
   ChevronDown, Zap, Shield, Users, TrendingUp
 } from 'lucide-react';
+import SEO from '../components/SEO';
+import { breadcrumbSchema } from '../utils/schemas';
 
 // Premium animation variants
 const fadeInUp = {
@@ -253,8 +255,26 @@ export default function Process() {
   const toggleFaq = useCallback((index) => {
     setExpandedFaq(expandedFaq === index ? null : index);
   }, [expandedFaq]);
+  
+  const processSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'Process', path: '/process' }
+    ])
+  ]
+};
 
   return (
+    <>
+     <SEO
+      title="Our Process"
+      description="Learn how Brancha works with businesses to create professional websites and brand identities. From discovery to launch, our transparent process ensures quality results."
+      canonical="/process"
+      schema={processSchema}
+      keywords="web design process, branding process, project workflow, how we work, design agency process India"
+    />
     <div className="min-h-screen bg-white overflow-hidden">
       {/* Hero Section with Parallax */}
       <section ref={heroRef} className="relative pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 lg:pb-32 overflow-hidden">
@@ -1278,5 +1298,6 @@ export default function Process() {
         </div>
       </section>
     </div>
+    </>
   );
 }

@@ -13,7 +13,7 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-white">
-         <ScrollToTop />
+        <ScrollToTop />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

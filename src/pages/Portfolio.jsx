@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Eye, X } from 'lucide-react';
+import SEO from '../components/SEO';
+import { portfolioSchema, breadcrumbSchema } from '../utils/schemas';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -91,6 +93,7 @@ export default function Portfolio() {
       results: '2M+ social media impressions, 15% sales increase',
       websiteUrl: null
     },
+
     {
       id: 5,
       title: 'Fashion Editorial Shoot',
@@ -105,11 +108,30 @@ export default function Portfolio() {
     }
   ];
 
+  const portfolioSchemaData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    portfolioSchema(projects),
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'Portfolio', path: '/portfolio' }
+    ])
+  ]
+};
+
   const filteredProjects = activeCategory === 'All'
     ? projects
     : projects.filter(project => project.category === activeCategory);
 
   return (
+    <>
+      <SEO
+      title="Portfolio"
+      description="View our portfolio of website designs, brand identities, and digital marketing work for businesses across India. Real results for cafés, salons, boutiques, and local enterprises."
+      canonical="/portfolio"
+      schema={portfolioSchemaData}
+      keywords="design portfolio, website design examples, brand identity portfolio, web design India, Brancha projects"
+    />
     <div className="bg-white overflow-hidden font-serif">
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 sm:pt-32 sm:pb-20 md:pt-40 md:pb-24 lg:pt-48 lg:pb-28">
@@ -520,5 +542,6 @@ export default function Portfolio() {
         </div>
       </section>
     </div>
+    </>
   );
 }

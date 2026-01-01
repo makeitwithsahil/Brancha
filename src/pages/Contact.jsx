@@ -7,6 +7,8 @@ import {
   Calendar, Clock, Briefcase, Globe
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
+import { contactPageSchema, breadcrumbSchema } from '../utils/schemas';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -172,7 +174,27 @@ export default function Contact() {
     }
   };
 
+  const contactSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    contactPageSchema,
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'Contact', path: '/contact' }
+    ])
+  ]
+};
+
   return (
+    <>
+    
+    <SEO
+      title="Contact Us"
+      description="Get in touch with Brancha for professional website design and brand identity services. Free consultation for businesses in Vadodara, Bangalore, and across India."
+      canonical="/contact"
+      schema={contactSchema}
+      keywords="contact Brancha, get free quote, website design consultation, brand identity inquiry, Vadodara web design contact, Bangalore design agency"
+    />
     <div className="bg-white overflow-hidden min-h-screen">
       {/* Hero Section */}
       <section className="relative pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
@@ -677,5 +699,6 @@ export default function Contact() {
         </div>
       </section>
     </div>
+    </>
   );
 }

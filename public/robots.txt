@@ -1,0 +1,15 @@
+# https://brancha.in/robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemaps
+Sitemap: https://brancha.in/sitemap.xml
+
+# Crawl-delay for specific bots (optional, adjust if needed)
+User-agent: Googlebot
+Crawl-delay: 0
+
+User-agent: Bingbot
+Crawl-delay: 0

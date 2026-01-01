@@ -6,6 +6,8 @@ import {
   Users, Zap, Globe, Shield, Award, Check, Sparkles
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
+import SEO from '../components/SEO';
+import { serviceSchema, breadcrumbSchema } from '../utils/schemas';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -184,8 +186,25 @@ export default function Services() {
     }
   ];
 
-
+const servicesSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    serviceSchema,
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'Services', path: '/services' }
+    ])
+  ]
+};
   return (
+    <>
+     <SEO
+      title="Our Services"
+      description="Professional website design, brand identity, social media management, and digital marketing services for businesses in Vadodara, Bangalore, and across India."
+      canonical="/services"
+      schema={servicesSchema}
+      keywords="web design services, brand identity services, social media management, digital marketing services India, website development Vadodara, branding services Bangalore"
+    />
     <div className="bg-white overflow-hidden font-serif">
       {/* Hero Section */}
       <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-36">
@@ -573,5 +592,6 @@ export default function Services() {
         </div>
       </section>
     </div>
+    </>
   );
 }
