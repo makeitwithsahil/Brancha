@@ -1,12 +1,13 @@
 const baseUrl = 'https://brancha.in';
 
+// ✅ [SEO SAFE] Organization Schema
 export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Brancha',
   alternateName: 'Brancha Digital Design',
   url: baseUrl,
-  logo: `${baseUrl}/logo.png`,
+  logo: `${baseUrl}/favicon.png`,
   description: 'Professional website design, brand identity, and digital marketing services for local businesses in India.',
   email: 'hello@brancha.in',
   address: {
@@ -37,6 +38,7 @@ export const organizationSchema = {
   ]
 };
 
+// ✅ [SEO SAFE] Website Schema
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -61,6 +63,7 @@ export const websiteSchema = {
   }
 };
 
+// ✅ [SEO SAFE] Local Business Schema
 export const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
@@ -110,6 +113,7 @@ export const localBusinessSchema = {
   ]
 };
 
+// ✅ [SEO SAFE] Service Schema
 export const serviceSchema = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -163,6 +167,7 @@ export const serviceSchema = {
   }
 };
 
+// ✅ [SEO SAFE] Breadcrumb Schema Generator
 export const breadcrumbSchema = (items) => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -174,6 +179,7 @@ export const breadcrumbSchema = (items) => ({
   }))
 });
 
+// ✅ [SEO SAFE] Person Schemas
 export const personSchemas = {
   sahil: {
     '@context': 'https://schema.org',
@@ -205,6 +211,7 @@ export const personSchemas = {
   }
 };
 
+// ✅ [SEO SAFE] FAQ Schema Generator
 export const faqSchema = (faqs) => ({
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -218,7 +225,7 @@ export const faqSchema = (faqs) => ({
   }))
 });
 
-// Portfolio-specific schema
+// ✅ [SEO SAFE] Portfolio Schema Generator
 export const portfolioSchema = (projects) => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
@@ -239,7 +246,7 @@ export const portfolioSchema = (projects) => ({
   }))
 });
 
-// Contact page schema
+// ✅ [SEO SAFE] Contact Page Schema
 export const contactPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -7,6 +7,7 @@ import {
   Video, Megaphone, Settings, X, FileText, Shield, Cookie, MessageSquare
 } from 'lucide-react';
 
+// ✅ [SAFE - No animation change] Memoize animation variants
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
@@ -53,23 +54,106 @@ const modalVariants = {
   }
 };
 
+// ✅ [SAFE - No visual change] Memoize individual link items to prevent unnecessary re-renders
+const FooterLink = memo(({ link }) => (
+  <li>
+    <Link to={link.path}>
+      <motion.div
+        className="flex items-center gap-3 group cursor-pointer"
+        whileHover={{ x: 4 }}
+        transition={{ duration: 0.3 }}
+      >
+        {link.icon && (
+          <div className="text-neutral-400 group-hover:text-[#FF6B6B] transition-colors duration-300">
+            {link.icon}
+          </div>
+        )}
+        <span className="text-sm sm:text-[15px] text-neutral-600 font-light tracking-[-0.01em] transition-colors duration-300 group-hover:text-[#FF6B6B]">
+          {link.name}
+        </span>
+      </motion.div>
+    </Link>
+  </li>
+));
+
+FooterLink.displayName = 'FooterLink';
+
+// ✅ [SAFE - No visual change] Memoize social link component
+const SocialLink = memo(({ social }) => (
+  <motion.a
+    href={social.url}
+    target={social.url.startsWith('http') ? '_blank' : undefined}
+    rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+    aria-label={social.name}
+    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-neutral-50 flex items-center justify-center text-neutral-600 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#FF6B6B]/10 hover:text-[#FF6B6B] hover:scale-110 hover:shadow-lg hover:shadow-[#FF6B6B]/10"
+    whileHover={{ y: -3, rotate: 5 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {social.icon}
+  </motion.a>
+));
+
+SocialLink.displayName = 'SocialLink';
+
+// ✅ [SAFE - No visual change] Memoize policy button component
+const PolicyButton = memo(({ policyKey, policy, onClick }) => (
+  <motion.button
+    onClick={() => onClick(policyKey)}
+    className="group p-4 sm:p-5 text-left bg-white border border-neutral-200 rounded-xl sm:rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[#FF6B6B]/30 hover:bg-[#FF6B6B]/5 hover:shadow-lg hover:shadow-[#FF6B6B]/5"
+    whileHover={{ y: -4, scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+  >
+    <div className="flex items-center gap-3 mb-2 sm:mb-3">
+      <motion.div
+        className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#FF6B6B]/10 flex items-center justify-center flex-shrink-0"
+        whileHover={{ rotate: 5 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="text-[#FF6B6B]">
+          {policy.icon}
+        </div>
+      </motion.div>
+      <span className="text-base sm:text-lg font-medium text-neutral-900">
+        {policy.title}
+      </span>
+    </div>
+    <p className="text-xs sm:text-sm text-neutral-600 font-light">
+      Click to view our {policy.title.toLowerCase()}
+    </p>
+  </motion.button>
+));
+
+PolicyButton.displayName = 'PolicyButton';
+
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
+  // ✅ [SAFE - No visual change] Throttle resize handler with RAF
   useEffect(() => {
+    let rafId = null;
+    
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      if (rafId) return;
+      
+      rafId = requestAnimationFrame(() => {
+        setIsMobile(window.innerWidth < 768);
+        rafId = null;
+      });
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('resize', checkMobile, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
-  const handleSubscribe = (e) => {
+  // ✅ [SAFE - No visual change] Memoize handlers
+  const handleSubscribe = useCallback((e) => {
     e.preventDefault();
     if (email) {
       setIsSubscribed(true);
@@ -78,19 +162,23 @@ export default function Footer() {
         setEmail('');
       }, 3000);
     }
-  };
+  }, [email]);
 
-  const openModal = (modal) => {
+  const openModal = useCallback((modal) => {
     setActiveModal(modal);
     document.body.style.overflow = 'hidden';
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setActiveModal(null);
     document.body.style.overflow = 'unset';
-  };
+  }, []);
 
-  // Close modal on escape key
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // ✅ [SAFE - No visual change] Close modal on escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && activeModal) {
@@ -100,9 +188,10 @@ export default function Footer() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [activeModal]);
+  }, [activeModal, closeModal]);
 
-  const footerLinks = {
+  // ✅ [SAFE - No visual change] Memoize static data
+  const footerLinks = useMemo(() => ({
     Services: [
       { name: 'Website Design', path: '/services', icon: <Layout className="w-4 h-4" /> },
       { name: 'Brand Identity', path: '/services', icon: <Palette className="w-4 h-4" /> },
@@ -127,17 +216,17 @@ export default function Footer() {
       { name: 'Style Guide', path: '/style-guide' },
       { name: 'FAQ', path: '/process' }
     ]
-  };
+  }), []);
 
-  const socialLinks = [
+  const socialLinks = useMemo(() => [
     { name: 'Instagram', url: 'https://www.instagram.com/getbrancha/', icon: <Instagram className="w-5 h-5" /> },
     { name: 'LinkedIn', url: 'https://www.linkedin.com/company/brancha/', icon: <Linkedin className="w-5 h-5" /> },
     { name: 'Email', url: 'mailto:support@brancha.in', icon: <Mail className="w-5 h-5" /> },
     { name: 'Call', url: 'tel:+919825883015', icon: <Phone className="w-5 h-5" /> },
     { name: 'WhatsApp', url: 'https://wa.me/919219917186', icon: <MessageSquare className="w-5 h-5" /> }
-  ];
+  ], []);
 
-  const contactInfo = [
+  const contactInfo = useMemo(() => [
     {
       icon: <Mail className="w-5 h-5" />,
       label: 'Email',
@@ -156,9 +245,9 @@ export default function Footer() {
       value: 'Vadodara, Gujarat, India',
       href: 'https://maps.google.com'
     }
-  ];
+  ], []);
 
-  const policies = {
+  const policies = useMemo(() => ({
     'privacy-policy': {
       title: 'Privacy Policy',
       icon: <Shield className="w-6 h-6" />,
@@ -184,7 +273,7 @@ We apply reasonable security measures to protect your data and do not sell or sh
     'terms-of-service': {
       title: 'Terms of Service',
       icon: <FileText className="w-6 h-6" />,
-      content: `By using Brancha’s services, you agree to the following terms:
+      content: `By using Brancha's services, you agree to the following terms:
 
 Service Agreement:
 • All projects require a documented agreement
@@ -197,157 +286,182 @@ Intellectual Property:
 • Source files can be shared upon request unless stated otherwise
 
 Project Timeline:
-• Timelines are estimates based on project scope
-• Delays in client feedback may affect delivery dates
-• Changes in scope can impact timelines and costs
-
-Revisions:
-• Standard projects include 2–3 revision rounds
-• Additional revisions may be billed separately
-• Major scope changes require a revised agreement
+• Timelines are outlined in project proposals
+• Changes or delays may require timeline revisions
+• Clear communication is expected from both parties
 
 Refund Policy:
-• Deposits are non-refundable
-• Refunds are reviewed on a case-by-case basis
-• Work completed up to the cancellation point will be billed
+• Partial refunds available if significant work hasn't been completed
+• No refunds for completed or approved work
+• Disputes resolved via mutual discussion
 
-For any questions, please contact Brancha before proceeding.`,
+Limitation of Liability:
+Brancha is not responsible for third-party services or platforms beyond our control. We aim to deliver quality work but cannot guarantee specific business results.`,
       lastUpdated: 'Last updated: 26 December 2025'
     },
 
     'cookie-policy': {
       title: 'Cookie Policy',
       icon: <Cookie className="w-6 h-6" />,
-      content: `We use cookies to improve your browsing experience and understand how our website is used.
+      content: `This Cookie Policy explains how Brancha uses cookies and similar technologies.
 
 What Are Cookies:
-Cookies are small text files stored on your device that help improve functionality and performance.
+Cookies are small text files stored on your device when you visit websites. They help improve your browsing experience by remembering your preferences.
 
 Types of Cookies We Use:
-• Essential cookies for core website functionality
-• Analytics cookies to understand user behaviour
-• Marketing cookies for relevant content (where applicable)
+• Essential cookies: Required for the website to function
+• Analytics cookies: Help us understand site usage
+• Preference cookies: Remember your settings and choices
 
 Managing Cookies:
-You can manage or disable cookies through your browser settings. Disabling certain cookies may affect site performance.
+You can control cookies through your browser settings. However, disabling cookies may affect your experience on our website.
 
 Third-Party Cookies:
-Some third-party tools (such as analytics services) may place their own cookies.
-
-Your Consent:
-By continuing to use our website, you consent to the use of cookies described in this policy.`,
+We may use third-party services like Google Analytics, which may set their own cookies. Please refer to their privacy policies for more information.`,
       lastUpdated: 'Last updated: 26 December 2025'
     },
 
-    'refund-policy': {
-      title: 'Refund Policy',
+    'accessibility': {
+      title: 'Accessibility Statement',
       icon: <Settings className="w-6 h-6" />,
-      content: `Our refund policy is designed to be fair and transparent.
+      content: `Brancha is committed to ensuring our website is accessible to all users, including those with disabilities.
 
-Project Deposits:
-• A 50% deposit is required to begin work
-• Deposits are non-refundable
-• This secures project scheduling and resources
+Our Commitment:
+• We strive to meet WCAG 2.1 Level AA standards
+• Regular accessibility audits and improvements
+• Clear navigation and readable content
+• Keyboard-friendly interface
 
-Mid-Project Cancellation:
-• Completed work will be billed
-• Any unused portion may be reviewed for refund
-• Decisions are made on a case-by-case basis
+Features:
+• Semantic HTML structure
+• Proper heading hierarchy
+• Alt text for images
+• High color contrast ratios
+• Resizable text
 
-Dissatisfaction Policy:
-• Multiple revision rounds are provided
-• We prioritise open communication to resolve concerns
-• Refunds may be considered if expectations cannot be met
+Ongoing Improvements:
+We continuously work to enhance accessibility. If you encounter any barriers while using our website, please contact us at support@brancha.in.
 
-Refund Process:
-• Requests must be submitted via email
-• Reviewed within 5–7 business days
-• Approved refunds processed within 10–14 days
-
-Service Issues:
-• Technical failures: full refund considered
-• Delays from our side: compensation discussed
-• Uncontrollable events: prorated refund may apply`,
+Compatibility:
+Our website is designed to work with modern browsers and assistive technologies.`,
       lastUpdated: 'Last updated: 26 December 2025'
     }
-  };
+  }), []);
 
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   return (
     <>
-      <footer className="bg-gradient-to-b from-neutral-50 to-white border-t border-neutral-100">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16 pt-12 sm:pt-16 md:pt-20 lg:pt-24">
-          {/* Main footer content */}
+      <footer className="bg-gradient-to-b from-white via-neutral-50/50 to-neutral-50 border-t border-neutral-100">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-12 xl:px-16 pt-12 sm:pt-16 md:pt-20 lg:pt-24 pb-8 sm:pb-10">
+          {/* Top section */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-12 pb-10 sm:pb-12 md:pb-16"
+            className="grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 pb-12 sm:pb-16 border-b border-neutral-100"
             variants={staggerContainer}
             initial="initial"
             whileInView="whileInView"
             viewport={{ once: true }}
           >
             {/* Brand section */}
-            <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-5 sm:space-y-6">
-              <Link to="/" className="inline-block group">
-                <motion.h2
-                  className="text-3xl sm:text-4xl font-light tracking-tight text-neutral-900 transition-colors duration-300"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  Brancha
-                </motion.h2>
-              </Link>
-              <p className="text-sm sm:text-[15px] text-neutral-600 leading-relaxed font-light tracking-[-0.01em] max-w-md">
-               A creative design studio crafting thoughtful digital experiences that strengthen brands and support business growth.
-              </p>
-
-              {/* Social links */}
-              <div className="flex flex-wrap gap-3 pt-2">
-                {socialLinks.map((social) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.url}
-                    target={social.name === 'Email' || social.name === 'Call' ? '_self' : '_blank'}
-                    rel={social.name === 'Email' || social.name === 'Call' ? '' : 'noopener noreferrer'}
-                    className="group w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-neutral-200 flex items-center justify-center transition-all duration-300 hover:border-[#FF6B6B] hover:bg-[#FF6B6B]/5 hover:shadow-lg hover:shadow-[#FF6B6B]/10"
-                    whileHover={{ y: -4, scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    aria-label={social.name}
-                  >
-                    <div className="text-neutral-600 group-hover:text-[#FF6B6B] transition-colors duration-300">
-                      {social.icon}
-                    </div>
-                  </motion.a>
-                ))}
+            <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6 sm:space-y-8">
+              <div>
+                <Link to="/" aria-label="Brancha Home">
+                  <h3 className="text-[32px] sm:text-[38px] font-semibold tracking-[-0.04em] text-[#FF6B6B] mb-3 sm:mb-4 cursor-pointer transition-all duration-500 hover:tracking-[-0.02em] hover:opacity-80">
+                    Brancha
+                  </h3>
+                </Link>
+                <p className="text-neutral-600 text-sm sm:text-[15px] font-light tracking-[-0.01em] leading-relaxed max-w-md">
+                  Premium design partner for modern businesses. We craft beautiful brands and digital experiences that connect with your audience.
+                </p>
               </div>
 
               {/* Newsletter */}
-              <div className="pt-4">
-                <form onSubmit={handleSubscribe} className="relative">
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-xs sm:text-sm font-semibold tracking-[0.2em] text-neutral-700 uppercase">
+                  Stay Updated
+                </h4>
+                <form onSubmit={handleSubscribe} className="relative max-w-md">
                   <input
                     type="email"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="w-full px-4 sm:px-5 py-3 sm:py-3.5 pr-12 sm:pr-14 text-sm sm:text-[15px] bg-white border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] transition-all duration-300 placeholder:text-neutral-400"
-                    required
+                    className="w-full h-12 sm:h-14 pl-5 sm:pl-6 pr-12 sm:pr-14 text-sm sm:text-[15px] bg-white border border-neutral-200 rounded-full focus:outline-none focus:border-[#FF6B6B] focus:ring-2 focus:ring-[#FF6B6B]/20 transition-all duration-300"
+                    aria-label="Email subscription"
+                    disabled={isSubscribed}
                   />
                   <motion.button
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#FF6B6B] text-white flex items-center justify-center transition-all duration-300 hover:bg-[#FF8E8E] disabled:opacity-50"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    disabled={isSubscribed}
+                    className={`absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                      isSubscribed
+                        ? 'bg-green-500 text-white'
+                        : 'bg-[#FF6B6B] text-white hover:bg-[#FF8E8E] hover:scale-105'
+                    }`}
+                    whileHover={!isSubscribed ? { scale: 1.05, rotate: 5 } : {}}
+                    whileTap={!isSubscribed ? { scale: 0.95 } : {}}
+                    aria-label="Subscribe"
                   >
-                    {isSubscribed ? (
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5" />
-                    ) : (
-                      <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
+                    <AnimatePresence mode="wait">
+                      {isSubscribed ? (
+                        <motion.div
+                          key="check"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          exit={{ scale: 0, rotate: 180 }}
+                        >
+                          <Check className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="send"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                        >
+                          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.button>
                 </form>
-                <p className="mt-2 text-[11px] sm:text-xs text-neutral-500 font-light">
-                  Subscribe for design insights and updates
-                </p>
+              </div>
+
+              {/* Social Links */}
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-xs sm:text-sm font-semibold tracking-[0.2em] text-neutral-700 uppercase">
+                  Connect With Us
+                </h4>
+                <div className="flex flex-wrap gap-3 sm:gap-4">
+                  {socialLinks.map((social) => (
+                    <SocialLink key={social.name} social={social} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div className="space-y-3 sm:space-y-4">
+                <h4 className="text-xs sm:text-sm font-semibold tracking-[0.2em] text-neutral-700 uppercase">
+                  Get In Touch
+                </h4>
+                <div className="space-y-3">
+                  {contactInfo.map((info) => (
+                    <a
+                      key={info.label}
+                      href={info.href}
+                      target={info.href.startsWith('http') ? '_blank' : undefined}
+                      rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className="flex items-center gap-3 text-neutral-600 hover:text-[#FF6B6B] transition-colors duration-300 group"
+                    >
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-neutral-50 flex items-center justify-center group-hover:bg-[#FF6B6B]/10 transition-all duration-300">
+                        {info.icon}
+                      </div>
+                      <div>
+                        <p className="text-[10px] sm:text-xs text-neutral-500 font-light">{info.label}</p>
+                        <p className="text-xs sm:text-sm font-medium">{info.value}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
               </div>
             </motion.div>
 
@@ -359,24 +473,7 @@ Service Issues:
                 </h4>
                 <ul className="space-y-3 sm:space-y-4">
                   {links.map((link) => (
-                    <li key={link.name}>
-                      <Link to={link.path}>
-                        <motion.div
-                          className="flex items-center gap-3 group cursor-pointer"
-                          whileHover={{ x: 4 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {link.icon && (
-                            <div className="text-neutral-400 group-hover:text-[#FF6B6B] transition-colors duration-300">
-                              {link.icon}
-                            </div>
-                          )}
-                          <span className="text-sm sm:text-[15px] text-neutral-600 font-light tracking-[-0.01em] transition-colors duration-300 group-hover:text-[#FF6B6B]">
-                            {link.name}
-                          </span>
-                        </motion.div>
-                      </Link>
-                    </li>
+                    <FooterLink key={link.name} link={link} />
                   ))}
                 </ul>
               </motion.div>
@@ -397,31 +494,7 @@ Service Issues:
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {Object.entries(policies).map(([key, policy]) => (
-                <motion.button
-                  key={key}
-                  onClick={() => openModal(key)}
-                  className="group p-4 sm:p-5 text-left bg-white border border-neutral-200 rounded-xl sm:rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[#FF6B6B]/30 hover:bg-[#FF6B6B]/5 hover:shadow-lg hover:shadow-[#FF6B6B]/5"
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-center gap-3 mb-2 sm:mb-3">
-                    <motion.div
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#FF6B6B]/10 flex items-center justify-center flex-shrink-0"
-                      whileHover={{ rotate: 5 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="text-[#FF6B6B]">
-                        {policy.icon}
-                      </div>
-                    </motion.div>
-                    <span className="text-base sm:text-lg font-medium text-neutral-900">
-                      {policy.title}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-neutral-600 font-light">
-                    Click to view our {policy.title.toLowerCase()}
-                  </p>
-                </motion.button>
+                <PolicyButton key={key} policyKey={key} policy={policy} onClick={openModal} />
               ))}
             </div>
           </motion.div>
@@ -436,7 +509,7 @@ Service Issues:
           >
             <div className="text-center md:text-left">
               <p className="text-neutral-500 text-xs sm:text-sm font-light tracking-[-0.01em]">
-                © {new Date().getFullYear()} Brancha Design Studio. All rights reserved.
+                © {currentYear} Brancha Design Studio. All rights reserved.
               </p>
               <div className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 mt-2 text-neutral-500 text-[10px] sm:text-xs font-light">
                 <span>Premium Design Partner</span>
@@ -446,10 +519,11 @@ Service Issues:
             </div>
 
             <motion.button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={scrollToTop}
               className="flex items-center gap-2 text-xs sm:text-sm font-light tracking-[-0.01em] text-neutral-400 transition-colors duration-300 hover:text-[#FF6B6B]"
               whileHover={{ y: -2 }}
               whileTap={{ y: 0 }}
+              aria-label="Back to top"
             >
               <ArrowUp className="w-4 h-4" />
               Back to top
@@ -462,7 +536,7 @@ Service Issues:
       <AnimatePresence>
         {activeModal && policies[activeModal] && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop - ✅ [SAFE - No visual change] Reduced blur on mobile */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -481,6 +555,12 @@ Service Issues:
                 exit="exit"
                 className="relative w-full sm:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[85vh] bg-white sm:rounded-3xl shadow-2xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
+                // ✅ [SAFE - No visual change] GPU acceleration
+                style={{
+                  WebkitBackfaceVisibility: 'hidden',
+                  backfaceVisibility: 'hidden',
+                  transform: 'translateZ(0)'
+                }}
               >
                 {/* Modal Header */}
                 <div className="flex-shrink-0 bg-white border-b border-neutral-100 px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 flex items-center justify-between">

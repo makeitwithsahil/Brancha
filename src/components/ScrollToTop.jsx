@@ -5,8 +5,17 @@ export default function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Scroll to top instantly when route changes
-    window.scrollTo(0, 0);
+    const rafId = requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
   }, [pathname]);
 
   return null;
