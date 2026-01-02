@@ -224,9 +224,9 @@ export default function Navbar() {
                         : 'text-neutral-700 active:bg-neutral-50'
                     }`}
                     style={{
-                      transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
+                      transitionDelay: isMobileMenuOpen ? `${index * 70}ms` : '0ms',
                       animation: isMobileMenuOpen 
-                        ? `slideInDown 0.5s ease-out ${index * 0.05}s both` 
+                        ? `slideInDown 0.7s ease-out ${index * 0.07}s both` 
                         : 'none'
                     }}
                   >
@@ -241,7 +241,7 @@ export default function Navbar() {
               style={{
                 transitionDelay: isMobileMenuOpen ? '220ms' : '0ms',
                 animation: isMobileMenuOpen 
-                  ? 'slideInDown 0.5s ease-out 0.50s both' 
+                  ? 'slideInDown 0.7s ease-out 0.50s both' 
                   : 'none'
               }}
             >

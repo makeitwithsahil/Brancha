@@ -9,23 +9,33 @@ import SEO from '../components/SEO';
 import { personSchemas, breadcrumbSchema } from '../utils/schemas';
 
 const fadeInUp = {
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-50px' },
+  viewport: { once: true, margin: '-100px', amount: 0.3 },
   transition: {
-    duration: 0.8,
-    ease: [0.16, 1, 0.3, 1]
+    duration: 0.6,
+    ease: [0.22, 1, 0.36, 1]
+  }
+};
+
+const fadeInScale = {
+  initial: { opacity: 0, scale: 0.95 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: true, margin: '-100px', amount: 0.3 },
+  transition: {
+    duration: 0.5,
+    ease: [0.22, 1, 0.36, 1]
   }
 };
 
 const staggerContainer = {
   whileInView: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1
+      staggerChildren: 0.08,
+      delayChildren: 0.05
     }
   },
-  viewport: { once: true, margin: '-50px' }
+  viewport: { once: true, margin: '-100px', amount: 0.2 }
 };
 
 export default function About() {
@@ -116,69 +126,107 @@ export default function About() {
       />
 
       <div className="bg-white overflow-hidden font-serif">
-        <section className="relative pt-32 pb-24 md:pt-44 md:pb-36">
-          <div className="absolute inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-[#FF6B6B]/5 via-[#FF8E8E]/3 to-transparent rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#FF6B6B]/4 to-transparent rounded-full blur-3xl" />
-          </div>
+        {/* Hero Section */}
+       <section className="relative pt-28 pb-22 sm:pt-32 sm:pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-36">
+  {/* Background glow */}
+  <div className="absolute inset-0 -z-10 overflow-hidden">
+    <motion.div 
+      className="absolute top-0 right-0 w-[720px] h-[720px] bg-gradient-to-br from-[#FF6B6B]/6 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl"
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+    />
+    <motion.div 
+      className="absolute bottom-0 left-0 w-[560px] h-[560px] bg-gradient-to-tr from-[#FF6B6B]/5 to-transparent rounded-full blur-3xl"
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+    />
+  </div>
 
+  <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
+    <motion.div
+      className="max-w-3xl mx-auto text-center"
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+    >
+      {/* Heading */}
+      <motion.h1
+        className="
+          text-[2rem]
+          leading-[1.3]
+          tracking-tight
+          font-light
+          text-neutral-900
+          mb-4
+
+          sm:text-4xl sm:leading-[1.25]
+          md:text-5xl
+          lg:text-6xl
+        "
+        initial={{ opacity: 0, y: 22 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
+      >
+        We create.
+        <span className="italic font-normal text-neutral-700 block sm:inline">
+          {" "}You grow.
+        </span>
+      </motion.h1>
+
+      {/* Description */}
+      <motion.p
+        className="
+          text-[15px]
+          leading-relaxed
+          text-neutral-600
+          mb-9
+          max-w-xl
+          mx-auto
+
+          sm:text-base
+          md:text-lg
+        "
+        initial={{ opacity: 0, y: 22 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
+      >
+        Brancha works with local and growing businesses to build clear,
+        professional digital experiences. We focus on thoughtful design,
+        honest communication, and long-term value — so your brand feels
+        confident today and stays relevant as you grow.
+      </motion.p>
+    </motion.div>
+  </div>
+</section>
+
+
+        {/* Stats Section */}
+        <section className="py-20 md:py-24 lg:py-28 bg-gradient-to-b from-neutral-50 to-white">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
             <motion.div
-              className="max-w-5xl mx-auto text-center"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            >
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-[#FF6B6B]" />
-                </div>
-                <span className="text-sm font-sans font-semibold tracking-[0.2em] text-[#FF6B6B] uppercase">
-                  About Brancha
-                </span>
-              </div>
-
-              <motion.h1
-                className="text-5xl sm:text-6xl md:text-7xl font-light text-neutral-900 mb-8 tracking-tight leading-[1.1]"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-              >
-                We build digital experiences that <span className="italic font-normal">grow businesses</span>
-              </motion.h1>
-
-              <motion.p
-                className="text-lg sm:text-xl text-neutral-600 mb-10 max-w-3xl mx-auto leading-relaxed"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-              >
-                Founded on the belief that exceptional design should be accessible to businesses of all sizes, Brancha partners with local enterprises to create digital presences that reflect their quality and values.
-              </motion.p>
-            </motion.div>
-          </div>
-        </section>
-
-        <section className="py-16 md:py-20 bg-gradient-to-b from-neutral-50 to-white">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12 max-w-5xl mx-auto"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
-              viewport={{ once: true, margin: '-50px' }}
+              viewport={{ once: true }}
             >
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
-                  variants={fadeInUp}
-                  className="text-center"
+                  variants={fadeInScale}
+                  className="text-center group"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <div className="text-4xl sm:text-5xl lg:text-6xl font-light text-[#FF6B6B] mb-2 tracking-tight">
-                    {stat.number}
-                  </div>
-                  <div className="text-sm sm:text-base text-neutral-600 font-light tracking-wide">
-                    {stat.label}
+                  <div className="relative p-6 md:p-8 rounded-2xl bg-white border border-neutral-100 transition-all duration-300 group-hover:border-[#FF6B6B]/20 group-hover:shadow-lg group-hover:shadow-[#FF6B6B]/5">
+                    <div className="text-3xl md:text-4xl lg:text-5xl font-light text-[#FF6B6B] mb-2 tracking-tight transition-all duration-300 group-hover:scale-110">
+                      {stat.number}
+                    </div>
+                    <div className="text-xs md:text-sm text-neutral-600 transition-colors duration-300 group-hover:text-neutral-900">
+                      {stat.label}
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -186,38 +234,101 @@ export default function About() {
           </div>
         </section>
 
+        {/* Our Values */}
         <section className="py-20 md:py-28 lg:py-32">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div className="text-center mb-16 md:mb-20" {...fadeInUp}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
+            <motion.div
+              className="text-center mb-14 md:mb-16"
+              {...fadeInUp}
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-4 tracking-tight">
                 Our <span className="italic font-normal">values</span>
               </h2>
-              <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-                These principles guide everything we do and every project we undertake.
+              <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
+                The principles that guide everything we do
               </p>
             </motion.div>
 
             <motion.div
-              className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: '-100px' }}
             >
               {values.map((value, index) => (
                 <motion.div
                   key={index}
                   variants={fadeInUp}
-                  className="group bg-white border border-neutral-200 rounded-2xl p-8 transition-all duration-500 hover:shadow-xl hover:shadow-neutral-100 hover:-translate-y-1"
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="group"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center text-[#FF6B6B] mb-6 group-hover:scale-110 transition-transform duration-300">
-                    {value.icon}
+                  <div className="h-full p-6 md:p-7 lg:p-8 bg-white border border-neutral-100 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/20">
+                    <motion.div 
+                      className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mb-5 text-[#FF6B6B]"
+                      whileHover={{ rotate: 5, scale: 1.1 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      {value.icon}
+                    </motion.div>
+                    <h3 className="text-lg md:text-xl font-sans font-semibold text-neutral-900 mb-3 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
+                      {value.title}
+                    </h3>
+                    <p className="text-neutral-600 leading-relaxed text-sm md:text-[15px] transition-colors duration-300 group-hover:text-neutral-700">
+                      {value.description}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-semibold text-neutral-900 mb-3 tracking-tight">
-                    {value.title}
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Our Approach */}
+        <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-neutral-50 to-white">
+          <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
+            <motion.div
+              className="text-center mb-16 md:mb-20"
+              {...fadeInUp}
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-5 tracking-tight">
+                Our <span className="italic font-normal">approach</span>
+              </h2>
+              <p className="text-sm sm:text-[15px] md:text-base text-neutral-600 max-w-lg mx-auto leading-relaxed">
+                A thoughtful process that puts your business goals at the center
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 xl:gap-12"
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true }}
+            >
+              {approach.map((step, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeInUp}
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="group text-center"
+                >
+                  <motion.div 
+                    className="mb-6"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="block text-4xl md:text-5xl lg:text-6xl font-light text-neutral-200 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]/30">
+                      {step.number}
+                    </span>
+                  </motion.div>
+                  <h3 className="text-lg md:text-xl font-medium text-neutral-900 mb-3 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
+                    {step.title}
                   </h3>
-                  <p className="text-neutral-600 leading-relaxed font-light">
-                    {value.description}
+                  <p className="text-sm md:text-[15px] leading-relaxed text-neutral-600 max-w-xs mx-auto transition-colors duration-300 group-hover:text-neutral-700">
+                    {step.description}
                   </p>
                 </motion.div>
               ))}
@@ -225,225 +336,235 @@ export default function About() {
           </div>
         </section>
 
-        <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-neutral-50 to-white">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div className="text-center mb-16 md:mb-20" {...fadeInUp}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
-                Our <span className="italic font-normal">approach</span>
-              </h2>
-              <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-                A refined process that delivers exceptional results, every time.
-              </p>
-            </motion.div>
-
-            <div className="max-w-5xl mx-auto space-y-6">
-              {approach.map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: index * 0.1 }}
-                  className="group bg-white border border-neutral-200 rounded-2xl p-8 md:p-10 transition-all duration-500 hover:shadow-xl hover:shadow-neutral-100"
-                >
-                  <div className="flex items-start gap-6">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] flex items-center justify-center text-white text-xl font-semibold shrink-0 group-hover:scale-110 transition-transform duration-300">
-                      {step.number}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 mb-3 tracking-tight">
-                        {step.title}
-                      </h3>
-                      <p className="text-neutral-600 leading-relaxed font-light">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
+        {/* Expertise */}
         <section className="py-20 md:py-28 lg:py-32">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div className="text-center mb-16 md:mb-20" {...fadeInUp}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
-                What we <span className="italic font-normal">do best</span>
+            <motion.div
+              className="text-center mb-14 md:mb-16"
+              {...fadeInUp}
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-4 tracking-tight">
+                Our <span className="italic font-normal">expertise</span>
               </h2>
-              <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-                Comprehensive services that support your entire digital journey.
+              <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
+                A full range of services to support your digital growth
               </p>
             </motion.div>
 
             <motion.div
-              className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4"
+              className="max-w-3xl mx-auto"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
               viewport={{ once: true }}
             >
-              {expertise.map((item, index) => (
-                <motion.div
-                  key={index}
-                  variants={fadeInUp}
-                  className="group flex items-center gap-3 p-5 bg-white border border-neutral-200 rounded-xl transition-all duration-300 hover:border-[#FF6B6B]/30 hover:bg-[#FF6B6B]/5 hover:shadow-lg"
-                >
-                  <div className="w-2 h-2 rounded-full bg-[#FF6B6B]" />
-                  <span className="text-neutral-700 font-light tracking-wide">
-                    {item}
-                  </span>
-                </motion.div>
-              ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {expertise.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    variants={fadeInUp}
+                    whileHover={{ x: 5, scale: 1.02 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="group flex items-center gap-3 p-4 bg-white border border-neutral-100 rounded-xl hover:border-[#FF6B6B]/30 hover:shadow-lg hover:shadow-[#FF6B6B]/5 transition-all duration-300"
+                  >
+                    <motion.div 
+                      className="w-2 h-2 rounded-full bg-[#FF6B6B] flex-shrink-0"
+                      whileHover={{ scale: 1.5 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                    <span className="text-sm md:text-[15px] text-neutral-700 group-hover:text-neutral-900 transition-colors duration-300">
+                      {item}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
           </div>
         </section>
 
+        {/* Team */}
         <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-neutral-50 to-white">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div className="text-center mb-16 md:mb-20" {...fadeInUp}>
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <TrendingUp className="w-8 h-8 text-[#FF6B6B]" />
-                <span className="text-sm font-sans font-semibold tracking-[0.2em] text-[#FF6B6B] uppercase">
-                  Meet the Team
-                </span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
-                The people behind <span className="italic font-normal">Brancha</span>
+            <motion.div
+              className="text-center mb-14 md:mb-16"
+              {...fadeInUp}
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-4 tracking-tight">
+                Meet <span className="italic font-normal">Founders</span>
               </h2>
-              <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-                Two founders committed to helping businesses establish meaningful digital presences.
+              <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
+                Two professionals dedicated to your success
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 gap-8 md:gap-10 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+              {/* Sahil */}
+              <a href="http://sahilmaurya.vercel.app" target="_blank" rel="noopener noreferrer">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -8, scale: 1.02 }}
                 className="group"
               >
-                <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-xl hover:shadow-neutral-100 hover:-translate-y-1">
-                  <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 border-b border-neutral-100">
+                <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/30">
+                  <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF6B6B]/15 group-hover:to-[#FF6B6B]/8">
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] flex items-center justify-center">
-                        <Code className="w-8 h-8 text-white" />
-                      </div>
+                      <motion.div 
+                        className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] flex items-center justify-center shadow-lg"
+                        whileHover={{ rotate: 5, scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Code className="w-7 h-7 md:w-8 md:h-8 text-white" />
+                      </motion.div>
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-2 h-2 rounded-full bg-[#FF6B6B]" />
-                          <span className="text-sm font-semibold tracking-[0.1em] text-[#FF6B6B] uppercase">
+                          <div className="w-2 h-2 rounded-full bg-[#FF6B6B] animate-pulse" />
+                          <span className="text-xs md:text-sm font-sans font-semibold tracking-[0.1em] text-[#FF6B6B] uppercase">
                             Founder
                           </span>
                         </div>
-                        <h3 className="text-3xl md:text-4xl font-semibold text-neutral-900 tracking-[-0.02em]">
+                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
                           Sahil
                         </h3>
-                        <p className="text-lg text-neutral-600 font-light">
-                          Developer
-                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="p-6 md:p-8">
-                    <p className="text-neutral-600 mb-6 leading-relaxed font-light">
+                    <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
                       Leads development at Brancha, focusing on building fast, functional websites that work well for businesses and their customers. Focuses on clean code and reliable solutions.
                     </p>
 
                     <div className="space-y-4 mb-6">
-                      <div className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5" />
-                        <span className="text-sm text-neutral-700">
+                      <motion.div 
+                        className="flex items-start gap-3"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-neutral-700">
                           Experience building websites for local and growing businesses
                         </span>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5" />
-                        <span className="text-sm text-neutral-700">
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-start gap-3"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-neutral-700">
                           Skilled in modern web tools and clean front-end development
                         </span>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5" />
-                        <span className="text-sm text-neutral-700">
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-start gap-3"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-neutral-700">
                           Strong focus on performance, clarity, and long-term usability
                         </span>
-                      </div>
+                      </motion.div>
                     </div>
 
                     <div className="pt-6 border-t border-neutral-100">
-                      <div className="flex items-center gap-2 text-sm text-neutral-600">
-                        <Mail className="w-4 h-4" />
-                        <span>workwiths4hil@gmail.com</span>
-                      </div>
+                      <motion.div 
+                        className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF6B6B] transition-colors duration-300"
+                        whileHover={{ x: 3 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Mail className="w-4 h-4 flex-shrink-0" />
+                        <span className="break-all">workwiths4hil@gmail.com</span>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
               </motion.div>
+              </a>
 
+              {/* Saad */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
                 className="group"
               >
-                <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-xl hover:shadow-neutral-100 hover:-translate-y-1">
-                  <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF8E8E]/10 to-[#FF6B6B]/5 border-b border-neutral-100">
+                <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF8E8E]/10 hover:border-[#FF8E8E]/30">
+                  <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF8E8E]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF8E8E]/15 group-hover:to-[#FF6B6B]/8">
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#FF8E8E] to-[#FF6B6B] flex items-center justify-center">
-                        <Palette className="w-8 h-8 text-white" />
-                      </div>
+                      <motion.div 
+                        className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF8E8E] to-[#FF6B6B] flex items-center justify-center shadow-lg"
+                        whileHover={{ rotate: -5, scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Palette className="w-7 h-7 md:w-8 md:h-8 text-white" />
+                      </motion.div>
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-2 h-2 rounded-full bg-[#FF8E8E]" />
-                          <span className="text-sm font-semibold tracking-[0.1em] text-[#FF8E8E] uppercase">
+                          <div className="w-2 h-2 rounded-full bg-[#FF8E8E] animate-pulse" />
+                          <span className="text-xs md:text-sm font-sans font-semibold tracking-[0.1em] text-[#FF8E8E] uppercase">
                             Co-Founder
                           </span>
                         </div>
-                        <h3 className="text-3xl md:text-4xl font-semibold text-neutral-900 tracking-[-0.02em]">
+                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF8E8E]">
                           Saad
                         </h3>
-                        <p className="text-lg text-neutral-600 font-light">
-                          Creative Director
-                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="p-6 md:p-8">
-                    <p className="text-neutral-600 mb-6 leading-relaxed font-light">
+                    <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
                       Leads the creative direction at Brancha, focusing on brand identity and visual design that feels clear, modern, and practical. Works closely with businesses to shape how they present themselves online.
                     </p>
 
                     <div className="space-y-4 mb-6">
-                      <div className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5" />
-                        <span className="text-sm text-neutral-700">
+                      <motion.div 
+                        className="flex items-start gap-3"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-neutral-700">
                           Experience designing brand identities and digital creatives
                         </span>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5" />
-                        <span className="text-sm text-neutral-700">
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-start gap-3"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-neutral-700">
                           Skilled with modern design tools and visual systems
                         </span>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5" />
-                        <span className="text-sm text-neutral-700">
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-start gap-3"
+                        whileHover={{ x: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
+                        <span className="text-xs md:text-sm text-neutral-700">
                           Strong focus on clarity, usability, and brand consistency
                         </span>
-                      </div>
+                      </motion.div>
                     </div>
 
                     <div className="pt-6 border-t border-neutral-100">
-                      <div className="flex items-center gap-2 text-sm text-neutral-600">
-                        <Mail className="w-4 h-4" />
-                        <span>saadbombaywala9@gmail.com</span>
-                      </div>
+                      <motion.div 
+                        className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF8E8E] transition-colors duration-300"
+                        whileHover={{ x: 3 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Mail className="w-4 h-4 flex-shrink-0" />
+                        <span className="break-all">saadbombaywala9@gmail.com</span>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
@@ -452,32 +573,56 @@ export default function About() {
           </div>
         </section>
 
-        <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-neutral-50 to-white">
+        {/* Mission */}
+        <section className="py-20 md:py-28 lg:py-32">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
             <motion.div
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl mx-auto text-center"
               {...fadeInUp}
             >
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mx-auto mb-8">
-                <Award className="w-10 h-10 text-[#FF6B6B]" />
-              </div>
+              <motion.div 
+                className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mx-auto mb-8"
+                whileHover={{ rotate: 5, scale: 1.1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Award className="w-8 h-8 md:w-10 md:h-10 text-[#FF6B6B]" />
+              </motion.div>
 
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
                 Our <span className="italic font-normal">mission</span>
               </h2>
-              <p className="text-lg sm:text-xl text-neutral-700 leading-relaxed mb-8">
+              <motion.p 
+                className="text-base sm:text-lg md:text-xl text-neutral-700 leading-relaxed mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+              >
                 To help quality-focused businesses build digital presences that genuinely reflect their standards and support their growth—without unnecessary complexity or inflated costs.
-              </p>
-              <p className="text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto">
+              </motion.p>
+              <motion.p 
+                className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              >
                 We believe exceptional design should be accessible, communication should be clear, and results should be measurable. Everything we do serves these commitments.
-              </p>
+              </motion.p>
             </motion.div>
           </div>
         </section>
 
-        <section className="py-20 md:py-28 lg:py-32 relative overflow-hidden bg-gradient-to-b from-neutral-50 to-white">
+        {/* CTA */}
+        <section className="py-20 md:py-28 lg:py-32 relative overflow-hidden">
           <div className="absolute inset-0 -z-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-br from-[#FF6B6B]/8 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl" />
+            <motion.div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-gradient-to-br from-[#FF6B6B]/8 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            />
           </div>
 
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
@@ -488,25 +633,41 @@ export default function About() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
                 Let's work <span className="italic font-normal">together</span>
               </h2>
-              <p className="text-base sm:text-lg text-neutral-600 mb-10 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-sm sm:text-base md:text-lg text-neutral-600 mb-10 leading-relaxed max-w-2xl mx-auto">
                 Whether you're starting from scratch or refining an existing presence, we'd like to hear about your project.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+              >
                 <Link to="/contact">
-                  <button className="group px-10 py-3.5 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-xl shadow-[#FF6B6B]/25 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-2xl hover:shadow-[#FF6B6B]/35 hover:scale-[1.02] active:scale-[0.98]">
+                  <motion.button 
+                    className="group px-8 md:px-10 py-3 md:py-3.5 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-xl shadow-[#FF6B6B]/25 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/35"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     <span className="flex items-center gap-2">
                       Start a Conversation
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </span>
-                  </button>
+                  </motion.button>
                 </Link>
                 <Link to="/portfolio">
-                  <button className="group px-10 py-3.5 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-neutral-400 hover:bg-neutral-50 hover:scale-[1.02] active:scale-[0.98]">
+                  <motion.button 
+                    className="group px-8 md:px-10 py-3 md:py-3.5 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-300 hover:border-neutral-400 hover:bg-neutral-50"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     View Our Work
-                  </button>
+                  </motion.button>
                 </Link>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </section>

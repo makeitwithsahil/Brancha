@@ -26,31 +26,31 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('Website');
 
   const services = [
-  {
-    title: 'Website Design & Development',
-    description: 'Custom websites that reflect your brand and convert visitors into customers.'
-  },
-  {
-    title: 'Brand Identity',
-    description: 'Cohesive visual systems that establish recognition and trust.'
-  },
-  {
-    title: 'Social Media Design',
-    description: 'Engaging graphics that maintain consistency across all platforms.'
-  },
-  {
-    title: 'Marketing Collateral',
-    description: 'Brochures, flyers, and promotional materials that communicate clearly.'
-  },
-  {
-    title: 'SEO & Website Optimisation',
-    description: 'On-page improvements that help your website perform better and load faster.'
-  },
-  {
-    title: 'Ongoing Support',
-    description: 'Regular updates and refinements to keep your presence current.'
-  }
-];
+    {
+      title: 'Website Design & Development',
+      description: 'Custom websites that reflect your brand and convert visitors into customers.'
+    },
+    {
+      title: 'Brand Identity',
+      description: 'Cohesive visual systems that establish recognition and trust.'
+    },
+    {
+      title: 'Social Media Design',
+      description: 'Engaging graphics that maintain consistency across all platforms.'
+    },
+    {
+      title: 'Marketing Collateral',
+      description: 'Brochures, flyers, and promotional materials that communicate clearly.'
+    },
+    {
+      title: 'SEO & Website Optimisation',
+      description: 'On-page improvements that help your website perform better and load faster.'
+    },
+    {
+      title: 'Ongoing Support',
+      description: 'Regular updates and refinements to keep your presence current.'
+    }
+  ];
 
   const process = [
     {
@@ -78,57 +78,90 @@ export default function Home() {
   return (
     <div className="bg-white overflow-hidden font-serif">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-36">
+      <section className="relative pt-28 pb-22 sm:pt-32 sm:pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-36">
+        {/* Soft background glow */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-[#FF6B6B]/5 via-[#FF8E8E]/3 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-[#FF6B6B]/4 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-[#FF6B6B]/6 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-[520px] h-[520px] bg-gradient-to-tr from-[#FF6B6B]/5 to-transparent rounded-full blur-3xl" />
         </div>
 
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
           <motion.div
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, y: 30 }}
+            className="max-w-3xl mx-auto text-center"
+            initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
+            {/* Headline */}
             <motion.h1
-              className="text-5xl sm:text-6xl md:text-7xl font-light text-neutral-900 mb-6 tracking-tight leading-[1.1]"
-              initial={{ opacity: 0, y: 30 }}
+              className="
+          text-[1.9rem]
+          leading-[1.3]
+          tracking-tight
+          font-light
+          text-neutral-900
+          mb-5
+
+          sm:text-4xl sm:leading-[1.25]
+          md:text-5xl
+          lg:text-6xl
+        "
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
             >
-              Digital design for businesses <span className="italic font-normal">that care about getting it right</span>
+              We create.
+              <span className="italic font-normal text-neutral-600 block sm:inline">
+                {" "}So your business can grow.
+              </span>
+
             </motion.h1>
 
+            {/* Subtext */}
             <motion.p
-              className="text-base sm:text-lg text-neutral-600 mb-10 max-w-2xl mx-auto leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
+              className="
+          text-[15px]
+          leading-relaxed
+          text-neutral-600
+          mb-9
+          max-w-xl
+          mx-auto
+
+          sm:text-base sm:mb-10
+        "
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
             >
-              We create websites and brand systems that help local businesses present themselves with clarity and confidence.
+              We design clear websites and brand systems that help local businesses
+              look professional, feel trustworthy, and grow with confidence —
+              without unnecessary complexity.
             </motion.p>
 
+            {/* CTAs */}
             <motion.div
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
             >
               <Link to="/contact">
                 <button className="group px-8 py-3 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-lg shadow-[#FF6B6B]/20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-xl hover:shadow-[#FF6B6B]/30 hover:scale-[1.02] active:scale-[0.98]">
-                  Get a Free Sample
+                  Get a free sample
                 </button>
               </Link>
+
               <Link to="/portfolio">
                 <button className="group px-8 py-3 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-neutral-400 hover:bg-neutral-50 hover:scale-[1.02] active:scale-[0.98]">
-                  Explore Our Work
+                  View selected work
                 </button>
               </Link>
             </motion.div>
           </motion.div>
         </div>
       </section>
+
+
 
       {/* Trust Section */}
       <section className="py-20 md:py-24 lg:py-28 bg-gradient-to-b from-neutral-50 to-white">
@@ -155,7 +188,7 @@ export default function Home() {
               What we <span className="italic font-normal">offer</span>
             </h2>
             <p className="text-base text-neutral-600 max-w-xl mx-auto">
-             Design services tailored to your business needs
+              Design services tailored to your business needs
             </p>
           </motion.div>
 
@@ -204,7 +237,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
               >
-               We focus on creating digital experiences that support your business goals. Every project is built with care, from the first idea to final delivery.
+                We focus on creating digital experiences that support your business goals. Every project is built with care, from the first idea to final delivery.
               </motion.p>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -220,7 +253,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
               >
-               Whether you need a complete brand system or a focused website update, we bring the same level of care and professionalism to every project.
+                Whether you need a complete brand system or a focused website update, we bring the same level of care and professionalism to every project.
               </motion.p>
             </div>
           </motion.div>

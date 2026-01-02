@@ -246,22 +246,52 @@ export default function Contact() {
             </motion.div>
 
             <motion.h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-neutral-900 mb-4 sm:mb-6 md:mb-8 tracking-tight leading-[1.1]"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              Let's Create <span className="relative inline-block">
-                <span className="italic font-normal text-[#FF6B6B]">Something Great</span>
-                <motion.span
-                  className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-[#FF6B6B] to-transparent rounded-full"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                  style={{ transformOrigin: 'left' }}
-                />
-              </span> Together
-            </motion.h1>
+  className="
+    text-[2.2rem]
+    sm:text-4xl
+    md:text-5xl
+    lg:text-6xl
+    xl:text-7xl
+    font-light
+    text-neutral-900
+    mb-4 sm:mb-6 md:mb-8
+    tracking-tight
+    leading-[1.25]
+  "
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, delay: 0.2 }}
+>
+  Let&apos;s Create{" "}
+  <span className="relative inline-block align-baseline">
+    <span className="italic font-normal text-[#FF6B6B] leading-[1.1]">
+      Something Great
+    </span>
+
+    {/* underline */}
+    <motion.span
+      className="
+        absolute
+        left-0
+        right-0
+        h-[0.12em]
+        bg-gradient-to-r
+        from-[#FF6B6B]
+        to-transparent
+        rounded-full
+      "
+      style={{
+        bottom: "-0.15em",
+        transformOrigin: "left",
+      }}
+      initial={{ scaleX: 0 }}
+      animate={{ scaleX: 1 }}
+      transition={{ duration: 0.8, delay: 0.6 }}
+    />
+  </span>{" "}
+  Together
+</motion.h1>
+
 
             <motion.p
               className="text-base sm:text-lg md:text-xl lg:text-2xl text-neutral-600 leading-relaxed max-w-3xl mx-auto"
