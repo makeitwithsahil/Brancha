@@ -301,7 +301,7 @@ export default function Contact() {
             </motion.a>
 
             <motion.a
-              href="tel:+919219917186"
+              href="tel:+919825883015"
               variants={fadeInUp}
               className="group relative bg-white rounded-3xl p-6 sm:p-8 border-2 border-neutral-200 hover:border-[#FF6B6B] shadow-lg shadow-neutral-900/5 hover:shadow-xl hover:shadow-[#FF6B6B]/10 transition-all duration-300"
             >
@@ -311,7 +311,7 @@ export default function Contact() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg sm:text-xl font-light text-neutral-900 mb-2 tracking-tight">Call Us</h3>
-                  <p className="text-sm sm:text-base text-neutral-600">+91 92199 17186</p>
+                  <p className="text-sm sm:text-base text-neutral-600">+919825883015</p>
                 </div>
               </div>
             </motion.a>
