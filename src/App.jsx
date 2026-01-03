@@ -10,6 +10,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const Process = lazy(() => import('./pages/Process'));
 const Services = lazy(() => import('./pages/Services'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function LoadingFallback() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/process" element={<Process />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
         <Footer />

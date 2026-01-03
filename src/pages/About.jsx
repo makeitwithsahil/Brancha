@@ -384,16 +384,22 @@ export default function About() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
               {/* Sahil */}
-              <a href="http://sahilmaurya.vercel.app" target="_blank" rel="noopener noreferrer">
+              <a
+                href="http://sahilmaurya.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-100px' }}
+                  viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   whileHover={{ y: -8, scale: 1.02 }}
                   className="group"
                 >
                   <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/30">
+
+                    {/* Header */}
                     <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF6B6B]/15 group-hover:to-[#FF6B6B]/8">
                       <div className="flex items-center gap-4">
                         <motion.div
@@ -403,6 +409,7 @@ export default function About() {
                         >
                           <Code className="w-7 h-7 md:w-8 md:h-8 text-white" />
                         </motion.div>
+
                         <div>
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-2 h-2 rounded-full bg-[#FF6B6B] animate-pulse" />
@@ -410,6 +417,7 @@ export default function About() {
                               Founder
                             </span>
                           </div>
+
                           <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
                             Sahil
                           </h3>
@@ -417,9 +425,12 @@ export default function About() {
                       </div>
                     </div>
 
+                    {/* Body */}
                     <div className="p-6 md:p-8">
                       <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
-                        Leads development at Brancha, focusing on building fast, functional websites that work well for businesses and their customers. Focuses on clean code and reliable solutions.
+                        Founder of Brancha, focused on helping businesses build a clear,
+                        professional digital presence. Works closely with brands to turn ideas
+                        into structured systems that support long-term growth.
                       </p>
 
                       <div className="space-y-4 mb-6">
@@ -430,9 +441,10 @@ export default function About() {
                         >
                           <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
                           <span className="text-xs md:text-sm text-neutral-700">
-                            Experience building websites for local and growing businesses
+                            Experience working with local and growing businesses
                           </span>
                         </motion.div>
+
                         <motion.div
                           className="flex items-start gap-3"
                           whileHover={{ x: 5 }}
@@ -440,9 +452,10 @@ export default function About() {
                         >
                           <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
                           <span className="text-xs md:text-sm text-neutral-700">
-                            Skilled in modern web tools and clean front-end development
+                            Strong focus on clarity, consistency, and brand credibility
                           </span>
                         </motion.div>
+
                         <motion.div
                           className="flex items-start gap-3"
                           whileHover={{ x: 5 }}
@@ -450,7 +463,7 @@ export default function About() {
                         >
                           <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
                           <span className="text-xs md:text-sm text-neutral-700">
-                            Strong focus on performance, clarity, and long-term usability
+                            Business-first approach with long-term value in mind
                           </span>
                         </motion.div>
                       </div>
@@ -462,7 +475,7 @@ export default function About() {
                           transition={{ duration: 0.2 }}
                         >
                           <Mail className="w-4 h-4 flex-shrink-0" />
-                          <span className="break-all">workwiths4hil@gmail.com</span>
+                          <span className="break-all">workwithbrancha@gmail.com</span>
                         </motion.div>
                       </div>
                     </div>
@@ -470,16 +483,19 @@ export default function About() {
                 </motion.div>
               </a>
 
+
               {/* Saad */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
+                viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
                 className="group"
               >
                 <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF8E8E]/10 hover:border-[#FF8E8E]/30">
+
+                  {/* Header */}
                   <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF8E8E]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF8E8E]/15 group-hover:to-[#FF6B6B]/8">
                     <div className="flex items-center gap-4">
                       <motion.div
@@ -489,6 +505,7 @@ export default function About() {
                       >
                         <Palette className="w-7 h-7 md:w-8 md:h-8 text-white" />
                       </motion.div>
+
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 rounded-full bg-[#FF8E8E] animate-pulse" />
@@ -496,6 +513,7 @@ export default function About() {
                             Co-Founder
                           </span>
                         </div>
+
                         <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF8E8E]">
                           Saad
                         </h3>
@@ -503,10 +521,14 @@ export default function About() {
                     </div>
                   </div>
 
+                  {/* Body */}
                   <div className="p-6 md:p-8">
                     <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
-                      Leads the creative direction at Brancha, focusing on brand identity and visual designs. Works closely with businesses to shape how they present themselves online.
+                      Co-founder of Brancha, focused on brand direction and visual judgment.
+                      Ensures every brand feels intentional, refined, and aligned with how
+                      customers actually perceive it in the real world.
                     </p>
+
 
                     <div className="space-y-4 mb-6">
                       <motion.div
@@ -516,9 +538,10 @@ export default function About() {
                       >
                         <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
                         <span className="text-xs md:text-sm text-neutral-700">
-                          Experience designing brand identities and digital creatives
+                          Defines brand tone, visual direction, and overall look & feel
                         </span>
                       </motion.div>
+
                       <motion.div
                         className="flex items-start gap-3"
                         whileHover={{ x: 5 }}
@@ -526,9 +549,10 @@ export default function About() {
                       >
                         <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
                         <span className="text-xs md:text-sm text-neutral-700">
-                          Skilled with modern design tools and visual systems
+                          Strong sense of taste, balance, and restraint in design decisions
                         </span>
                       </motion.div>
+
                       <motion.div
                         className="flex items-start gap-3"
                         whileHover={{ x: 5 }}
@@ -536,7 +560,7 @@ export default function About() {
                       >
                         <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
                         <span className="text-xs md:text-sm text-neutral-700">
-                          Strong focus on clarity, usability, and brand consistency
+                          Focused on trust, perception, and long-term brand recall
                         </span>
                       </motion.div>
                     </div>
@@ -554,6 +578,7 @@ export default function About() {
                   </div>
                 </div>
               </motion.div>
+
             </div>
           </div>
         </section>
