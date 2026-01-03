@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -76,62 +77,53 @@ export default function Home() {
   ];
 
   return (
-    <div className="bg-white overflow-hidden font-serif">
+    <div className="bg-white overflow-hidden font-sans">
       {/* Hero Section */}
-      <section className="relative pt-28 pb-22 sm:pt-32 sm:pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-36">
-        {/* Soft background glow */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-[#FF6B6B]/6 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-[520px] h-[520px] bg-gradient-to-tr from-[#FF6B6B]/5 to-transparent rounded-full blur-3xl" />
+      <section className="relative pt-24 sm:pt-28 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 lg:pb-28 overflow-hidden bg-gradient-to-b from-neutral-50 to-white">
+        {/* Minimal Background Pattern */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ willChange: 'auto' }}>
+          <div className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0)`,
+              backgroundSize: '48px 48px'
+            }}
+          />
         </div>
 
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-          <motion.div
-            className="max-w-3xl mx-auto text-center"
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-neutral-200 mb-8" style={{ willChange: 'auto' }}>
+                <Sparkles className="w-4 h-4 text-[#FF6B6B]" />
+                <span className="text-sm font-sans font-medium text-neutral-700 tracking-wide">
+                  Design That Works
+                </span>
+              </div>
+            </motion.div>
+
             {/* Headline */}
             <motion.h1
-              className="
-          text-[1.9rem]
-          leading-[1.3]
-          tracking-tight
-          font-light
-          text-neutral-900
-          mb-5
-
-          sm:text-4xl sm:leading-[1.25]
-          md:text-5xl
-          lg:text-6xl
-        "
-              initial={{ opacity: 0, y: 24 }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-neutral-900 mb-6 tracking-tight leading-[1.1]"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 0.61, 0.36, 1] }}
             >
               We create.
-              <span className="italic font-normal text-neutral-600 block sm:inline">
+              <span className="italic font-normal text-[#FF6B6B] block sm:inline">
                 {" "}So your business can grow.
               </span>
-
             </motion.h1>
 
             {/* Subtext */}
             <motion.p
-              className="
-          text-[15px]
-          leading-relaxed
-          text-neutral-600
-          mb-9
-          max-w-xl
-          mx-auto
-
-          sm:text-base sm:mb-10
-        "
-              initial={{ opacity: 0, y: 24 }}
+              className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed mb-10"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
             >
               We design clear websites and brand systems that help local businesses
               look professional, feel trustworthy, and grow with confidence —
@@ -141,9 +133,9 @@ export default function Home() {
             {/* CTAs */}
             <motion.div
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 0.61, 0.36, 1] }}
             >
               <Link to="/contact">
                 <button className="group px-8 py-3 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-lg shadow-[#FF6B6B]/20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-xl hover:shadow-[#FF6B6B]/30 hover:scale-[1.02] active:scale-[0.98]">
@@ -157,7 +149,7 @@ export default function Home() {
                 </button>
               </Link>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 

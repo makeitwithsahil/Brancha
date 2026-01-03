@@ -125,81 +125,66 @@ export default function About() {
         keywords="about Brancha, design agency team, Sahil founder, Saad creative director, Vadodara design agency, Bangalore web design"
       />
 
-      <div className="bg-white overflow-hidden font-serif">
-        {/* Hero Section */}
-       <section className="relative pt-28 pb-22 sm:pt-32 sm:pb-24 md:pt-40 md:pb-32 lg:pt-48 lg:pb-36">
-  {/* Background glow */}
-  <div className="absolute inset-0 -z-10 overflow-hidden">
-    <motion.div 
-      className="absolute top-0 right-0 w-[720px] h-[720px] bg-gradient-to-br from-[#FF6B6B]/6 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl"
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-    />
-    <motion.div 
-      className="absolute bottom-0 left-0 w-[560px] h-[560px] bg-gradient-to-tr from-[#FF6B6B]/5 to-transparent rounded-full blur-3xl"
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-    />
-  </div>
+      <div className="bg-white overflow-hidden font-sans">
+        <section className="relative pt-24 sm:pt-28 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 lg:pb-28 overflow-hidden bg-gradient-to-b from-neutral-50 to-white">
+          {/* Minimal Background Pattern */}
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ willChange: 'auto' }}>
+            <div className="absolute inset-0"
+              style={{
+                backgroundImage: `radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0)`,
+                backgroundSize: '48px 48px'
+              }}
+            />
+          </div>
 
-  <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-    <motion.div
-      className="max-w-3xl mx-auto text-center"
-      initial={{ opacity: 0, y: 22 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-    >
-      {/* Heading */}
-      <motion.h1
-        className="
-          text-[2rem]
-          leading-[1.3]
-          tracking-tight
-          font-light
-          text-neutral-900
-          mb-4
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <motion.div
+              className="max-w-4xl mx-auto text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1], delay: 0.15 }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-neutral-200 mb-8" style={{ willChange: 'auto' }}>
+                  <Sparkles className="w-4 h-4 text-[#FF6B6B]" />
+                  <span className="text-sm font-sans font-medium text-neutral-700 tracking-wide">
+                    About Brancha
+                  </span>
+                </div>
+              </motion.div>
 
-          sm:text-4xl sm:leading-[1.25]
-          md:text-5xl
-          lg:text-6xl
-        "
-        initial={{ opacity: 0, y: 22 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-      >
-        We create.
-        <span className="italic font-normal text-neutral-700 block sm:inline">
-          {" "}You grow.
-        </span>
-      </motion.h1>
+              {/* Heading */}
+              <motion.h1
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-neutral-900 mb-6 tracking-tight leading-[1.1]"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1], delay: 0.1 }}
+              >
+                We create.
+                <span className="italic font-normal text-[#FF6B6B] block sm:inline">
+                  {" "}You grow.
+                </span>
+              </motion.h1>
 
-      {/* Description */}
-      <motion.p
-        className="
-          text-[15px]
-          leading-relaxed
-          text-neutral-600
-          mb-9
-          max-w-xl
-          mx-auto
-
-          sm:text-base
-          md:text-lg
-        "
-        initial={{ opacity: 0, y: 22 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
-      >
-        Brancha works with local and growing businesses to build clear,
-        professional digital experiences. We focus on thoughtful design,
-        honest communication, and long-term value — so your brand feels
-        confident today and stays relevant as you grow.
-      </motion.p>
-    </motion.div>
-  </div>
-</section>
+              {/* Description */}
+              <motion.p
+                className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1], delay: 0.2 }}
+              >
+                Brancha works with local and growing businesses to build clear,
+                professional digital experiences. We focus on thoughtful design,
+                honest communication, and long-term value — so your brand feels
+                confident today and stays relevant as you grow.
+              </motion.p>
+            </motion.div>
+          </div>
+        </section>
 
 
         {/* Stats Section */}
@@ -265,7 +250,7 @@ export default function About() {
                   className="group"
                 >
                   <div className="h-full p-6 md:p-7 lg:p-8 bg-white border border-neutral-100 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/20">
-                    <motion.div 
+                    <motion.div
                       className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mb-5 text-[#FF6B6B]"
                       whileHover={{ rotate: 5, scale: 1.1 }}
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -315,7 +300,7 @@ export default function About() {
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="group text-center"
                 >
-                  <motion.div 
+                  <motion.div
                     className="mb-6"
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.3 }}
@@ -367,7 +352,7 @@ export default function About() {
                     transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                     className="group flex items-center gap-3 p-4 bg-white border border-neutral-100 rounded-xl hover:border-[#FF6B6B]/30 hover:shadow-lg hover:shadow-[#FF6B6B]/5 transition-all duration-300"
                   >
-                    <motion.div 
+                    <motion.div
                       className="w-2 h-2 rounded-full bg-[#FF6B6B] flex-shrink-0"
                       whileHover={{ scale: 1.5 }}
                       transition={{ duration: 0.2 }}
@@ -400,89 +385,89 @@ export default function About() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
               {/* Sahil */}
               <a href="http://sahilmaurya.vercel.app" target="_blank" rel="noopener noreferrer">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group"
-              >
-                <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/30">
-                  <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF6B6B]/15 group-hover:to-[#FF6B6B]/8">
-                    <div className="flex items-center gap-4">
-                      <motion.div 
-                        className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] flex items-center justify-center shadow-lg"
-                        whileHover={{ rotate: 5, scale: 1.1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Code className="w-7 h-7 md:w-8 md:h-8 text-white" />
-                      </motion.div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-2 h-2 rounded-full bg-[#FF6B6B] animate-pulse" />
-                          <span className="text-xs md:text-sm font-sans font-semibold tracking-[0.1em] text-[#FF6B6B] uppercase">
-                            Founder
-                          </span>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-100px' }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="group"
+                >
+                  <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/30">
+                    <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF6B6B]/15 group-hover:to-[#FF6B6B]/8">
+                      <div className="flex items-center gap-4">
+                        <motion.div
+                          className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] flex items-center justify-center shadow-lg"
+                          whileHover={{ rotate: 5, scale: 1.1 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Code className="w-7 h-7 md:w-8 md:h-8 text-white" />
+                        </motion.div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-[#FF6B6B] animate-pulse" />
+                            <span className="text-xs md:text-sm font-sans font-semibold tracking-[0.1em] text-[#FF6B6B] uppercase">
+                              Founder
+                            </span>
+                          </div>
+                          <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
+                            Sahil
+                          </h3>
                         </div>
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
-                          Sahil
-                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="p-6 md:p-8">
+                      <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
+                        Leads development at Brancha, focusing on building fast, functional websites that work well for businesses and their customers. Focuses on clean code and reliable solutions.
+                      </p>
+
+                      <div className="space-y-4 mb-6">
+                        <motion.div
+                          className="flex items-start gap-3"
+                          whileHover={{ x: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
+                          <span className="text-xs md:text-sm text-neutral-700">
+                            Experience building websites for local and growing businesses
+                          </span>
+                        </motion.div>
+                        <motion.div
+                          className="flex items-start gap-3"
+                          whileHover={{ x: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
+                          <span className="text-xs md:text-sm text-neutral-700">
+                            Skilled in modern web tools and clean front-end development
+                          </span>
+                        </motion.div>
+                        <motion.div
+                          className="flex items-start gap-3"
+                          whileHover={{ x: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
+                          <span className="text-xs md:text-sm text-neutral-700">
+                            Strong focus on performance, clarity, and long-term usability
+                          </span>
+                        </motion.div>
+                      </div>
+
+                      <div className="pt-6 border-t border-neutral-100">
+                        <motion.div
+                          className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF6B6B] transition-colors duration-300"
+                          whileHover={{ x: 3 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <span className="break-all">workwiths4hil@gmail.com</span>
+                        </motion.div>
                       </div>
                     </div>
                   </div>
-
-                  <div className="p-6 md:p-8">
-                    <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
-                      Leads development at Brancha, focusing on building fast, functional websites that work well for businesses and their customers. Focuses on clean code and reliable solutions.
-                    </p>
-
-                    <div className="space-y-4 mb-6">
-                      <motion.div 
-                        className="flex items-start gap-3"
-                        whileHover={{ x: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-neutral-700">
-                          Experience building websites for local and growing businesses
-                        </span>
-                      </motion.div>
-                      <motion.div 
-                        className="flex items-start gap-3"
-                        whileHover={{ x: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-neutral-700">
-                          Skilled in modern web tools and clean front-end development
-                        </span>
-                      </motion.div>
-                      <motion.div 
-                        className="flex items-start gap-3"
-                        whileHover={{ x: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-neutral-700">
-                          Strong focus on performance, clarity, and long-term usability
-                        </span>
-                      </motion.div>
-                    </div>
-
-                    <div className="pt-6 border-t border-neutral-100">
-                      <motion.div 
-                        className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF6B6B] transition-colors duration-300"
-                        whileHover={{ x: 3 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Mail className="w-4 h-4 flex-shrink-0" />
-                        <span className="break-all">workwiths4hil@gmail.com</span>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+                </motion.div>
               </a>
 
               {/* Saad */}
@@ -497,7 +482,7 @@ export default function About() {
                 <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF8E8E]/10 hover:border-[#FF8E8E]/30">
                   <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF8E8E]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF8E8E]/15 group-hover:to-[#FF6B6B]/8">
                     <div className="flex items-center gap-4">
-                      <motion.div 
+                      <motion.div
                         className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF8E8E] to-[#FF6B6B] flex items-center justify-center shadow-lg"
                         whileHover={{ rotate: -5, scale: 1.1 }}
                         transition={{ duration: 0.3 }}
@@ -520,11 +505,11 @@ export default function About() {
 
                   <div className="p-6 md:p-8">
                     <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
-                      Leads the creative direction at Brancha, focusing on brand identity and visual design that feels clear, modern, and practical. Works closely with businesses to shape how they present themselves online.
+                      Leads the creative direction at Brancha, focusing on brand identity and visual designs. Works closely with businesses to shape how they present themselves online.
                     </p>
 
                     <div className="space-y-4 mb-6">
-                      <motion.div 
+                      <motion.div
                         className="flex items-start gap-3"
                         whileHover={{ x: 5 }}
                         transition={{ duration: 0.2 }}
@@ -534,7 +519,7 @@ export default function About() {
                           Experience designing brand identities and digital creatives
                         </span>
                       </motion.div>
-                      <motion.div 
+                      <motion.div
                         className="flex items-start gap-3"
                         whileHover={{ x: 5 }}
                         transition={{ duration: 0.2 }}
@@ -544,7 +529,7 @@ export default function About() {
                           Skilled with modern design tools and visual systems
                         </span>
                       </motion.div>
-                      <motion.div 
+                      <motion.div
                         className="flex items-start gap-3"
                         whileHover={{ x: 5 }}
                         transition={{ duration: 0.2 }}
@@ -557,7 +542,7 @@ export default function About() {
                     </div>
 
                     <div className="pt-6 border-t border-neutral-100">
-                      <motion.div 
+                      <motion.div
                         className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF8E8E] transition-colors duration-300"
                         whileHover={{ x: 3 }}
                         transition={{ duration: 0.2 }}
@@ -580,7 +565,7 @@ export default function About() {
               className="max-w-3xl mx-auto text-center"
               {...fadeInUp}
             >
-              <motion.div 
+              <motion.div
                 className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mx-auto mb-8"
                 whileHover={{ rotate: 5, scale: 1.1 }}
                 transition={{ duration: 0.3 }}
@@ -591,7 +576,7 @@ export default function About() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
                 Our <span className="italic font-normal">mission</span>
               </h2>
-              <motion.p 
+              <motion.p
                 className="text-base sm:text-lg md:text-xl text-neutral-700 leading-relaxed mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -600,7 +585,7 @@ export default function About() {
               >
                 To help quality-focused businesses build digital presences that genuinely reflect their standards and support their growth—without unnecessary complexity or inflated costs.
               </motion.p>
-              <motion.p 
+              <motion.p
                 className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -616,7 +601,7 @@ export default function About() {
         {/* CTA */}
         <section className="py-20 md:py-28 lg:py-32 relative overflow-hidden">
           <div className="absolute inset-0 -z-10">
-            <motion.div 
+            <motion.div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-gradient-to-br from-[#FF6B6B]/8 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -637,7 +622,7 @@ export default function About() {
                 Whether you're starting from scratch or refining an existing presence, we'd like to hear about your project.
               </p>
 
-              <motion.div 
+              <motion.div
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -645,7 +630,7 @@ export default function About() {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
               >
                 <Link to="/contact">
-                  <motion.button 
+                  <motion.button
                     className="group px-8 md:px-10 py-3 md:py-3.5 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-xl shadow-[#FF6B6B]/25 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/35"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
@@ -658,7 +643,7 @@ export default function About() {
                   </motion.button>
                 </Link>
                 <Link to="/portfolio">
-                  <motion.button 
+                  <motion.button
                     className="group px-8 md:px-10 py-3 md:py-3.5 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-300 hover:border-neutral-400 hover:bg-neutral-50"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
