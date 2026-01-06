@@ -323,8 +323,6 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
               >
                 <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 >
                   <TrendingUp className="w-3.5 h-3.5 text-[#e2493b]" />
                 </motion.div>
