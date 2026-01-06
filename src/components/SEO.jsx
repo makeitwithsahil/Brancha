@@ -26,7 +26,7 @@ export default function SEO({
   
   // ✅ [SAFE - No visual change] Memoize computed values
   const fullTitle = useMemo(() => 
-    title ? `${title} | ${siteName}` : `${siteName} - Digital Design for Businesses That Care`,
+    title ? `${title} | ${siteName}` : `${siteName} - Where Brands Grow`,
     [title, siteName]
   );
   

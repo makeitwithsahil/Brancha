@@ -1,113 +1,166 @@
-import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useMemo, useEffect } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Heart, Users, Target, Zap, Award, TrendingUp,
-  Sparkles, Mail, Check, MessageSquare, ArrowRight, Code, Palette
+  Target, Users, TrendingUp, Shield, Award, CheckCircle2,
+  Sparkles, Mail, ArrowRight, AlertCircle, MessageSquare
 } from 'lucide-react';
 import SEO from '../components/SEO';
-import { personSchemas, breadcrumbSchema } from '../utils/schemas';
+import { breadcrumbSchema } from '../utils/schemas';
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-100px', amount: 0.3 },
-  transition: {
-    duration: 0.6,
-    ease: [0.22, 1, 0.36, 1]
-  }
-};
-
-const fadeInScale = {
-  initial: { opacity: 0, scale: 0.95 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: true, margin: '-100px', amount: 0.3 },
-  transition: {
-    duration: 0.5,
-    ease: [0.22, 1, 0.36, 1]
-  }
-};
-
-const staggerContainer = {
-  whileInView: {
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.05
+const useOptimizedAnimations = () => {
+  const prefersReducedMotion = useReducedMotion();
+  
+  return useMemo(() => {
+    if (prefersReducedMotion) {
+      return {
+        fadeInUp: { initial: { opacity: 0 }, whileInView: { opacity: 1 }, viewport: { once: true, margin: '-50px', amount: 0.3 }, transition: { duration: 0.2 } },
+        staggerContainer: { whileInView: { transition: { staggerChildren: 0.03 } }, viewport: { once: true, margin: '-50px', amount: 0.2 } }
+      };
     }
-  },
-  viewport: { once: true, margin: '-100px', amount: 0.2 }
+
+    return {
+      fadeInUp: { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-50px', amount: 0.3 }, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+      staggerContainer: { whileInView: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } }, viewport: { once: true, margin: '-50px', amount: 0.2 } }
+    };
+  }, [prefersReducedMotion]);
 };
 
 export default function About() {
-  const values = useMemo(() => [
+  const { fadeInUp, staggerContainer } = useOptimizedAnimations();
+  const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    document.title = 'About Brancha - Where Brands Grow | Complete Online Presence Management';
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Brancha stops customer loss for local businesses. We build proper online presence first, then manage it every month to bring consistent enquiries.');
+    }
+  }, []);
+
+  const whatMakesBranchaDifferent = useMemo(() => [
     {
-      icon: <Heart className="w-7 h-7" />,
-      title: 'Genuine Care',
-      description: 'We treat every project as if it were our own business, investing the same care and attention to detail.'
+      icon: <Target className="w-5 h-5" />,
+      title: "A Company, Not a Short-Term Agency",
+      description:
+        "Brancha works as a long-term partner, not a project vendor. We manage and improve your online presence continuously, so it stays accurate, reliable, and effective."
     },
     {
-      icon: <Target className="w-7 h-7" />,
-      title: 'Results-Focused',
-      description: 'Beautiful design is just the beginning. We measure success by the impact on your business goals.'
+      icon: <Shield className="w-5 h-5" />,
+      title: "One Clear System, Built in the Right Order",
+      description:
+        "We don't offer disconnected services. First, we fix the foundation. Then, we manage and optimise it over time. This ensures your time and money are spent where they actually matter."
     },
     {
-      icon: <Users className="w-7 h-7" />,
-      title: 'Collaborative Spirit',
-      description: 'Your insights and expertise are invaluable. We work alongside you, not just for you.'
+      icon: <TrendingUp className="w-5 h-5" />,
+      title: "Business Outcomes, Not Just Design",
+      description:
+        "Good design supports the business, but results matter more. Our work focuses on visibility, trust, and enquiries — not decoration or trends."
     },
     {
-      icon: <Zap className="w-7 h-7" />,
-      title: 'Efficient Process',
-      description: 'Streamlined workflows and clear communication mean faster delivery without compromising quality.'
+      icon: <Users className="w-5 h-5" />,
+      title: "Designed for Local Businesses in India",
+      description:
+        "Our approach reflects real market conditions — pricing sensitivity, local competition, and customer behaviour — with clear communication and practical execution."
     }
   ], []);
 
-  const approach = useMemo(() => [
+  const coreValues = useMemo(() => [
     {
-      number: '01',
-      title: 'Understanding First',
-      description: 'We begin every project by deeply understanding your business, audience, and competitive landscape. No templates, no assumptions.'
+      title: "Professional",
+      description: "We communicate clearly, deliver on time, and treat your business with the seriousness it deserves."
     },
     {
-      number: '02',
-      title: 'Strategic Foundation',
-      description: 'Before any design begins, we develop a clear strategy that aligns creative decisions with your business objectives.'
+      title: "Honest",
+      description: "If something won't work for your business, we'll tell you. We don't upsell. We recommend what actually fits."
     },
     {
-      number: '03',
-      title: 'Thoughtful Execution',
-      description: 'Every element is crafted with intention. From typography to user flows, we consider how each choice serves your goals.'
-    },
-    {
-      number: '04',
-      title: 'Ongoing Partnership',
-      description: 'Launch is just the beginning. We remain available to refine, optimize, and support your continued growth.'
+      title: "Calm & Focused",
+      description: "No loud pitches. No pressure. No unnecessary complexity. Just clear systems that work."
     }
   ], []);
 
-  const stats = useMemo(() => [
-    { number: '10+', label: 'Projects Delivered' },
-    { number: '98%', label: 'Client Satisfaction' },
-    { number: '3-7', label: 'Day Avg Delivery' },
-    { number: '100%', label: 'Commitment' }
+  const approachSteps = useMemo(() => [
+    {
+      step: "1",
+      title: "We Listen First",
+      description: "Before anything else, we understand your business. What's working? What's broken? What are customers actually saying? No templates. No assumptions."
+    },
+    {
+      step: "2",
+      title: "We Fix What's Broken",
+      description: "Foundation Package comes first. We fix Google profiles, build proper websites, set up contact systems. This stops customer loss before we drive any traffic."
+    },
+    {
+      step: "3",
+      title: "We Manage What Works",
+      description: "Monthly Result Package begins after Foundation. We keep everything current, optimized, and working. Updates, improvements, ads, content—handled."
+    },
+    {
+      step: "4",
+      title: "We Measure & Improve",
+      description: "Every month, we track what's working. Cost per customer. Enquiry quality. Conversion rates. We adjust based on data, not guesses."
+    }
   ], []);
 
-  const expertise = useMemo(() => [
-    'Website Design & Development',
-    'Brand Identity & Visual Design',
-    'Poster & Creative Design',
-    'Social Media Management',
-    'Reel & Video Editing',
-    'SEO & Website Optimisation',
-    'Menu & Digital Catalog Design',
-    'WhatsApp Business Setup'
+  const teamMembers = useMemo(() => [
+    {
+      name: "Sahil",
+      role: "Founder",
+      color: "#e2493b",
+      description: "Handles strategy, systems, and client direction. Ensures every project solves real business problems, not just design problems.",
+      focus: [
+        "Business strategy and positioning",
+        "Foundation package structure",
+        "Client communication and direction",
+        "System design for growth"
+      ],
+      email: "workwiths4hil@gmail.com"
+    },
+    {
+      name: "Saad",
+      role: "Co-Founder",
+      color: "#C94A3F",
+      description: "Focuses on brand direction and visual judgment. Makes sure everything looks intentional, refined, and trustworthy.",
+      focus: [
+        "Brand tone and visual direction",
+        "Design taste and restraint",
+        "Trust and perception",
+        "Long-term brand recall"
+      ],
+      email: "saadbombaywala9@gmail.com"
+    }
   ], []);
+
+  const whyWeExist = useMemo(() => ({
+    problem: "Most local businesses don't fail because of poor products. They fail because customers can't find correct information, Google profiles are weak, messages go unanswered, websites don't build trust, and ads are run without tracking.",
+    solution: "Brancha exists to fix and manage these problems as a complete system. Foundation stops customer loss. Monthly management keeps customers coming consistently.",
+    commitment: "We don't sell creativity. We sell clarity, control, and growth."
+  }), []);
 
   const aboutSchema = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
-      personSchemas.sahil,
-      personSchemas.saad,
+      {
+        '@type': 'Organization',
+        '@id': 'https://brancha.in/#organization',
+        name: 'Brancha',
+        url: 'https://brancha.in',
+        logo: 'https://brancha.in/logo.png',
+        description: 'A company that builds and manages the complete online presence of businesses',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Vadodara',
+          addressRegion: 'Gujarat',
+          addressCountry: 'IN'
+        },
+        contactPoint: {
+          '@type': 'ContactPoint',
+          telephone: '+91-98258-83015',
+          contactType: 'customer service'
+        }
+      },
       breadcrumbSchema([
         { name: 'Home', path: '/' },
         { name: 'About', path: '/about' }
@@ -118,566 +171,424 @@ export default function About() {
   return (
     <>
       <SEO
-        title="About Us"
-        description="Meet the team behind Brancha. Sahil and Saad founded Brancha to help local businesses in Vadodara and Bangalore build professional digital presences through exceptional design and development."
-        canonical="/about"
+        title="About Brancha - Where Brands Grow | Complete Online Presence Management"
+        description="Brancha stops customer loss for local businesses. We build proper online presence first, then manage it every month to bring consistent enquiries."
+        canonicalUrl="https://brancha.in/about"
         schema={aboutSchema}
-        keywords="about Brancha, design agency team, Sahil founder, Saad creative director, Vadodara design agency, Bangalore web design"
       />
 
-      <div className="bg-white overflow-hidden font-sans">
-        <section className="relative pt-24 sm:pt-28 md:pt-32 lg:pt-40 pb-16 sm:pb-20 md:pb-24 lg:pb-28 overflow-hidden bg-gradient-to-b from-neutral-50 to-white">
-          {/* Minimal Background Pattern */}
-          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ willChange: 'auto' }}>
-            <div className="absolute inset-0"
-              style={{
-                backgroundImage: `radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0)`,
-                backgroundSize: '48px 48px'
+      <div className="bg-[#FAF9F7] overflow-hidden">
+        {/* Hero Section */}
+        <section className="relative pt-32 sm:pt-36 md:pt-40 pb-16 sm:pb-20 md:pb-24 overflow-hidden bg-white">
+          <div className="absolute inset-0 -z-10">
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.1, 1],
+                rotate: [0, 90, 0]
+              }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: 'linear'
               }}
             />
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <motion.div
-              className="max-w-4xl mx-auto text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1], delay: 0.15 }}
-            >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+            <motion.div className="max-w-4xl mx-auto text-center" {...fadeInUp}>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
+                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-5 sm:mb-6"
+                whileHover={{
+                  scale: prefersReducedMotion ? 1 : 1.05,
+                  boxShadow: '0 4px 16px rgba(226, 73, 59, 0.15)'
+                }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-neutral-200 mb-8" style={{ willChange: 'auto' }}>
-                  <Sparkles className="w-4 h-4 text-[#FF6B6B]" />
-                  <span className="text-sm font-sans font-medium text-neutral-700 tracking-wide">
-                    About Brancha
-                  </span>
-                </div>
+                <Sparkles className="w-4 h-4 text-[#e2493b] mr-2" />
+                <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>
+                  About Brancha
+                </span>
               </motion.div>
 
-              {/* Heading */}
-              <motion.h1
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-neutral-900 mb-6 tracking-tight leading-[1.1]"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1], delay: 0.1 }}
-              >
-                We create.
-                <span className="italic font-normal text-[#FF6B6B] block sm:inline">
-                  {" "}You grow.
-                </span>
-              </motion.h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-[#1F1F1F] mb-5 sm:mb-6 leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
+                A company that stops <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>customer loss</span>
+              </h1>
 
-              {/* Description */}
-              <motion.p
-                className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1], delay: 0.2 }}
+              <p className="text-base sm:text-lg md:text-xl text-[#6B6B6B] leading-relaxed max-w-3xl mx-auto mb-8" style={{ fontWeight: 400 }}>
+                {whyWeExist.problem}
+              </p>
+
+              <motion.div
+                className="max-w-2xl mx-auto p-6 sm:p-7 md:p-8 bg-[#FAF9F7] border border-[#EFEDE9] rounded-2xl"
+                whileHover={{
+                  y: prefersReducedMotion ? 0 : -4,
+                  boxShadow: '0 12px 32px -8px rgba(226, 73, 59, 0.08)'
+                }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                Brancha works with local and growing businesses to build clear,
-                professional digital experiences. We focus on thoughtful design,
-                honest communication, and long-term value — so your brand feels
-                confident today and stays relevant as you grow.
-              </motion.p>
+                <p className="text-base sm:text-lg text-[#1F1F1F] mb-4 leading-relaxed" style={{ fontWeight: 400 }}>
+                  {whyWeExist.solution}
+                </p>
+                <p className="text-sm sm:text-base text-[#e2493b] italic" style={{ fontWeight: 500 }}>
+                  {whyWeExist.commitment}
+                </p>
+              </motion.div>
             </motion.div>
           </div>
         </section>
 
+        {/* What Makes Brancha Different */}
+        <section className="py-16 sm:py-20 md:py-24 bg-[#FAF9F7]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+                What makes Brancha <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>different</span>
+              </h2>
+              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+                Why businesses choose us over agencies and freelancers
+              </p>
+            </motion.div>
 
-        {/* Stats Section */}
-        <section className="py-20 md:py-24 lg:py-28 bg-gradient-to-b from-neutral-50 to-white">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
             <motion.div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12 max-w-5xl mx-auto"
+              className="grid sm:grid-cols-2 gap-6 sm:gap-8"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.2 }}
             >
-              {stats.map((stat, index) => (
-                <motion.div
+              {whatMakesBranchaDifferent.map((item, index) => (
+                <motion.article
                   key={index}
-                  variants={fadeInScale}
-                  className="text-center group"
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  variants={fadeInUp}
+                  className="group relative p-6 sm:p-7 md:p-8 bg-white border border-[#EFEDE9] rounded-2xl hw-accelerate cursor-default"
+                  whileHover={{
+                    y: prefersReducedMotion ? 0 : -4,
+                    scale: prefersReducedMotion ? 1 : 1.01,
+                    borderColor: 'rgba(226, 73, 59, 0.3)',
+                    boxShadow: '0 12px 32px -8px rgba(226, 73, 59, 0.08)'
+                  }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div className="relative p-6 md:p-8 rounded-2xl bg-white border border-neutral-100 transition-all duration-300 group-hover:border-[#FF6B6B]/20 group-hover:shadow-lg group-hover:shadow-[#FF6B6B]/5">
-                    <div className="text-3xl md:text-4xl lg:text-5xl font-light text-[#FF6B6B] mb-2 tracking-tight transition-all duration-300 group-hover:scale-110">
-                      {stat.number}
+                  <motion.div
+                    className="w-11 h-11 sm:w-12 sm:h-12 mb-4 sm:mb-5 rounded-full bg-[#e2493b]/10 flex items-center justify-center text-[#e2493b] hw-accelerate relative overflow-hidden"
+                    whileHover={{
+                      backgroundColor: '#e2493b',
+                      color: '#ffffff',
+                      scale: 1.1,
+                      rotate: [0, -5, 5, 0]
+                    }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="relative z-10">
+                      {item.icon}
                     </div>
-                    <div className="text-xs md:text-sm text-neutral-600 transition-colors duration-300 group-hover:text-neutral-900">
-                      {stat.label}
-                    </div>
-                  </div>
-                </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileHover={{ opacity: 0.3, scale: 1.5 }}
+                      transition={{ duration: 0.4 }}
+                      className="absolute inset-0 bg-[#e2493b] rounded-full blur-md"
+                    />
+                  </motion.div>
+
+                  <h3 className="text-base sm:text-lg font-medium text-[#1F1F1F] mb-3 leading-snug transition-colors duration-400 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-[#6B6B6B] leading-relaxed transition-colors duration-400 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
+                    {item.description}
+                  </p>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: '-100%' }}
+                    whileHover={{ opacity: 0.03, x: '100%' }}
+                    transition={{ duration: 0.8, ease: 'easeInOut' }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e2493b] to-transparent"
+                    style={{ pointerEvents: 'none' }}
+                  />
+                </motion.article>
               ))}
             </motion.div>
           </div>
         </section>
 
-        {/* Our Values */}
-        <section className="py-20 md:py-28 lg:py-32">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div
-              className="text-center mb-14 md:mb-16"
-              {...fadeInUp}
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-4 tracking-tight">
-                Our <span className="italic font-normal">values</span>
+        {/* How We Work */}
+        <section className="py-16 sm:py-20 md:py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+                How we <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>work</span>
               </h2>
-              <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
-                The principles that guide everything we do
+              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+                Our approach to building systems that bring consistent customers
               </p>
             </motion.div>
 
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+              className="space-y-6"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
-              viewport={{ once: true, margin: '-100px' }}
+              viewport={{ once: true, amount: 0.2 }}
             >
-              {values.map((value, index) => (
-                <motion.div
+              {approachSteps.map((step, index) => (
+                <motion.article
                   key={index}
                   variants={fadeInUp}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="group"
+                  className="group relative"
                 >
-                  <div className="h-full p-6 md:p-7 lg:p-8 bg-white border border-neutral-100 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/20">
+                  <div className="flex gap-5 sm:gap-6 p-6 sm:p-7 md:p-8 bg-[#FAF9F7] border border-[#EFEDE9] rounded-2xl hw-accelerate transition-all duration-400 hover:bg-white hover:shadow-lg hover:shadow-[#e2493b]/5 hover:border-[#e2493b]/20">
+                    <div className="flex-shrink-0">
+                      <motion.div
+                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#e2493b] text-white flex items-center justify-center text-lg font-semibold hw-accelerate"
+                        style={{ fontWeight: 600 }}
+                        whileHover={{
+                          scale: prefersReducedMotion ? 1 : 1.1,
+                          boxShadow: '0 8px 20px -4px rgba(226, 73, 59, 0.4)'
+                        }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        {step.step}
+                      </motion.div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base sm:text-lg md:text-xl font-medium text-[#1F1F1F] mb-3 transition-colors duration-400 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
+                        {step.title}
+                      </h3>
+                      <p className="text-sm sm:text-base text-[#6B6B6B] leading-relaxed" style={{ fontWeight: 400 }}>
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Core Values */}
+        <section className="py-16 sm:py-20 md:py-24 bg-[#FAF9F7]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+                Our <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>values</span>
+              </h2>
+              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+                These principles guide every decision we make
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="grid sm:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto"
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              {coreValues.map((value, index) => (
+                <motion.article
+                  key={index}
+                  variants={fadeInUp}
+                  className="group relative"
+                >
+                  <div className="h-full p-6 sm:p-7 md:p-8 bg-white border border-[#EFEDE9] rounded-2xl text-center hw-accelerate transition-all duration-400 hover:shadow-lg hover:shadow-[#e2493b]/5 hover:border-[#e2493b]/20">
                     <motion.div
-                      className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mb-5 text-[#FF6B6B]"
-                      whileHover={{ rotate: 5, scale: 1.1 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#e2493b]/10 flex items-center justify-center"
+                      whileHover={{
+                        scale: prefersReducedMotion ? 1 : 1.1,
+                        backgroundColor: 'rgba(226, 73, 59, 0.15)'
+                      }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      {value.icon}
+                      <Award className="w-7 h-7 text-[#e2493b]" />
                     </motion.div>
-                    <h3 className="text-lg md:text-xl font-sans font-semibold text-neutral-900 mb-3 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
+                    <h3 className="text-base sm:text-lg md:text-xl font-medium text-[#1F1F1F] mb-3 transition-colors duration-400 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
                       {value.title}
                     </h3>
-                    <p className="text-neutral-600 leading-relaxed text-sm md:text-[15px] transition-colors duration-300 group-hover:text-neutral-700">
+                    <p className="text-sm text-[#6B6B6B] leading-relaxed" style={{ fontWeight: 400 }}>
                       {value.description}
                     </p>
                   </div>
-                </motion.div>
+                </motion.article>
               ))}
             </motion.div>
           </div>
         </section>
 
-        {/* Our Approach */}
-        <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-neutral-50 to-white">
-          <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
-            <motion.div
-              className="text-center mb-16 md:mb-20"
-              {...fadeInUp}
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-5 tracking-tight">
-                Our <span className="italic font-normal">approach</span>
+        {/* Team Section */}
+        <section className="py-16 sm:py-20 md:py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+                Meet the <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>founders</span>
               </h2>
-              <p className="text-sm sm:text-[15px] md:text-base text-neutral-600 max-w-lg mx-auto leading-relaxed">
-                A thoughtful process that puts your business goals at the center
+              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+                Two people building systems that actually work for businesses
               </p>
             </motion.div>
 
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 xl:gap-12"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true }}
-            >
-              {approach.map((step, index) => (
-                <motion.div
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+              {teamMembers.map((member, index) => (
+                <motion.article
                   key={index}
                   variants={fadeInUp}
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                  className="group text-center"
-                >
-                  <motion.div
-                    className="mb-6"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <span className="block text-4xl md:text-5xl lg:text-6xl font-light text-neutral-200 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]/30">
-                      {step.number}
-                    </span>
-                  </motion.div>
-                  <h3 className="text-lg md:text-xl font-medium text-neutral-900 mb-3 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm md:text-[15px] leading-relaxed text-neutral-600 max-w-xs mx-auto transition-colors duration-300 group-hover:text-neutral-700">
-                    {step.description}
-                  </p>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Expertise */}
-        <section className="py-20 md:py-28 lg:py-32">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div
-              className="text-center mb-14 md:mb-16"
-              {...fadeInUp}
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-4 tracking-tight">
-                Our <span className="italic font-normal">expertise</span>
-              </h2>
-              <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
-                A full range of services to support your digital growth
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="max-w-3xl mx-auto"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true }}
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {expertise.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    variants={fadeInUp}
-                    whileHover={{ x: 5, scale: 1.02 }}
-                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="group flex items-center gap-3 p-4 bg-white border border-neutral-100 rounded-xl hover:border-[#FF6B6B]/30 hover:shadow-lg hover:shadow-[#FF6B6B]/5 transition-all duration-300"
-                  >
-                    <motion.div
-                      className="w-2 h-2 rounded-full bg-[#FF6B6B] flex-shrink-0"
-                      whileHover={{ scale: 1.5 }}
-                      transition={{ duration: 0.2 }}
-                    />
-                    <span className="text-sm md:text-[15px] text-neutral-700 group-hover:text-neutral-900 transition-colors duration-300">
-                      {item}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Team */}
-        <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-neutral-50 to-white">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div
-              className="text-center mb-14 md:mb-16"
-              {...fadeInUp}
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-4 tracking-tight">
-                Meet <span className="italic font-normal">Founders</span>
-              </h2>
-              <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
-                Two professionals dedicated to your success
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
-              {/* Sahil */}
-              <a
-                href="http://sahilmaurya.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -8, scale: 1.02 }}
+                  initial="initial"
+                  whileInView="whileInView"
+                  viewport={{ once: true }}
                   className="group"
                 >
-                  <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/10 hover:border-[#FF6B6B]/30">
-
+                  <motion.div
+                    className="h-full bg-white border border-[#EFEDE9] rounded-2xl hw-accelerate"
+                    whileHover={{
+                      y: prefersReducedMotion ? 0 : -4,
+                      boxShadow: '0 12px 32px -8px rgba(226, 73, 59, 0.08)',
+                      borderColor: 'rgba(226, 73, 59, 0.3)'
+                    }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  >
                     {/* Header */}
-                    <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF6B6B]/15 group-hover:to-[#FF6B6B]/8">
-                      <div className="flex items-center gap-4">
+                    <div className="p-6 sm:p-7 md:p-8 border-b border-[#EFEDE9] bg-[#FAF9F7]">
+                      <div className="flex items-center gap-2 mb-2">
                         <motion.div
-                          className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] flex items-center justify-center shadow-lg"
-                          whileHover={{ rotate: 5, scale: 1.1 }}
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: member.color }}
+                          whileHover={{ scale: 1.5 }}
                           transition={{ duration: 0.3 }}
-                        >
-                          <Code className="w-7 h-7 md:w-8 md:h-8 text-white" />
-                        </motion.div>
-
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2 h-2 rounded-full bg-[#FF6B6B] animate-pulse" />
-                            <span className="text-xs md:text-sm font-sans font-semibold tracking-[0.1em] text-[#FF6B6B] uppercase">
-                              Founder
-                            </span>
-                          </div>
-
-                          <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF6B6B]">
-                            Sahil
-                          </h3>
-                        </div>
+                        />
+                        <span className="text-xs font-semibold tracking-wider text-[#6B6B6B] uppercase" style={{ fontWeight: 600 }}>
+                          {member.role}
+                        </span>
                       </div>
+                      <h3 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F]" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+                        {member.name}
+                      </h3>
                     </div>
 
                     {/* Body */}
-                    <div className="p-6 md:p-8">
-                      <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
-                        Founder of Brancha, focused on helping businesses build a clear,
-                        professional digital presence. Works closely with brands to turn ideas
-                        into structured systems that support long-term growth.
+                    <div className="p-6 sm:p-7 md:p-8">
+                      <p className="text-sm sm:text-base text-[#6B6B6B] mb-6 leading-relaxed" style={{ fontWeight: 400 }}>
+                        {member.description}
                       </p>
 
-                      <div className="space-y-4 mb-6">
-                        <motion.div
-                          className="flex items-start gap-3"
-                          whileHover={{ x: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
-                          <span className="text-xs md:text-sm text-neutral-700">
-                            Experience working with local and growing businesses
-                          </span>
-                        </motion.div>
-
-                        <motion.div
-                          className="flex items-start gap-3"
-                          whileHover={{ x: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
-                          <span className="text-xs md:text-sm text-neutral-700">
-                            Strong focus on clarity, consistency, and brand credibility
-                          </span>
-                        </motion.div>
-
-                        <motion.div
-                          className="flex items-start gap-3"
-                          whileHover={{ x: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Check className="w-5 h-5 text-[#FF6B6B] mt-0.5 flex-shrink-0" />
-                          <span className="text-xs md:text-sm text-neutral-700">
-                            Business-first approach with long-term value in mind
-                          </span>
-                        </motion.div>
+                      <div className="space-y-3 mb-6">
+                        {member.focus.map((item, idx) => (
+                          <motion.div
+                            key={idx}
+                            className="flex items-start gap-2 group/item"
+                            whileHover={{ x: prefersReducedMotion ? 0 : 2 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.2, rotate: 5 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <CheckCircle2 className="w-4 h-4 text-[#e2493b] flex-shrink-0 mt-0.5" />
+                            </motion.div>
+                            <span className="text-sm text-[#1F1F1F]" style={{ fontWeight: 400 }}>{item}</span>
+                          </motion.div>
+                        ))}
                       </div>
 
-                      <div className="pt-6 border-t border-neutral-100">
-                        <motion.div
-                          className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF6B6B] transition-colors duration-300"
-                          whileHover={{ x: 3 }}
-                          transition={{ duration: 0.2 }}
+                      <div className="pt-4 border-t border-[#EFEDE9]">
+                        <motion.a
+                          href={`mailto:${member.email}`}
+                          className="flex items-center gap-2 text-sm text-[#6B6B6B] transition-colors duration-300 group/email"
+                          whileHover={{ color: '#e2493b' }}
+                          style={{ fontWeight: 400 }}
                         >
-                          <Mail className="w-4 h-4 flex-shrink-0" />
-                          <span className="break-all">workwithbrancha@gmail.com</span>
-                        </motion.div>
+                          <motion.div
+                            whileHover={{ scale: 1.2, rotate: -10 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <Mail className="w-4 h-4" />
+                          </motion.div>
+                          <span className="break-all">{member.email}</span>
+                        </motion.a>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              </a>
-
-
-              {/* Saad */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group"
-              >
-                <div className="h-full bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF8E8E]/10 hover:border-[#FF8E8E]/30">
-
-                  {/* Header */}
-                  <div className="p-6 md:p-8 bg-gradient-to-br from-[#FF8E8E]/10 to-[#FF6B6B]/5 border-b border-neutral-100 transition-all duration-300 group-hover:from-[#FF8E8E]/15 group-hover:to-[#FF6B6B]/8">
-                    <div className="flex items-center gap-4">
-                      <motion.div
-                        className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FF8E8E] to-[#FF6B6B] flex items-center justify-center shadow-lg"
-                        whileHover={{ rotate: -5, scale: 1.1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Palette className="w-7 h-7 md:w-8 md:h-8 text-white" />
-                      </motion.div>
-
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-2 h-2 rounded-full bg-[#FF8E8E] animate-pulse" />
-                          <span className="text-xs md:text-sm font-sans font-semibold tracking-[0.1em] text-[#FF8E8E] uppercase">
-                            Co-Founder
-                          </span>
-                        </div>
-
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-light text-neutral-900 tracking-tight transition-colors duration-300 group-hover:text-[#FF8E8E]">
-                          Saad
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <div className="p-6 md:p-8">
-                    <p className="text-sm md:text-base text-neutral-600 mb-6 leading-relaxed">
-                      Co-founder of Brancha, focused on brand direction and visual judgment.
-                      Ensures every brand feels intentional, refined, and aligned with how
-                      customers actually perceive it in the real world.
-                    </p>
-
-
-                    <div className="space-y-4 mb-6">
-                      <motion.div
-                        className="flex items-start gap-3"
-                        whileHover={{ x: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-neutral-700">
-                          Defines brand tone, visual direction, and overall look & feel
-                        </span>
-                      </motion.div>
-
-                      <motion.div
-                        className="flex items-start gap-3"
-                        whileHover={{ x: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-neutral-700">
-                          Strong sense of taste, balance, and restraint in design decisions
-                        </span>
-                      </motion.div>
-
-                      <motion.div
-                        className="flex items-start gap-3"
-                        whileHover={{ x: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Check className="w-5 h-5 text-[#FF8E8E] mt-0.5 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-neutral-700">
-                          Focused on trust, perception, and long-term brand recall
-                        </span>
-                      </motion.div>
-                    </div>
-
-                    <div className="pt-6 border-t border-neutral-100">
-                      <motion.div
-                        className="flex items-center gap-2 text-xs md:text-sm text-neutral-600 hover:text-[#FF8E8E] transition-colors duration-300"
-                        whileHover={{ x: 3 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Mail className="w-4 h-4 flex-shrink-0" />
-                        <span className="break-all">saadbombaywala9@gmail.com</span>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
+                  </motion.div>
+                </motion.article>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Mission */}
-        <section className="py-20 md:py-28 lg:py-32">
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div
-              className="max-w-3xl mx-auto text-center"
-              {...fadeInUp}
-            >
-              <motion.div
-                className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-[#FF6B6B]/10 to-[#FF6B6B]/5 flex items-center justify-center mx-auto mb-8"
-                whileHover={{ rotate: 5, scale: 1.1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Award className="w-8 h-8 md:w-10 md:h-10 text-[#FF6B6B]" />
-              </motion.div>
-
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
-                Our <span className="italic font-normal">mission</span>
-              </h2>
-              <motion.p
-                className="text-base sm:text-lg md:text-xl text-neutral-700 leading-relaxed mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              >
-                To help quality-focused businesses build digital presences that genuinely reflect their standards and support their growth—without unnecessary complexity or inflated costs.
-              </motion.p>
-              <motion.p
-                className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              >
-                We believe exceptional design should be accessible, communication should be clear, and results should be measurable. Everything we do serves these commitments.
-              </motion.p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-20 md:py-28 lg:py-32 relative overflow-hidden">
+        {/* CTA Section */}
+        <section className="py-16 sm:py-20 md:py-24 lg:py-28 relative overflow-hidden bg-[#FAF9F7]">
           <div className="absolute inset-0 -z-10">
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] bg-gradient-to-br from-[#FF6B6B]/8 via-[#FF8E8E]/4 to-transparent rounded-full blur-3xl"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.1, 1],
+                rotate: [0, 90, 0]
+              }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: 'linear'
+              }}
             />
           </div>
 
-          <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
-            <motion.div
-              className="max-w-3xl mx-auto text-center"
-              {...fadeInUp}
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-neutral-900 mb-6 tracking-tight">
-                Let's work <span className="italic font-normal">together</span>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+            <motion.div className="text-center" {...fadeInUp}>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-5 sm:mb-6 leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
+                Ready to <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>stop losing customers?</span>
               </h2>
-              <p className="text-sm sm:text-base md:text-lg text-neutral-600 mb-10 leading-relaxed max-w-2xl mx-auto">
-                Whether you're starting from scratch or refining an existing presence, we'd like to hear about your project.
+              <p className="text-base sm:text-lg text-[#6B6B6B] mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+                Let's talk about your business. We'll explain how Foundation + Monthly works and recommend what actually fits your needs.
               </p>
 
-              <motion.div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              >
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link to="/contact">
                   <motion.button
-                    className="group px-8 md:px-10 py-3 md:py-3.5 text-sm font-sans font-medium tracking-wide text-white bg-[#FF6B6B] rounded-full shadow-xl shadow-[#FF6B6B]/25 transition-all duration-300 hover:shadow-2xl hover:shadow-[#FF6B6B]/35"
-                    whileHover={{ scale: 1.05 }}
+                    className="group relative px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white bg-gradient-to-br from-[#e2493b] to-[#e2493b] rounded-full shadow-xl shadow-[#e2493b]/25 inline-flex items-center gap-2 hw-accelerate overflow-hidden"
+                    aria-label="Start a conversation with Brancha"
+                    whileHover={{
+                      scale: prefersReducedMotion ? 1 : 1.04,
+                      boxShadow: '0 16px 48px -12px rgba(226, 73, 59, 0.4)'
+                    }}
                     whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.2 }}
+                    style={{ fontWeight: 500 }}
                   >
-                    <span className="flex items-center gap-2">
-                      Start a Conversation
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </span>
+                    <MessageSquare className="w-4 h-4" />
+                    <span className="relative z-10">Start a Conversation</span>
+
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+
+                    {!prefersReducedMotion && (
+                      <motion.div
+                        animate={{ x: ['-100%', '200%'] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        style={{ pointerEvents: 'none' }}
+                      />
+                    )}
                   </motion.button>
                 </Link>
-                <Link to="/portfolio">
+
+                <Link to="/services">
                   <motion.button
-                    className="group px-8 md:px-10 py-3 md:py-3.5 text-sm font-sans font-medium tracking-wide text-neutral-700 bg-white border border-neutral-300 rounded-full transition-all duration-300 hover:border-neutral-400 hover:bg-neutral-50"
-                    whileHover={{ scale: 1.05 }}
+                    className="group px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-[#1F1F1F] bg-white border-2 border-[#EFEDE9] rounded-full inline-flex items-center gap-2 hw-accelerate"
+                    aria-label="View Brancha services"
+                    whileHover={{
+                      scale: prefersReducedMotion ? 1 : 1.04,
+                      borderColor: '#e2493b',
+                      boxShadow: '0 8px 24px -4px rgba(226, 73, 59, 0.15)'
+                    }}
                     whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.2 }}
+                    style={{ fontWeight: 500 }}
                   >
-                    View Our Work
+                    <span>View Services</span>
+                    <motion.div
+                      animate={{ x: [0, 3, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.div>
                   </motion.button>
                 </Link>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </section>

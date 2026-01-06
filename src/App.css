@@ -1,15 +1,17 @@
-/* App.css - Performance Optimized */
-
-/* ✅ [SAFE - No visual change] Preload critical fonts with display=swap */
 @import url("https://fonts.bunny.net/css?family=satoshi:400,500,700&display=swap");
 
 :root {
   --transition-duration: 0.4s;
   --transition-timing: cubic-bezier(0.16, 1, 0.3, 1);
   --scroll-margin: 6rem;
+  --off-white: #FAF9F7;
+  --charcoal: #1F1F1F;
+  --muted-grey: #6B6B6B;
+  --warm-stone: #EFEDE9;
+  --soft-coral: #e2493b;
+  --deep-coral: #C94A3F;
 }
 
-/* Base styles with performance optimizations */
 body {
   font-family: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
   transition: 
@@ -18,86 +20,50 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  /* ✅ [SAFE - No visual change] GPU acceleration for smooth scrolling */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
+  background-color: var(--off-white);
+  color: var(--charcoal);
 }
 
-/* Smooth scrolling with prefers-reduced-motion respect */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
 }
 
-/* Section spacing with logical properties */
 section {
   scroll-margin-block-start: var(--scroll-margin);
 }
 
-/* ✅ [SAFE - No visual change] Optimize re-paints by using transform instead of top/left */
 .transform-gpu {
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   will-change: transform;
 }
 
-/* Input styles with modern focus states */
 .input-style {
-  --input-bg-light: #f9fafb;
-  --input-bg-dark: #1f2937;
-  --input-text-light: #111827;
-  --input-text-dark: #f3f4f6;
-  --input-border-light: #d1d5db;
-  --input-border-dark: #374151;
-  --input-focus: #ff6b6b;
-  --input-focus-ring: rgba(255, 107, 107, 0.2);
-
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 9999px;
-  background-color: var(--input-bg-light);
-  color: var(--input-text-light);
+  background-color: white;
+  color: var(--charcoal);
   font-size: 0.875rem;
-  border: 1px solid var(--input-border-light);
+  border: 1px solid var(--warm-stone);
   outline: 2px solid transparent;
   outline-offset: 2px;
   transition:
     background-color var(--transition-duration) var(--transition-timing),
     border-color var(--transition-duration) var(--transition-timing),
     box-shadow 0.2s var(--transition-timing);
-  
-  /* ✅ [SAFE - No visual change] GPU acceleration */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
 
-/* Dark mode styles */
-@media (prefers-color-scheme: dark) {
-  .input-style:not(.light) {
-    background-color: var(--input-bg-dark);
-    color: var(--input-text-dark);
-    border-color: var(--input-border-dark);
-  }
-}
-
-.dark .input-style {
-  background-color: var(--input-bg-dark);
-  color: var(--input-text-dark);
-  border-color: var(--input-border-dark);
-}
-
-/* Focus styles with accessibility considerations */
 .input-style:focus-visible {
-  border-color: var(--input-focus);
-  box-shadow: 0 0 0 3px var(--input-focus-ring);
+  border-color: var(--soft-coral);
+  box-shadow: 0 0 0 3px rgba(226, 73, 59, 0.2);
   outline: none;
 }
 
-/* ✅ [SAFE - No visual change] Optimize animations to use only transform and opacity */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -120,7 +86,20 @@ section {
   }
 }
 
-/* ✅ [SAFE - No visual change] Contain layout shifts */
+/* Explicit spin animation for loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg) translateZ(0);
+  }
+  to {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 .contain-layout {
   contain: layout;
 }
@@ -133,24 +112,6 @@ section {
   contain: strict;
 }
 
-/* ✅ [SAFE - No visual change] Image optimization base classes */
-img, picture, video {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* ✅ [SAFE - No visual change] Lazy loading enhancement */
-img[loading="lazy"] {
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-img[loading="lazy"].loaded {
-  opacity: 1;
-}
-
-/* Reduced motion alternative */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -162,9 +123,7 @@ img[loading="lazy"].loaded {
   }
 }
 
-/* ✅ [SAFE - No visual change] Optimize expensive shadows by reducing blur radius slightly on low-end devices */
 @media (hover: none) and (pointer: coarse) {
-  /* Mobile/touch devices - slightly reduce shadow complexity */
   .shadow-lg {
     box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
   }
@@ -178,7 +137,6 @@ img[loading="lazy"].loaded {
   }
 }
 
-/* ✅ [SAFE - No visual change] Optimize backdrop-blur for mobile */
 @media (hover: none) and (pointer: coarse) {
   .backdrop-blur-2xl {
     backdrop-filter: blur(16px);
@@ -196,12 +154,10 @@ img[loading="lazy"].loaded {
   }
 }
 
-/* ✅ [SAFE - No visual change] Content visibility for off-screen content */
 .auto-visibility {
   content-visibility: auto;
 }
 
-/* Print styles */
 @media print {
   body {
     background: white !important;
@@ -215,13 +171,11 @@ img[loading="lazy"].loaded {
     border: 1px solid black !important;
   }
   
-  /* Hide non-printable elements */
   nav, footer, .no-print {
     display: none !important;
   }
 }
 
-/* ✅ [SAFE - No visual change] Hardware acceleration utilities */
 .hw-accelerate {
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
@@ -231,15 +185,12 @@ img[loading="lazy"].loaded {
   perspective: 1000;
 }
 
-/* ✅ [SAFE - No visual change] Prevent layout thrashing */
 .prevent-layout-shift {
   min-height: 0;
   min-width: 0;
 }
 
-/* ✅ [SAFE - No visual change] Optimize font loading to prevent FOIT */
 @font-face {
   font-family: 'Satoshi';
   font-display: swap;
-  /* Loaded from Bunny Fonts via @import */
 }

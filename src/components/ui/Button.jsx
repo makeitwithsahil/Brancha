@@ -2,8 +2,8 @@ export default function Button({ children, className = '', variant = 'primary', 
   const baseStyles = 'inline-block font-semibold rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-center';
   
   const variants = {
-    primary: 'bg-[#FF6B6B] text-white hover:shadow-lg hover:shadow-[#FF6B6B]/30',
-    secondary: 'bg-white text-neutral-700 border-2 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
+    primary: 'bg-[#FF6F61] text-white hover:shadow-lg hover:shadow-[#FF6F61]/30 hover:bg-[#C94A3F]',
+    secondary: 'bg-white text-[#1F1F1F] border-2 border-[#EFEDE9] hover:border-[#6B6B6B] hover:bg-[#EFEDE9]'
   };
   
   const sizes = {

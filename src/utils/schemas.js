@@ -8,7 +8,7 @@ export const organizationSchema = {
   alternateName: 'Brancha Digital Design',
   url: baseUrl,
   logo: `${baseUrl}/favicon.png`,
-  description: 'Professional website design, brand identity, and digital marketing services for local businesses in India.',
+  description: 'We build and manage complete online systems for local businesses in India. Website, Google profile, and monthly brand support for long-term business growth.',
   email: 'hello@brancha.in',
   address: {
     '@type': 'PostalAddress',
@@ -44,7 +44,7 @@ export const websiteSchema = {
   '@type': 'WebSite',
   name: 'Brancha',
   url: baseUrl,
-  description: 'Digital design for businesses that care about getting it right.',
+  description: 'Complete online presence management for local and growing businesses in India.',
   publisher: {
     '@type': 'Organization',
     name: 'Brancha',

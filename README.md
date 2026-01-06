@@ -1,25 +1,25 @@
-# 🌟 Brancha – Creative Design Agency Website (Built by Us)
+# 🌟 Brancha – Where Brands Grow
 
-**Brancha** is a professional design agency helping cafés, salons, and local businesses stand out with modern websites, posters, and social media content.
+**Brancha** builds and manages complete online systems for local businesses across India. We handle your website, Google profile, and monthly brand support so you can focus on growing your business.
 
-This is the official **website template** for our agency — handcrafted with React, Tailwind CSS, and Framer Motion to give a smooth, premium, and responsive user experience.
+This is the official website for Brancha—built with React, Tailwind CSS, and Framer Motion for a professional, performance-optimized experience.
 
 ---
 
-## 🔥 Live Preview
+## 🔥 Live Site
 
-> Visit Us: [brancha.vercel.app](https://brancha.vercel.app)
+> Visit Us: [brancha.in](https://brancha.in)
 
 ---
 
 ## ✨ What This Website Includes
 
-- 🎯 Custom section scroll with smooth transitions
-- 🌙 Theme toggle (dark/light) with localStorage
-- 🎞️ Framer Motion animations on hover & scroll
-- 📸 Portfolio grid with image placeholders
-- 📨 Contact form (Formspree integration)
-- ✅ Mobile-first, clean, fast UI
+- 🎯 Smooth scroll navigation with professional transitions
+- 🎨 Brand-focused color palette (Off-White, Charcoal, Soft Coral)
+- 🎞️ Subtle Framer Motion animations
+- 📱 Mobile-first, responsive design
+- 📧 Contact form integration
+- ⚡ Performance-optimized and SEO-ready
 
 ---
 
@@ -29,16 +29,16 @@ This is the official **website template** for our agency — handcrafted with Re
 |------------------|--------------------------------|
 | React            | Component-based frontend       |
 | Tailwind CSS     | Utility-first styling          |
-| Framer Motion    | Animations                     |
-| Lucide Icons     | Iconography                    |
-| Formspree        | Backendless contact form       |
+| Framer Motion    | Professional animations        |
+| Lucide Icons     | Clean iconography              |
+| Formspree        | Contact form handling          |
 
 ---
 
-## 🧑‍🎨 About Us – Brancha Agency
+## 🧑‍🎨 About Brancha
 
-> We help **cafés, salons, shops, and small businesses** get noticed online — through stunning **posters**, responsive **websites**, and consistent **social media design**.
+> We work with **cafés, clinics, salons, gyms**, and growing businesses that need a reliable online presence managed monthly.
 
-👉 DM us on Instagram for a **free sample**: [@getbrancha](https://instagram.com/getbrancha)
+👉 Contact us for a consultation: [brancha.in/contact](https://brancha.in/contact)
 
 ---
