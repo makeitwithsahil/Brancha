@@ -8,36 +8,35 @@ import {
 } from 'lucide-react';
 
 const fadeInUp = {
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-50px', amount: 0.3 },
-  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+  viewport: { once: true, margin: '-100px', amount: 0.15 },
+  transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
 };
 
 const staggerContainer = {
   whileInView: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 }
+    transition: { staggerChildren: 0.05, delayChildren: 0.02 }
   },
-  viewport: { once: true, margin: '-50px', amount: 0.3 }
+  viewport: { once: true, margin: '-100px', amount: 0.1 }
 };
 
 const modalVariants = {
-  hidden: { opacity: 0, scale: 0.94, y: 30 },
+  hidden: { opacity: 0, scale: 0.96, y: 20 },
   visible: { 
     opacity: 1, 
     scale: 1, 
     y: 0, 
     transition: { 
-      duration: 0.5, 
-      ease: [0.16, 1, 0.3, 1],
-      opacity: { duration: 0.3 }
+      duration: 0.3, 
+      ease: [0.16, 1, 0.3, 1]
     } 
   },
   exit: { 
     opacity: 0, 
-    scale: 0.94, 
-    y: 30, 
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } 
+    scale: 0.96, 
+    y: 20, 
+    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } 
   }
 };
 
@@ -47,27 +46,17 @@ const FooterLink = memo(({ link }) => {
   return (
     <li>
       <Link to={link.path}>
-        <motion.div
-          className="flex items-center gap-2 group cursor-pointer"
-          whileHover={{ x: prefersReducedMotion ? 0 : 4 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <motion.span 
-            className="text-sm text-[#6B6B6B] transition-all duration-400 ease-out group-hover:text-[#e35342]" 
+        <div className="flex items-center gap-2 group cursor-pointer transition-transform duration-200 hover:translate-x-1">
+          <span 
+            className="text-sm text-[#6B6B6B] transition-colors duration-200 group-hover:text-[#e35342]" 
             style={{ fontWeight: 400 }}
-            whileHover={{ fontWeight: 500 }}
           >
             {link.name}
-          </motion.span>
-          <motion.span
-            initial={{ opacity: 0, x: -4 }}
-            whileHover={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className="text-[#e35342]"
-          >
+          </span>
+          <span className="text-[#e35342] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             →
-          </motion.span>
-        </motion.div>
+          </span>
+        </div>
       </Link>
     </li>
   );
@@ -79,49 +68,17 @@ const SocialLink = memo(({ social }) => {
   const prefersReducedMotion = useReducedMotion();
   
   return (
-    <motion.a
+    <a
       href={social.url}
       target={social.url.startsWith('http') ? '_blank' : undefined}
       rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
       aria-label={social.name}
-      className="relative w-11 h-11 rounded-full bg-[#EFEDE9] flex items-center justify-center text-[#6B6B6B] transition-all duration-400 ease-out hover:bg-[#e35342]/10 hover:text-[#e35342] hw-accelerate group overflow-hidden"
-      whileHover={{ 
-        y: prefersReducedMotion ? 0 : -4,
-        scale: prefersReducedMotion ? 1 : 1.08,
-        boxShadow: '0 8px 20px -4px rgba(255, 111, 97, 0.2)'
-      }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="relative w-11 h-11 rounded-full bg-[#EFEDE9] flex items-center justify-center text-[#6B6B6B] transition-all duration-200 hover:bg-[#e35342]/10 hover:text-[#e35342] hover:-translate-y-1 hover:shadow-md group overflow-hidden"
     >
-      <div className="relative z-10 transition-transform duration-400 group-hover:scale-110">
+      <div className="relative z-10 transition-transform duration-200 group-hover:scale-110">
         {social.icon}
       </div>
-      
-      {/* Premium gradient on hover */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileHover={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="absolute inset-0 bg-gradient-to-br from-[#e35342]/10 to-transparent"
-      />
-      
-      {/* Shine effect */}
-      {!prefersReducedMotion && (
-        <motion.div
-          animate={{ 
-            rotate: [0, 180],
-            opacity: [0, 0.5, 0]
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 4
-          }}
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          style={{ pointerEvents: 'none' }}
-        />
-      )}
-    </motion.a>
+    </a>
   );
 });
 
@@ -131,43 +88,24 @@ const PolicyButton = memo(({ policyKey, policy, onClick }) => {
   const prefersReducedMotion = useReducedMotion();
   
   return (
-    <motion.button
+    <button
       onClick={() => onClick(policyKey)}
-      className="group p-6 text-left bg-white border border-[#EFEDE9] rounded-xl transition-all duration-400 ease-out hover:border-[#e35342]/30 hover:shadow-xl hover:shadow-[#e35342]/5 h-full flex flex-col hw-accelerate relative overflow-hidden"
-      whileHover={{ 
-        y: prefersReducedMotion ? 0 : -3,
-        scale: prefersReducedMotion ? 1 : 1.01
-      }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="group p-6 text-left bg-white border border-[#EFEDE9] rounded-xl transition-all duration-200 hover:border-[#e35342]/30 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col relative overflow-hidden active:scale-[0.98]"
     >
       <div className="flex items-center gap-3 mb-3 relative z-10">
-        <motion.div 
-          className="w-11 h-11 rounded-xl bg-[#e35342]/10 flex items-center justify-center flex-shrink-0 transition-all duration-400 group-hover:bg-[#e35342]/15 group-hover:shadow-md group-hover:shadow-[#e35342]/10"
-          whileHover={{ rotate: prefersReducedMotion ? 0 : [0, -10, 10, 0] }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="text-[#e35342] transition-transform duration-400 group-hover:scale-110">
+        <div className="w-11 h-11 rounded-xl bg-[#e35342]/10 flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:bg-[#e35342]/15">
+          <div className="text-[#e35342] transition-transform duration-200 group-hover:scale-110">
             {policy.icon}
           </div>
-        </motion.div>
-        <span className="text-sm font-medium text-[#1F1F1F] transition-colors duration-400 group-hover:text-[#e35342]" style={{ fontWeight: 500 }}>
+        </div>
+        <span className="text-sm font-medium text-[#1F1F1F] transition-colors duration-200 group-hover:text-[#e35342]" style={{ fontWeight: 500 }}>
           {policy.title}
         </span>
       </div>
-      <p className="text-xs text-[#6B6B6B] mt-auto transition-colors duration-400 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
+      <p className="text-xs text-[#6B6B6B] mt-auto transition-colors duration-200 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
         Click to view details
       </p>
-      
-      {/* Premium gradient overlay on hover */}
-      <motion.div
-        initial={{ opacity: 0, x: '-100%' }}
-        whileHover={{ opacity: 0.03, x: '100%' }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e35342] to-transparent"
-        style={{ pointerEvents: 'none' }}
-      />
-    </motion.button>
+    </button>
   );
 });
 
@@ -181,21 +119,13 @@ export default function Footer() {
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    let rafId = null;
-
     const checkMobile = () => {
-      if (rafId) return;
-
-      rafId = requestAnimationFrame(() => {
-        setIsMobile(window.innerWidth < 768);
-        rafId = null;
-      });
+      setIsMobile(window.innerWidth < 768);
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile, { passive: true });
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
@@ -334,7 +264,6 @@ For questions about cookies, email support@brancha.in`
 
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
-  // Modal component
   const modalContent = activeModal && policies[activeModal] && (
     <AnimatePresence mode="wait">
       <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -343,10 +272,13 @@ For questions about cookies, email support@brancha.in`
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
           onClick={closeModal}
-          className={`absolute inset-0 ${isMobile ? 'bg-black/70' : 'bg-black/50 backdrop-blur-md'}`}
-          style={{ cursor: 'pointer' }}
+          className="absolute inset-0 bg-black/50"
+          style={{ 
+            cursor: 'pointer',
+            backdropFilter: isMobile ? 'none' : 'blur(4px)'
+          }}
         />
 
         <motion.div
@@ -359,19 +291,13 @@ For questions about cookies, email support@brancha.in`
           onClick={(e) => e.stopPropagation()}
           style={{ cursor: 'default' }}
         >
-          {/* Modal Header */}
           <div className="flex-shrink-0 bg-white border-b border-[#EFEDE9] px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <motion.div
-                className="w-11 h-11 rounded-xl bg-[#e35342]/10 flex items-center justify-center flex-shrink-0"
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              >
+              <div className="w-11 h-11 rounded-xl bg-[#e35342]/10 flex items-center justify-center flex-shrink-0">
                 <div className="text-[#e35342]">
                   {policies[activeModal].icon}
                 </div>
-              </motion.div>
+              </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-lg sm:text-xl font-semibold text-[#1F1F1F] truncate" style={{ fontWeight: 600 }}>
                   {policies[activeModal].title}
@@ -381,51 +307,33 @@ For questions about cookies, email support@brancha.in`
                 </p>
               </div>
             </div>
-            <motion.button
+            <button
               onClick={closeModal}
-              className="w-10 h-10 rounded-full bg-[#EFEDE9] flex items-center justify-center transition-all duration-300 hover:bg-[#e35342]/10 hover:text-[#e35342] flex-shrink-0 ml-2"
+              className="w-10 h-10 rounded-full bg-[#EFEDE9] flex items-center justify-center transition-all duration-200 hover:bg-[#e35342]/10 hover:text-[#e35342] flex-shrink-0 ml-2 active:scale-95"
               aria-label="Close modal"
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
             >
               <span className="text-xl leading-none">×</span>
-            </motion.button>
+            </button>
           </div>
 
-          {/* Modal Content */}
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
-            <motion.div
+            <div
               className="text-[#1F1F1F] leading-relaxed whitespace-pre-line text-sm"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
               style={{ fontWeight: 400 }}
             >
               {policies[activeModal].content}
-            </motion.div>
+            </div>
           </div>
 
-          {/* Modal Footer */}
           <div className="flex-shrink-0 bg-white px-4 sm:px-6 py-4 border-t border-[#EFEDE9]">
             <div className="flex justify-end">
-              <motion.button
+              <button
                 onClick={closeModal}
-                className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#e35342] to-[#FF8577] rounded-full transition-all duration-400 hover:shadow-lg hover:shadow-[#e35342]/30 relative overflow-hidden"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+                className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#e35342] to-[#FF8577] rounded-full transition-all duration-200 hover:shadow-lg active:scale-95 relative overflow-hidden"
                 style={{ fontWeight: 500 }}
               >
                 Close
-                
-                {!prefersReducedMotion && (
-                  <motion.div
-                    animate={{ x: ['0%', '200%'] }}
-                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                    style={{ pointerEvents: 'none' }}
-                  />
-                )}
-              </motion.button>
+              </button>
             </div>
           </div>
         </motion.div>
@@ -437,36 +345,29 @@ For questions about cookies, email support@brancha.in`
     <>
       <footer className="bg-[#FAF9F7] border-t border-[#EFEDE9]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Main footer content */}
           <motion.div
             className="py-12 sm:py-16 md:py-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 sm:gap-10 lg:gap-12"
             variants={staggerContainer}
             initial="initial"
             whileInView="whileInView"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.1 }}
           >
-            {/* Company info */}
             <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
-              {/* Logo */}
               <Link to="/" className="inline-block group">
-                <motion.img
+                <img
                   src="/Brancha_logo_with_tagline-png.webp"
                   alt="Brancha - Where Brands Grow"
-                  className="h-20 sm:h-24 w-auto transition-all duration-500 ease-out group-hover:opacity-80 group-hover:brightness-110"
-                  whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="h-20 sm:h-24 w-auto transition-opacity duration-200 group-hover:opacity-80"
                   loading="lazy"
                 />
               </Link>
 
-              {/* Description */}
               <div className="space-y-3">
-                <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-sm transition-colors duration-400 hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
+                <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-sm transition-colors duration-200 hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
                   A company that builds and manages the complete online presence of businesses—so they stop losing customers and start growing with clarity.
                 </p>
               </div>
 
-              {/* Newsletter */}
               <div className="space-y-3">
                 <h4 className="text-xs font-semibold tracking-wider text-[#1F1F1F] uppercase" style={{ fontWeight: 600 }}>
                   Stay Updated
@@ -477,36 +378,24 @@ For questions about cookies, email support@brancha.in`
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="flex-1 px-4 py-3 text-sm bg-white border border-[#EFEDE9] rounded-lg focus:outline-none focus:border-[#e35342] focus:ring-2 focus:ring-[#e35342]/20 transition-all duration-400"
+                    className="flex-1 px-4 py-3 text-sm bg-white border border-[#EFEDE9] rounded-lg focus:outline-none focus:border-[#e35342] focus:ring-2 focus:ring-[#e35342]/20 transition-all duration-200"
                     style={{ fontWeight: 400 }}
                     disabled={isSubscribed}
                   />
-                  <motion.button
+                  <button
                     type="submit"
                     disabled={isSubscribed}
-                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-400 hw-accelerate relative overflow-hidden ${isSubscribed
+                    className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative overflow-hidden ${isSubscribed
                       ? 'bg-green-500 text-white'
-                      : 'bg-[#e35342] text-white hover:bg-[#C94A3F] hover:shadow-lg hover:shadow-[#e35342]/25'
+                      : 'bg-[#e35342] text-white hover:bg-[#C94A3F] hover:shadow-lg active:scale-95'
                       }`}
-                    whileHover={!isSubscribed ? { scale: 1.05 } : {}}
-                    whileTap={!isSubscribed ? { scale: 0.95 } : {}}
                     style={{ fontWeight: 500 }}
                   >
                     {isSubscribed ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-                    
-                    {!isSubscribed && !prefersReducedMotion && (
-                      <motion.div
-                        animate={{ x: ['-100%', '200%'] }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                        style={{ pointerEvents: 'none' }}
-                      />
-                    )}
-                  </motion.button>
+                  </button>
                 </form>
               </div>
 
-              {/* Social Links */}
               <div className="space-y-3">
                 <h4 className="text-xs font-semibold tracking-wider text-[#1F1F1F] uppercase" style={{ fontWeight: 600 }}>
                   Connect
@@ -519,7 +408,6 @@ For questions about cookies, email support@brancha.in`
               </div>
             </motion.div>
 
-            {/* Link columns */}
             {Object.entries(footerLinks).map(([category, links]) => (
               <motion.div key={category} variants={fadeInUp} className="space-y-4">
                 <h4 className="text-xs font-semibold tracking-wider text-[#1F1F1F] uppercase" style={{ fontWeight: 600 }}>
@@ -533,45 +421,38 @@ For questions about cookies, email support@brancha.in`
               </motion.div>
             ))}
 
-            {/* Contact info */}
             <motion.div variants={fadeInUp} className="space-y-4">
               <h4 className="text-xs font-semibold tracking-wider text-[#1F1F1F] uppercase" style={{ fontWeight: 600 }}>
                 Contact
               </h4>
               <div className="space-y-3">
                 {contactInfo.map((info) => (
-                  <motion.a
+                  <a
                     key={info.label}
                     href={info.href}
                     target={info.href.startsWith('http') ? '_blank' : undefined}
                     rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className="flex items-start gap-2 text-[#6B6B6B] hover:text-[#e35342] transition-colors duration-400 group"
-                    whileHover={{ x: prefersReducedMotion ? 0 : 2 }}
+                    className="flex items-start gap-2 text-[#6B6B6B] hover:text-[#e35342] transition-colors duration-200 group"
                   >
-                    <motion.div 
-                      className="w-5 h-5 mt-0.5 flex-shrink-0 transition-transform duration-400 group-hover:scale-110"
-                      whileHover={{ rotate: prefersReducedMotion ? 0 : [0, -10, 10, 0] }}
-                      transition={{ duration: 0.5 }}
-                    >
+                    <div className="w-5 h-5 mt-0.5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110">
                       {info.icon}
-                    </motion.div>
+                    </div>
                     <div className="min-w-0">
                       <p className="text-xs text-[#6B6B6B] mb-0.5" style={{ fontWeight: 400 }}>{info.label}</p>
                       <p className="text-sm font-medium break-words" style={{ fontWeight: 500 }}>{info.value}</p>
                     </div>
-                  </motion.a>
+                  </a>
                 ))}
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Policies Section */}
           <motion.div
             className="py-8 border-t border-[#EFEDE9]"
             variants={fadeInUp}
             initial="initial"
             whileInView="whileInView"
-            viewport={{ once: true, amount: 0.5 }}
+            viewport={{ once: true, amount: 0.3 }}
           >
             <h4 className="text-sm font-semibold tracking-wider text-[#1F1F1F] uppercase mb-6" style={{ fontWeight: 600 }}>
               Legal
@@ -584,7 +465,6 @@ For questions about cookies, email support@brancha.in`
             </div>
           </motion.div>
 
-          {/* Bottom section */}
           <motion.div
             className="py-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-[#EFEDE9]"
             variants={fadeInUp}
@@ -593,43 +473,31 @@ For questions about cookies, email support@brancha.in`
             viewport={{ once: true, amount: 1 }}
           >
             <div className="text-center sm:text-left">
-              <p className="text-[#6B6B6B] text-xs transition-colors duration-400 hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
+              <p className="text-[#6B6B6B] text-xs transition-colors duration-200 hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
                 © {currentYear} Brancha. All rights reserved.
               </p>
-              <p className="text-[#6B6B6B] text-xs italic mt-1 transition-colors duration-400 hover:text-[#e35342]" style={{ fontWeight: 400 }}>
+              <p className="text-[#6B6B6B] text-xs italic mt-1 transition-colors duration-200 hover:text-[#e35342]" style={{ fontWeight: 400 }}>
                 Where Brands Grow
               </p>
             </div>
 
-            <motion.button
+            <button
               onClick={scrollToTop}
-              className="flex items-center gap-2 text-xs text-[#6B6B6B] transition-all duration-400 hover:text-[#e35342] group relative"
-              whileHover={{ y: prefersReducedMotion ? 0 : -2 }}
-              whileTap={{ y: 0 }}
+              className="flex items-center gap-2 text-xs text-[#6B6B6B] transition-all duration-200 hover:text-[#e35342] hover:-translate-y-1 group relative"
               aria-label="Back to top"
               style={{ fontWeight: 400 }}
             >
-              <motion.div
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <ArrowUp className="w-4 h-4" />
-              </motion.div>
+              <ArrowUp className="w-4 h-4" />
               Back to top
               
-              {/* Underline animation */}
-              <motion.div
-                initial={{ scaleX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#e35342] origin-left"
+              <div
+                className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#e35342] origin-left transition-transform duration-200 scale-x-0 group-hover:scale-x-100"
               />
-            </motion.button>
+            </button>
           </motion.div>
         </div>
       </footer>
 
-      {/* Render modal using createPortal for guaranteed visibility */}
       {typeof document !== 'undefined' && createPortal(modalContent, document.body)}
     </>
   );

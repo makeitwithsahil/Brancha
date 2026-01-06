@@ -2,74 +2,62 @@ import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 
-const NavLink = memo(({ link, location, hoveredLink, onMouseEnter, onMouseLeave, prefersReducedMotion, index }) => {
+const NavLink = memo(({ link, location, hoveredLink, onMouseEnter, onMouseLeave }) => {
   const isActive = location.pathname === link.path;
   const isHovered = hoveredLink === link.path;
 
   return (
-    <Link key={link.path} to={link.path} aria-label={link.name}>
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
-        className="relative px-6 py-3 cursor-pointer overflow-hidden"
+    <Link to={link.path} aria-label={link.name}>
+      <div
+        className="nav-link relative px-6 py-3 cursor-pointer overflow-hidden"
         onMouseEnter={() => onMouseEnter(link.path)}
         onMouseLeave={onMouseLeave}
+        style={{ 
+          transform: 'translateZ(0)',
+          willChange: 'transform'
+        }}
       >
-        {/* Text */}
         <span
-          className={`relative z-10 text-[14px] font-medium tracking-[0.01em] transition-all duration-300 ${
+          className={`relative z-10 text-[14px] font-medium tracking-[0.01em] ${
             isActive ? 'text-[#e2493b]' : isHovered ? 'text-[#e2493b]' : 'text-[#6B6B6B]'
           }`}
           style={{
             fontWeight: isActive ? 600 : 500,
-            letterSpacing: isHovered ? '0.05em' : '0.01em',
-            textShadow: isActive ? '0 0 20px rgba(255, 111, 97, 0.15)' : 'none'
+            textShadow: isActive ? '0 0 20px rgba(255, 111, 97, 0.2)' : 'none',
+            transition: 'color 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
           {link.name}
         </span>
 
-        {/* Hover background */}
-        <motion.div
-          initial={false}
-          animate={{
-            opacity: isHovered ? 1 : 0,
-            scale: isHovered ? 1 : 0.92
-          }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 rounded-[14px] bg-gradient-to-br from-[#e2493b]/[0.06] via-[#e2493b]/[0.03] to-transparent"
+        <div
+          className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#e2493b]/8 via-[#e2493b]/4 to-transparent"
           style={{
-            boxShadow: isHovered ? '0 0 24px rgba(255, 111, 97, 0.08), inset 0 1px 0 rgba(255, 111, 97, 0.1)' : 'none'
+            opacity: isHovered ? 1 : 0,
+            transform: isHovered ? 'scale(1) translateZ(0)' : 'scale(0.95) translateZ(0)',
+            boxShadow: isHovered ? '0 0 20px rgba(255, 111, 97, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)' : 'none',
+            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+            backfaceVisibility: 'hidden',
+            willChange: 'transform, opacity'
           }}
         />
 
-        {/* Active indicator */}
-        <motion.div
-          initial={false}
-          animate={{
-            opacity: isActive ? 1 : 0,
-            scale: isActive ? 1 : 0,
-            y: isActive ? 0 : 4
-          }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute bottom-2 left-1/2 w-[5px] h-[5px] bg-[#e2493b] rounded-full -translate-x-1/2"
-          style={{ 
-            boxShadow: isActive ? '0 0 12px rgba(255, 111, 97, 0.8), 0 0 24px rgba(255, 111, 97, 0.4)' : 'none'
-          }}
-        />
-
-        {/* Shine effect */}
-        {isHovered && !prefersReducedMotion && (
+        {isActive && (
           <motion.div
-            initial={{ x: '-100%', opacity: 0 }}
-            animate={{ x: '200%', opacity: [0, 0.5, 0] }}
-            transition={{ duration: 1, ease: 'easeInOut' }}
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            style={{ pointerEvents: 'none' }}
+            layoutId="activeIndicator"
+            className="absolute bottom-2 left-1/2 w-[5px] h-[5px] bg-[#e2493b] rounded-full -translate-x-1/2"
+            style={{ 
+              boxShadow: '0 0 12px rgba(255, 111, 97, 0.8), 0 2px 8px rgba(255, 111, 97, 0.4)'
+            }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 500, 
+              damping: 35,
+              mass: 0.8
+            }}
           />
         )}
-      </motion.div>
+      </div>
     </Link>
   );
 });
@@ -83,64 +71,53 @@ export default function Navbar() {
   const location = useLocation();
   const prefersReducedMotion = useReducedMotion();
 
-  // Optimized scroll handler for low-end devices
   useEffect(() => {
-    let rafId = null;
     let ticking = false;
-    let lastScrollY = window.scrollY;
-    let lastUpdate = 0;
-    const threshold = 10;
-    const minDelta = 5;
-    const throttleMs = 32; // ~30fps for low-end devices
+    const threshold = 5;
 
     const handleScroll = () => {
-      if (!ticking) {
-        const currentScrollY = window.scrollY;
-        
-        // Skip if scroll hasn't changed enough
-        if (Math.abs(currentScrollY - lastScrollY) < minDelta) {
-          return;
-        }
+      const currentScrollY = window.scrollY;
 
-        ticking = true;
-        rafId = requestAnimationFrame(() => {
-          const now = performance.now();
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const shouldBeScrolled = currentScrollY > threshold;
           
-          // Throttle updates for performance
-          if (now - lastUpdate >= throttleMs) {
-            const shouldBeScrolled = currentScrollY > threshold;
-            
-            // Only update if state actually changes
-            setIsScrolled(prev => {
-              if (prev !== shouldBeScrolled) {
-                return shouldBeScrolled;
-              }
-              return prev;
-            });
-            
-            lastScrollY = currentScrollY;
-            lastUpdate = now;
+          if (isScrolled !== shouldBeScrolled) {
+            setIsScrolled(shouldBeScrolled);
           }
           
           ticking = false;
         });
+        
+        ticking = true;
       }
     };
 
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isScrolled]);
 
-  // Close mobile menu on route change
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location]);
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+      setHoveredLink(null);
+      
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+  }, [location.pathname]);
 
-  // Handle body scroll lock for mobile menu
   useEffect(() => {
     if (isMobileMenuOpen) {
       const scrollY = window.scrollY;
@@ -159,13 +136,6 @@ export default function Navbar() {
         window.scrollTo(0, parseInt(scrollY || '0') * -1);
       }
     }
-    
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-    };
   }, [isMobileMenuOpen]);
 
   const navLinks = useMemo(() => [
@@ -177,7 +147,7 @@ export default function Navbar() {
   ], []);
 
   const handleMouseEnter = useCallback((path) => {
-    if (!prefersReducedMotion) {
+    if (!prefersReducedMotion && window.innerWidth >= 1024) {
       setHoveredLink(path);
     }
   }, [prefersReducedMotion]);
@@ -193,44 +163,42 @@ export default function Navbar() {
   return (
     <>
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ y: 0, opacity: 1 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
           isScrolled
-            ? 'bg-[#FAF9F7]/95 backdrop-blur-xl shadow-lg shadow-black/[0.03] border-b border-[#EFEDE9]/80'
-            : 'bg-[#FAF9F7]/80 backdrop-blur-md'
+            ? 'bg-white/80 shadow-sm border-b border-gray-200/50'
+            : 'bg-white/60'
         }`}
         style={{ 
-          WebkitBackfaceVisibility: 'hidden',
-          backfaceVisibility: 'hidden',
-          transform: 'translate3d(0, 0, 0)',
-          contain: 'layout style paint'
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          transform: 'translateZ(0)',
+          willChange: 'transform'
         }}
       >
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-[76px] lg:h-[92px]">
-            {/* Logo */}
             <Link to="/" aria-label="Brancha Home">
-              <motion.div 
-                className="cursor-pointer group"
-                whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              <div 
+                className="cursor-pointer smooth-scale"
+                style={{ transform: 'translateZ(0)' }}
               >
                 <img 
                   src="/Brancha_Wordmark_logo.webp" 
                   alt="Brancha - Where Brands Grow" 
-                  className="h-[32px] lg:h-[36px] w-auto transition-all duration-300 ease-out group-hover:opacity-80"
+                  className="h-[32px] lg:h-[36px] w-auto"
                   loading="eager"
-                  fetchpriority="high"
+                  fetchPriority="high"
+                  style={{ 
+                    filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.05))',
+                    transform: 'translateZ(0)'
+                  }}
                 />
-              </motion.div>
+              </div>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link, index) => (
+              {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
                   link={link}
@@ -238,66 +206,37 @@ export default function Navbar() {
                   hoveredLink={hoveredLink}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
-                  prefersReducedMotion={prefersReducedMotion}
-                  index={index}
                 />
               ))}
             </div>
 
-            {/* CTA Button */}
             <Link to="/contact" className="hidden lg:block" aria-label="Get Started">
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ 
-                  scale: prefersReducedMotion ? 1 : 1.04,
-                  boxShadow: '0 8px 30px -4px rgba(255, 111, 97, 0.35), 0 0 0 1px rgba(255, 111, 97, 0.1)'
-                }}
-                whileTap={{ scale: 0.96 }}
-                className="group relative px-8 py-3.5 text-[14px] font-semibold tracking-[0.02em] text-white bg-gradient-to-br from-[#e2493b] to-[#e35342] rounded-full overflow-hidden shadow-lg shadow-[#e2493b]/25"
+              <button
+                className="smooth-scale relative px-8 py-3.5 text-[14px] font-semibold tracking-[0.02em] text-white rounded-full overflow-hidden"
                 style={{
                   fontWeight: 600,
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                  background: 'linear-gradient(135deg, #e2493b 0%, #e35342 100%)',
+                  boxShadow: '0 4px 16px -2px rgba(226, 73, 59, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                  transform: 'translateZ(0)',
+                  willChange: 'transform',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
               >
-                <span className="relative z-10 transition-all duration-300 ease-out group-hover:tracking-[0.08em]">
-                  Get Started
-                </span>
-                
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] via-[#e2493b] to-[#e35342] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Shimmer effect */}
-                {!prefersReducedMotion && (
-                  <motion.div
-                    animate={{ 
-                      x: ['0%', '200%'],
-                      opacity: [0, 0.6, 0]
-                    }}
-                    transition={{ 
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                      ease: 'easeInOut'
-                    }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12"
-                    style={{ pointerEvents: 'none' }}
-                  />
-                )}
-
-                {/* Inner glow */}
-                <div className="absolute inset-[1px] rounded-full bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
+                <span className="relative z-10">Get Started</span>
+              </button>
             </Link>
 
-            {/* Mobile Menu Toggle */}
-            <button
-              className="lg:hidden relative w-11 h-11 flex items-center justify-center rounded-full transition-all duration-200 hover:bg-[#EFEDE9]/50 active:bg-[#EFEDE9]"
+            <motion.button
+              className="lg:hidden relative w-11 h-11 flex items-center justify-center rounded-full bg-gray-100/50 active:bg-gray-200/50"
               onClick={toggleMobileMenu}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMobileMenuOpen}
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 500, damping: 35, mass: 0.8 }}
+              style={{ 
+                WebkitTapHighlightColor: 'transparent',
+                transform: 'translateZ(0)'
+              }}
             >
               <div className="w-[20px] h-[14px] flex flex-col justify-between relative">
                 <motion.span
@@ -306,17 +245,16 @@ export default function Navbar() {
                     y: isMobileMenuOpen ? 6 : 0,
                     backgroundColor: isMobileMenuOpen ? '#e2493b' : '#1F1F1F'
                   }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="absolute w-full h-[2px] rounded-full top-0"
                 />
                 <motion.span
                   animate={{
                     opacity: isMobileMenuOpen ? 0 : 1,
-                    scale: isMobileMenuOpen ? 0 : 1,
-                    backgroundColor: '#1F1F1F'
+                    scale: isMobileMenuOpen ? 0 : 1
                   }}
                   transition={{ duration: 0.15 }}
-                  className="absolute w-full h-[2px] rounded-full top-[6px]"
+                  className="absolute w-full h-[2px] rounded-full top-[6px] bg-[#1F1F1F]"
                 />
                 <motion.span
                   animate={{
@@ -324,77 +262,90 @@ export default function Navbar() {
                     y: isMobileMenuOpen ? -6 : 0,
                     backgroundColor: isMobileMenuOpen ? '#e2493b' : '#1F1F1F'
                   }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="absolute w-full h-[2px] rounded-full top-[12px]"
                 />
               </div>
-            </button>
+            </motion.button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu Backdrop */}
       <motion.div
         initial={false}
         animate={{
           opacity: isMobileMenuOpen ? 1 : 0,
-          backdropFilter: isMobileMenuOpen ? 'blur(8px) saturate(1.2)' : 'blur(0px)'
+          pointerEvents: isMobileMenuOpen ? 'auto' : 'none'
         }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed inset-0 z-40 lg:hidden bg-gradient-to-b from-black/10 to-black/20 ${
-          isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
-        }`}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-40 lg:hidden bg-black/20"
         onClick={toggleMobileMenu}
+        style={{ 
+          backdropFilter: isMobileMenuOpen ? 'blur(8px)' : 'none',
+          WebkitBackdropFilter: isMobileMenuOpen ? 'blur(8px)' : 'none'
+        }}
       />
 
-      {/* Mobile Menu */}
       <motion.div
         initial={false}
         animate={{
           y: isMobileMenuOpen ? 0 : -20,
           opacity: isMobileMenuOpen ? 1 : 0,
-          scale: isMobileMenuOpen ? 1 : 0.95
+          scale: isMobileMenuOpen ? 1 : 0.96,
+          pointerEvents: isMobileMenuOpen ? 'auto' : 'none'
         }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed left-0 right-0 z-50 lg:hidden ${
-          isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
-        }`}
+        transition={{ type: "spring", stiffness: 500, damping: 35, mass: 0.8 }}
+        className="fixed left-0 right-0 z-50 lg:hidden"
         style={{ top: '76px' }}
       >
-        <div className="relative mx-6 mt-4 bg-white/98 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-[#EFEDE9]/50">
-          <nav className="py-4">
+        <div 
+          className="relative mx-6 mt-4 bg-white/95 rounded-[28px] overflow-hidden border border-gray-200/50"
+          style={{ 
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            boxShadow: '0 20px 60px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5) inset',
+            transform: 'translateZ(0)',
+            willChange: 'transform'
+          }}
+        >
+          <nav className="py-3">
             {navLinks.map((link, index) => (
               <Link key={link.path} to={link.path} aria-label={link.name}>
                 <motion.div
                   initial={false}
                   animate={{
-                    x: isMobileMenuOpen ? 0 : -20,
+                    x: isMobileMenuOpen ? 0 : -10,
                     opacity: isMobileMenuOpen ? 1 : 0
                   }}
                   transition={{ 
-                    duration: 0.25, 
-                    delay: isMobileMenuOpen ? index * 0.04 : 0,
-                    ease: [0.16, 1, 0.3, 1]
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 35,
+                    mass: 0.8,
+                    delay: isMobileMenuOpen ? index * 0.02 : 0
                   }}
-                  className={`relative mx-3 mb-2 last:mb-0 rounded-2xl transition-all duration-200 active:scale-[0.97] ${
+                  className={`smooth-scale-mobile relative mx-3 mb-1.5 last:mb-0 rounded-2xl ${
                     location.pathname === link.path
-                      ? 'bg-gradient-to-r from-[#e2493b]/10 via-[#e2493b]/5 to-transparent shadow-sm shadow-[#e2493b]/5'
-                      : 'bg-transparent active:bg-[#EFEDE9]/50'
+                      ? 'bg-gradient-to-br from-[#e2493b]/10 via-[#e2493b]/5 to-transparent'
+                      : 'bg-transparent'
                   }`}
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                  style={{ 
+                    WebkitTapHighlightColor: 'transparent',
+                    boxShadow: location.pathname === link.path ? '0 2px 8px -2px rgba(226, 73, 59, 0.15)' : 'none',
+                    transform: 'translateZ(0)',
+                    willChange: 'transform'
+                  }}
                 >
                   {location.pathname === link.path && (
-                    <motion.div 
-                      layoutId="mobile-active-indicator"
+                    <div 
                       className="absolute left-4 top-1/2 w-1.5 h-1.5 rounded-full bg-[#e2493b] -translate-y-1/2"
-                      style={{ boxShadow: '0 0 12px rgba(255, 111, 97, 0.6)' }}
-                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ boxShadow: '0 0 8px rgba(255, 111, 97, 0.6)' }}
                     />
                   )}
                   
                   <div className={`px-6 py-4 ${location.pathname === link.path ? 'pl-9' : ''}`}>
                     <span 
-                      className={`text-[15.5px] font-medium tracking-[-0.01em] transition-colors duration-200 ${
+                      className={`text-[15.5px] font-medium tracking-[-0.01em] ${
                         location.pathname === link.path 
                           ? 'text-[#e2493b]' 
                           : 'text-[#1F1F1F]'
@@ -409,7 +360,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="mx-6 h-[1px] bg-gradient-to-r from-transparent via-[#EFEDE9] to-transparent" />
+          <div className="mx-6 h-[1px] bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
           <motion.div 
             initial={false}
@@ -417,25 +368,39 @@ export default function Navbar() {
               y: isMobileMenuOpen ? 0 : 10,
               opacity: isMobileMenuOpen ? 1 : 0
             }}
-            transition={{ duration: 0.25, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ 
+              type: "spring",
+              stiffness: 500,
+              damping: 35,
+              mass: 0.8,
+              delay: 0.1
+            }}
             className="p-4"
           >
             <Link to="/contact" aria-label="Get Started">
-              <button className="w-full rounded-2xl bg-gradient-to-br from-[#e2493b] to-[#e35342] shadow-lg shadow-[#e2493b]/20 active:scale-[0.97] transition-all duration-200 group overflow-hidden relative">
+              <button 
+                className="smooth-scale-mobile w-full rounded-2xl text-white overflow-hidden relative"
+                style={{
+                  background: 'linear-gradient(135deg, #e2493b 0%, #e35342 100%)',
+                  boxShadow: '0 8px 20px -4px rgba(226, 73, 59, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+                  transform: 'translateZ(0)',
+                  willChange: 'transform'
+                }}
+              >
                 <div className="px-6 py-4 flex items-center justify-between relative z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                    <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"
+                      style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)' }}
+                    >
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
-                    <span className="text-[15.5px] font-semibold text-white tracking-[-0.01em]" style={{ fontWeight: 600 }}>
+                    <span className="text-[16px] font-semibold tracking-[-0.01em]" style={{ fontWeight: 600 }}>
                       Get Started
                     </span>
                   </div>
-                  <motion.svg
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                  <svg
                     className="w-4 h-4 text-white/90"
                     fill="none"
                     stroke="currentColor"
@@ -443,11 +408,8 @@ export default function Navbar() {
                     strokeWidth={2.5}
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </motion.svg>
+                  </svg>
                 </div>
-                
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-active:opacity-100 transition-opacity duration-200" />
               </button>
             </Link>
           </motion.div>
@@ -462,6 +424,7 @@ export default function Navbar() {
         nav, button, a {
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
         }
         
         button, a {
@@ -479,68 +442,104 @@ export default function Navbar() {
           }
         }
 
-        /* Performance optimizations for low-end devices */
         nav {
-          transform: translate3d(0, 0, 0);
-          will-change: auto;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          will-change: transform;
+          contain: layout style paint;
         }
 
-        @media (hover: hover) and (pointer: fine) {
-          button:hover, a:hover {
-            will-change: transform;
-          }
-        }
-
-        /* GPU acceleration */
-        motion-div, [data-framer-motion] {
+        /* Butter-smooth hover effects */
+        .nav-link {
+          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
           transform: translateZ(0);
           backface-visibility: hidden;
         }
 
-        /* Reduce backdrop blur on low-end devices */
-        @media (max-width: 768px) {
-          .backdrop-blur-xl {
-            backdrop-filter: blur(8px);
-          }
-          
-          .backdrop-blur-md {
-            backdrop-filter: blur(4px);
+        @media (hover: hover) {
+          .nav-link:hover {
+            transform: scale(1.02) translateZ(0);
           }
         }
 
-        /* Fallback for browsers without backdrop-filter */
-        @supports not (backdrop-filter: blur(12px)) {
-          .backdrop-blur-xl {
-            background-color: rgba(250, 249, 247, 0.98);
+        /* Smooth scale for buttons */
+        .smooth-scale {
+          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateZ(0);
+          backface-visibility: hidden;
+        }
+
+        @media (hover: hover) {
+          .smooth-scale:hover {
+            transform: scale(1.02) translateZ(0);
           }
           
-          .backdrop-blur-md {
-            background-color: rgba(250, 249, 247, 0.92);
+          button.smooth-scale:hover {
+            box-shadow: 0 8px 24px -4px rgba(226, 73, 59, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
           }
         }
 
-        /* Optimize shadow rendering */
-        @media (max-width: 768px) {
-          .shadow-lg {
-            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
-          }
-          
-          .shadow-2xl {
-            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.1);
+        .smooth-scale:active,
+        .nav-link:active {
+          transform: scale(0.98) translateZ(0);
+          transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mobile tap animations */
+        .smooth-scale-mobile {
+          transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateZ(0);
+          backface-visibility: hidden;
+        }
+
+        .smooth-scale-mobile:active {
+          transform: scale(0.98) translateZ(0);
+        }
+
+        @supports not (backdrop-filter: blur(20px)) {
+          nav {
+            background-color: rgba(255, 255, 255, 0.95) !important;
           }
         }
 
-        /* Prevent layout shift during transitions */
         .fixed {
           backface-visibility: hidden;
-          perspective: 1000px;
         }
 
-        /* Optimize text rendering on mobile */
-        @media (max-width: 768px) {
-          span, button, a {
-            text-rendering: optimizeSpeed;
+        img {
+          transform: translateZ(0);
+          image-rendering: -webkit-optimize-contrast;
+        }
+
+        @media (hover: none) {
+          button:hover, a:hover {
+            transform: translateZ(0) !important;
           }
+        }
+
+        @media (max-width: 1024px) {
+          a {
+            transition: none !important;
+          }
+          
+          a, button {
+            touch-action: manipulation;
+          }
+          
+          * {
+            will-change: auto !important;
+          }
+        }
+
+        button, a {
+          cursor: pointer;
+        }
+
+        /* Hardware acceleration */
+        button, a, .smooth-scale, .smooth-scale-mobile, .nav-link {
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
         }
       `}</style>
     </>

@@ -247,7 +247,7 @@ export default function Services() {
       answer: "3 months minimum. Real results need time. Rankings improve gradually. Trust builds slowly. Ads optimize over weeks. Expecting instant results in 30 days sets unrealistic expectations and wastes your money."
     },
     {
-      question: "Do you work with businesses outside Gujarat?",
+      question: "Do you work with businesses outside India?",
       answer: "Yes. Most of our work is done remotely. For Growth package photoshoots, we charge travel expenses separately or recommend local photographers we can coordinate with."
     }
   ];
