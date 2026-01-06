@@ -180,7 +180,7 @@ export default function Process() {
       answer: 'We\'ll audit it during consultation. If it converts well, we\'ll optimize it. If it\'s losing customers, we\'ll rebuild it properly. No unnecessary work.'
     },
     {
-      question: 'Do you work with businesses outside Gujarat?',
+      question: 'Do you work with businesses outside India?',
       answer: 'Yes. Most work is remote. For Growth package photoshoots, we charge travel separately or recommend local photographers we coordinate with.'
     },
     {
