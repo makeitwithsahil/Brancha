@@ -281,7 +281,7 @@ export default function Home() {
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Stop losing customers online. Brancha builds and manages complete online presence for local businesses in India. Get consistent enquiries, not just designs.');
+      metaDescription.setAttribute('content', 'Stop losing customers online. Brancha builds and manages a complete online presence for local businesses worldwide. Get consistent enquiries, not just designs.');
     }
   }, []);
 
@@ -368,7 +368,7 @@ export default function Home() {
               className="text-base sm:text-lg md:text-xl text-[#6B6B6B] max-w-2xl mx-auto mb-9 sm:mb-11 leading-relaxed" 
               style={{ fontWeight: 400 }}
             >
-              We build and manage the complete online presence for local businesses in India — so you get customers, not just designs.
+              We build and manage a complete online presence for local businesses — so you get customers, not just designs.
             </motion.p>
 
             <motion.div 

@@ -95,7 +95,7 @@ export default function About() {
     },
     {
       icon: <Users className="w-5 h-5" aria-hidden="true" />,
-      title: "Designed for Local Businesses in India",
+      title: "Designed for Local Businesses",
       description:
         "Our approach reflects real market conditions — pricing sensitivity, local competition, and customer behaviour — with clear communication and practical execution."
     }

@@ -100,7 +100,7 @@ export default function Contact() {
       title: 'Location',
       detail: 'Vadodara, Gujarat',
       action: null,
-      description: 'Serving all of India remotely'
+      description: 'Serving businesses worldwide — remotely'
     }
   ];
 
