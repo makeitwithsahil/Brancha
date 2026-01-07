@@ -410,7 +410,7 @@ export default function Home() {
                 </motion.button>
               </Link>
               
-              <Link to="/work" className="w-full sm:w-auto">
+              <Link to="/process" className="w-full sm:w-auto">
                 <motion.button 
                   className="group relative w-full sm:w-auto px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-[#1F1F1F] bg-transparent border-2 border-[#EFEDE9] rounded-full transition-all duration-400 hw-accelerate overflow-hidden" 
                   aria-label="View our work and case studies"
@@ -423,7 +423,7 @@ export default function Home() {
                   whileTap={{ scale: 0.98 }}
                   style={{ fontWeight: 500 }}
                 >
-                  <span className="relative z-10 transition-colors duration-400 group-hover:text-[#e2493b]">View Our Work</span>
+                  <span className="relative z-10 transition-colors duration-400 group-hover:text-[#e2493b]">How We Work</span>
                   
                   <motion.div
                     initial={{ opacity: 0 }}
