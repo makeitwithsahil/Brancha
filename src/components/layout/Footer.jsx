@@ -103,7 +103,7 @@ const PolicyButton = memo(({ policyKey, policy, onClick }) => {
         </span>
       </div>
       <p className="text-xs text-[#6B6B6B] mt-auto transition-colors duration-200 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
-        Click to view details
+        View policy details
       </p>
     </button>
   );
@@ -169,7 +169,7 @@ export default function Footer() {
   const footerLinks = useMemo(() => ({
     Services: [
       { name: 'Foundation Package', path: '/services' },
-      { name: 'Monthly Result Package', path: '/services' },
+      { name: 'Monthly Care Package', path: '/services' },
       { name: 'Complete System', path: '/services' }
     ],
     Company: [
@@ -178,7 +178,7 @@ export default function Footer() {
       { name: 'Contact', path: '/contact' }
     ],
     Support: [
-      { name: 'FAQs', path: '/contact' },
+      { name: 'Common Questions', path: '/contact' },
       { name: 'Get Started', path: '/contact' }
     ]
   }), []);
@@ -199,100 +199,129 @@ export default function Footer() {
       title: 'Privacy Policy',
       icon: <Shield className="w-5 h-5" />,
       lastUpdated: 'Last updated: January 2026',
-      content: `At Brancha, we respect your privacy and protect your personal data.
+      content: `At Brancha, we handle your information with care and respect your privacy.
 
 Information We Collect:
-We collect information you provide directly—name, email, phone number, and business details when you contact us or use our services.
+We collect information you provide directly, such as your name, email address, phone number, and business details when you contact us or use our services. We also collect usage data through cookies and analytics to improve your experience on our website.
 
 How We Use Your Information:
-- To provide and improve our services
-- To communicate with you about projects and updates
-- To send relevant business information (you can opt out anytime)
-- To analyze usage and improve our offerings
+We use your information to provide and improve our services, respond to your inquiries, send relevant updates about your projects, and maintain the security of our systems. We do not sell or share your personal information with third parties for marketing purposes.
+
+Data Protection:
+We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, or destruction. Your information is stored securely and accessed only by authorized personnel who need it to provide our services.
 
 Your Rights:
-You have the right to access, correct, or delete your personal information at any time.
+You have the right to access, correct, or delete your personal information at any time. You can also opt out of marketing communications while continuing to receive service-related updates. Contact us at support@brancha.in to exercise these rights.
 
-Contact:
-For privacy concerns, email us at support@brancha.in`
+Cookies:
+We use cookies to enhance your browsing experience and understand how visitors use our website. You can control cookie preferences through your browser settings.
+
+Changes to This Policy:
+We may update this privacy policy periodically to reflect changes in our practices or legal requirements. We will notify you of significant changes through our website or email.
+
+Contact Us:
+If you have questions about this privacy policy or how we handle your information, please contact us at support@brancha.in.`
     },
     terms: {
       title: 'Terms of Service',
       icon: <FileText className="w-5 h-5" />,
       lastUpdated: 'Last updated: January 2026',
-      content: `Welcome to Brancha. By using our services, you agree to these terms.
+      content: `These terms govern your use of Brancha's services and website.
 
-Services:
-Brancha provides online presence management including branding, website development, and digital marketing services.
+Services Overview:
+Brancha provides digital presence management services for businesses in India, including website development, brand identity design, and ongoing maintenance support. Our services are delivered according to the specific package or agreement you select.
+
+Client Responsibilities:
+Clients are responsible for providing accurate information, timely feedback, and necessary content for their projects. You are also responsible for maintaining the confidentiality of any login credentials we provide and for all activities under your account.
 
 Payment Terms:
-- Foundation Package: One-time payment required before project start
-- Monthly Packages: Billed monthly in advance
-- Refunds available within 7 days of initial payment
+Payment is due according to the terms specified in your service agreement. We accept payments through secure online methods. Late payments may result in service suspension until the account is brought current.
 
 Intellectual Property:
-- Final deliverables belong to you after full payment
-- We retain rights to use work in our portfolio
+Upon full payment, you own the final deliverables we create for you. However, we retain the right to display work in our portfolio and case studies unless otherwise agreed. You grant us permission to use your feedback and testimonials for marketing purposes.
+
+Service Delivery:
+We commit to delivering services within agreed timelines, subject to your timely cooperation and feedback. Delays caused by late responses or missing information from your end may extend project timelines accordingly.
+
+Modifications and Cancellations:
+Changes to agreed project scope may affect timelines and costs. Cancellation terms are outlined in your specific service agreement. We strive to be fair and reasonable in handling changes or cancellations.
+
+Limitation of Liability:
+While we work diligently to provide high-quality services, we cannot guarantee specific business results. Our liability is limited to the amount you paid for the specific service in question.
 
 Termination:
-Either party may terminate monthly services with 30 days notice.
+Either party may terminate services according to the terms in the service agreement. Upon termination, you will receive any completed work, and payment obligations will be settled for work performed.
+
+Disputes:
+Any disputes will be handled through good faith negotiation first. If necessary, disputes will be resolved under the laws of India.
 
 Contact:
-For questions, email us at support@brancha.in`
+For questions about these terms, contact us at support@brancha.in.`
     },
     cookies: {
       title: 'Cookie Policy',
       icon: <Cookie className="w-5 h-5" />,
       lastUpdated: 'Last updated: January 2026',
-      content: `Brancha uses cookies to improve your experience on our website.
+      content: `This policy explains how Brancha uses cookies and similar technologies.
 
 What Are Cookies:
-Cookies are small text files stored on your device when you visit our website.
+Cookies are small text files stored on your device when you visit our website. They help us remember your preferences and understand how you use our site.
 
-How We Use Cookies:
-- Essential cookies: Required for website functionality
-- Analytics cookies: Help us understand how visitors use our site
-- Marketing cookies: Remember your preferences
+Types of Cookies We Use:
+
+Essential Cookies:
+These cookies are necessary for the website to function properly. They enable core functionality such as page navigation and access to secure areas. The website cannot function properly without these cookies.
+
+Analytics Cookies:
+We use analytics cookies to understand how visitors interact with our website. This helps us improve user experience and identify areas for enhancement. These cookies collect information anonymously.
+
+Functionality Cookies:
+These cookies remember your preferences and choices to provide a more personalized experience when you return to our website.
+
+Marketing Cookies:
+With your consent, we may use cookies to deliver relevant content and measure the effectiveness of our communications.
 
 Managing Cookies:
-You can control cookies through your browser settings. Disabling cookies may affect website functionality.
+You can control and delete cookies through your browser settings. However, blocking certain cookies may affect website functionality. Most browsers allow you to refuse cookies or alert you when cookies are being sent.
+
+Third-Party Cookies:
+Some cookies on our site are set by third-party services such as Google Analytics. These services have their own privacy policies governing their use of information.
+
+Updates:
+We may update this cookie policy periodically. Changes will be posted on this page with an updated revision date.
 
 Contact:
-For questions about cookies, email support@brancha.in`
+For questions about our use of cookies, contact us at support@brancha.in.`
     }
   }), []);
 
-  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const currentYear = new Date().getFullYear();
 
-  const modalContent = activeModal && policies[activeModal] && (
+  const modalContent = activeModal && (
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div
+        className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4"
+        onClick={closeModal}
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(4px)'
+        }}
+      >
         <motion.div
-          key="modal-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          onClick={closeModal}
-          className="absolute inset-0 bg-black/50"
-          style={{ 
-            cursor: 'pointer',
-            backdropFilter: isMobile ? 'none' : 'blur(4px)'
-          }}
-        />
-
-        <motion.div
-          key="modal-content"
           variants={modalVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="relative w-full sm:max-w-2xl max-h-[90vh] sm:max-h-[85vh] bg-white sm:rounded-2xl shadow-2xl flex flex-col z-10"
           onClick={(e) => e.stopPropagation()}
-          style={{ cursor: 'default' }}
+          className="bg-white w-full sm:max-w-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          style={{
+            maxHeight: isMobile ? '90vh' : '85vh',
+            height: isMobile ? '90vh' : 'auto',
+            borderRadius: isMobile ? '20px 20px 0 0' : '16px'
+          }}
         >
-          <div className="flex-shrink-0 bg-white border-b border-[#EFEDE9] px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex-shrink-0 bg-white px-4 sm:px-6 py-4 sm:py-5 border-b border-[#EFEDE9] flex items-center justify-between sticky top-0 z-10">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <div className="w-11 h-11 rounded-xl bg-[#e35342]/10 flex items-center justify-center flex-shrink-0">
                 <div className="text-[#e35342]">
                   {policies[activeModal].icon}
@@ -364,13 +393,13 @@ For questions about cookies, email support@brancha.in`
 
               <div className="space-y-3">
                 <p className="text-sm text-[#6B6B6B] leading-relaxed max-w-sm transition-colors duration-200 hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
-                  A company that builds and manages the complete online presence of businesses—so they stop losing customers and start growing with clarity.
+                  We build and maintain consistent online presence systems for service businesses across India, so you can focus on what you do best.
                 </p>
               </div>
 
               <div className="space-y-3">
                 <h4 className="text-xs font-semibold tracking-wider text-[#1F1F1F] uppercase" style={{ fontWeight: 600 }}>
-                  Stay Updated
+                  Stay Informed
                 </h4>
                 <form onSubmit={handleSubscribe} className="flex gap-2">
                   <input

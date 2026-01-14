@@ -5,6 +5,17 @@
       "has": [
         {
           "type": "host",
+          "value": "www.brancha.in"
+        }
+      ],
+      "destination": "https://brancha.in/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
           "value": "brancha.vercel.app"
         }
       ],

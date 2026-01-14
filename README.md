@@ -1,31 +1,31 @@
-# 🌟 Brancha – Where Brands Grow
+# Brancha – Where Brands Grow
 
-**Brancha** builds and manages complete online systems for local businesses across India. We handle your website, Google profile, and monthly brand support so you can focus on growing your business.
+Brancha builds and maintains consistent online presence systems for service businesses across India. We handle your website, brand identity, and ongoing digital support so you can focus on running your business.
 
 This is the official website for Brancha—built with React, Tailwind CSS, and Framer Motion for a professional, performance-optimized experience.
 
 ---
 
-## 🔥 Live Site
+## Live Site
 
-> Visit Us: [brancha.in](https://brancha.in)
-
----
-
-## ✨ What This Website Includes
-
-- 🎯 Smooth scroll navigation with professional transitions
-- 🎨 Brand-focused color palette (Off-White, Charcoal, Soft Coral)
-- 🎞️ Subtle Framer Motion animations
-- 📱 Mobile-first, responsive design
-- 📧 Contact form integration
-- ⚡ Performance-optimized and SEO-ready
+Visit us at [brancha.in](https://brancha.in)
 
 ---
 
-## 🛠 Tech Stack
+## What This Website Includes
 
-| Tech             | Purpose                        |
+- Professional scroll navigation with smooth transitions
+- Clean, business-focused design system
+- Subtle animations that enhance without distracting
+- Mobile-first, fully responsive layout
+- Contact form integration
+- Performance-optimized and SEO-ready
+
+---
+
+## Tech Stack
+
+| Technology       | Purpose                        |
 |------------------|--------------------------------|
 | React            | Component-based frontend       |
 | Tailwind CSS     | Utility-first styling          |
@@ -35,10 +35,10 @@ This is the official website for Brancha—built with React, Tailwind CSS, and F
 
 ---
 
-## 🧑‍🎨 About Brancha
+## About Brancha
 
-> We work with **cafés, clinics, salons, gyms**, and growing businesses that need a reliable online presence managed monthly.
+We work with clinics, salons, gyms, diagnostic centres, restaurants, and growing service businesses that need their online presence handled properly and consistently.
 
-👉 Contact us for a consultation: [brancha.in/contact](https://brancha.in/contact)
+Contact us: [brancha.in/contact](https://brancha.in/contact)
 
 ---

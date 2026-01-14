@@ -17,7 +17,6 @@ const SEOImage = memo(function SEOImage({
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"
       className={className}
-      // ✅ [SAFE - No visual change] Add fetchpriority for LCP optimization
       fetchpriority={priority ? 'high' : 'auto'}
       {...props}
     />
