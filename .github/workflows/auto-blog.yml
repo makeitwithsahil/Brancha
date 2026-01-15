@@ -29,12 +29,14 @@ jobs:
           
           # Track used templates
           USED_TEMPLATES=()
-          for file in src/blog/*.md 2>/dev/null; do
-            [ -e "$file" ] || continue
-            slug=$(basename "$file" .md)
-            template_key=$(echo "$slug" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//')
-            USED_TEMPLATES+=("$template_key")
-          done
+          if [ -d "src/blog" ]; then
+            for file in src/blog/*.md; do
+              [ -e "$file" ] || continue
+              slug=$(basename "$file" .md)
+              template_key=$(echo "$slug" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//')
+              USED_TEMPLATES+=("$template_key")
+            done
+          fi
           
           # All 30 unique templates
           ALL_TEMPLATES=(
