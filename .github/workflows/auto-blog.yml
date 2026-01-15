@@ -1,0 +1,795 @@
+name: Auto Generate Blog Post
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC (2:30 PM IST)
+    - cron: '0 9 * * 1'
+    # Run every Thursday at 9:00 AM UTC (2:30 PM IST)
+    - cron: '0 9 * * 4'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-blog:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate blog post from template
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          
+          # Check which templates have already been used
+          USED_TEMPLATES=()
+          for file in src/blog/*.md; do
+            if [ -f "$file" ]; then
+              slug=$(basename "$file" .md)
+              # Extract template name from slug (everything after the date)
+              template_key=$(echo "$slug" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//')
+              USED_TEMPLATES+=("$template_key")
+            fi
+          done
+          
+          # All available templates (30 templates for year-long content)
+          ALL_TEMPLATES=(
+            "building-customer-trust-online-presence"
+            "why-service-businesses-need-reliable-systems"
+            "when-to-update-business-website"
+            "why-brand-consistency-matters-service-businesses"
+            "managing-business-online-reputation"
+            "choosing-right-domain-name-business"
+            "mobile-friendly-website-matters"
+            "website-security-basics-small-businesses"
+            "google-business-profile-optimization"
+            "handling-negative-customer-reviews"
+            "website-loading-speed-customer-retention"
+            "professional-business-email-importance"
+            "social-media-consistency-local-businesses"
+            "when-rebrand-your-business"
+            "content-strategy-service-businesses"
+            "customer-testimonials-credibility"
+            "website-accessibility-basics"
+            "local-seo-fundamentals"
+            "business-photography-matters"
+            "maintaining-professional-social-presence"
+            "website-vs-social-media-business"
+            "tracking-website-analytics-basics"
+            "customer-service-response-times"
+            "business-listing-accuracy"
+            "seasonal-updates-business-website"
+            "competitor-analysis-online-presence"
+            "website-contact-forms-best-practices"
+            "building-email-list-service-business"
+            "online-booking-systems-benefits"
+            "business-hours-holiday-communication"
+          )
+          
+          # Filter out used templates
+          AVAILABLE_TEMPLATES=()
+          for template in "${ALL_TEMPLATES[@]}"; do
+            if [[ ! " ${USED_TEMPLATES[@]} " =~ " ${template} " ]]; then
+              AVAILABLE_TEMPLATES+=("$template")
+            fi
+          done
+          
+          # If all templates used, reset and allow reuse
+          if [ ${#AVAILABLE_TEMPLATES[@]} -eq 0 ]; then
+            AVAILABLE_TEMPLATES=("${ALL_TEMPLATES[@]}")
+          fi
+          
+          # Select random available template
+          SELECTED_KEY=${AVAILABLE_TEMPLATES[$RANDOM % ${#AVAILABLE_TEMPLATES[@]}]}
+          
+          # Generate content based on selected template
+          case "$SELECTED_KEY" in
+            "building-customer-trust-online-presence")
+              TITLE="Building Customer Trust Through Your Online Presence"
+              EXCERPT="Trust begins before the first interaction. Your online presence either builds confidence or creates doubt."
+              CONTENT="Customers research before they contact you. What they find determines whether they trust you enough to reach out.
+
+## The First Impression
+
+Your website, social media, and online listings create an impression before you say a word. If information is inconsistent or outdated, customers wonder about reliability.
+
+Trust comes from consistency. Same phone number everywhere. Same message across platforms. Information that matches reality.
+
+## What Customers Look For
+
+When people research service businesses, they check specific things. Accurate information matters. Current hours, correct address, working phone number. Basic details that match across all platforms.
+
+Professional presentation helps too. Not flashy or trendy. Just well-maintained and intentional. Shows you care about details.
+
+Recent activity signals engagement. Updated content, current projects, or recent posts. Signs the business is active and engaged.
+
+## Common Trust Breakers
+
+Small problems signal bigger issues. A broken contact form suggests poor maintenance. Outdated information implies neglect. Inconsistent branding creates confusion.
+
+These details seem minor but customers notice them. Each inconsistency raises a question about reliability.
+
+## Building Confidence
+
+Professional service businesses maintain their online presence like they maintain their workspace. Regular updates, accurate information, working systems.
+
+This does not require constant attention. It requires a system for keeping things current and someone responsible for it."
+              ;;
+
+            "why-service-businesses-need-reliable-systems")
+              TITLE="Why Service Businesses Need Reliable Systems"
+              EXCERPT="Running a service business without systems means constantly managing small fires instead of growing your business."
+              CONTENT="Most service businesses start without formal systems. The owner handles everything personally. This works initially but creates problems as the business grows.
+
+## What Systems Actually Mean
+
+A system is simply a reliable way to handle recurring tasks. Not complicated processes or expensive software. Just documented methods that work consistently.
+
+For online presence, this means knowing what gets updated, when, and by whom. Having clear processes for maintaining your website, responding to inquiries, and keeping information current.
+
+## The Cost of No Systems
+
+Without systems, everything depends on memory and availability. Tasks get missed when you are busy. Updates happen inconsistently. Quality varies based on how much time you have.
+
+Customers notice this inconsistency. Delayed responses, outdated information, or varying service quality. Each instance creates doubt about reliability.
+
+## Building Practical Systems
+
+Effective systems start simple. Document current processes. Write down how things currently work. Identify recurring tasks. Assign clear responsibility. Set regular schedules."
+              ;;
+
+            "when-to-update-business-website")
+              TITLE="When to Update Your Business Website"
+              EXCERPT="Most businesses update their website either too much or not enough. The right timing matters for both customers and your resources."
+              CONTENT="A common question from business owners is how often they should update their website. The answer depends on what needs updating and why.
+
+## Essential Updates
+
+Some updates cannot wait. Contact information changes immediately. New hours, new phone numbers, temporary closures. These affect customer access directly.
+
+Service changes matter too. If you add or remove services, customers need to know. Outdated service lists create confusion and wasted inquiries.
+
+## Regular Maintenance
+
+Beyond essential updates, websites need regular attention. Technical updates matter for security. Content freshness helps too. Performance checks catch problems.
+
+## Creating an Update Schedule
+
+A simple schedule prevents both neglect and over-updating. Check essential information monthly. Review content quarterly. Perform technical maintenance quarterly."
+              ;;
+
+            "why-brand-consistency-matters-service-businesses")
+              TITLE="Why Brand Consistency Matters for Service Businesses"
+              EXCERPT="Consistent branding is not about looking fancy. It is about making your business easy to recognize and remember."
+              CONTENT="Many service business owners think branding means having a nice logo. That is part of it, but consistency matters more than individual design elements.
+
+## What Consistency Actually Means
+
+Brand consistency means customers see the same visual identity and messaging everywhere. Your website, business cards, signage, social media, and advertising all look related.
+
+## Why It Matters
+
+Recognition builds over time. Trust develops faster with consistency. Marketing becomes more efficient.
+
+## Common Consistency Problems
+
+Many businesses use different logos in different places. Color variations create problems too. Message inconsistency undermines positioning.
+
+## Building Consistency
+
+Start with core elements. Create simple guidelines. Apply consistently across all materials. Maintain over time."
+              ;;
+
+            "managing-business-online-reputation")
+              TITLE="Managing Your Business Online Reputation"
+              EXCERPT="Your online reputation forms whether you manage it or not. Taking control prevents problems and builds trust."
+              CONTENT="Every service business has an online reputation. The question is whether you shape it actively or let it form randomly.
+
+## What Online Reputation Includes
+
+Your online reputation encompasses everything people find about your business online. Google reviews obviously matter. So do Facebook reviews, industry-specific platforms, and social media mentions.
+
+## Why It Matters for Service Businesses
+
+Service businesses depend heavily on trust. Reviews influence decisions directly. Reputation affects pricing power too.
+
+## Handling Negative Reviews
+
+Negative reviews require careful handling. Never argue or get defensive. Acknowledge the issue professionally. Learn from legitimate criticism."
+              ;;
+
+            "choosing-right-domain-name-business")
+              TITLE="Choosing the Right Domain Name for Your Business"
+              EXCERPT="Your domain name is often the first thing customers see. Make it count without overthinking it."
+              CONTENT="Picking a domain name feels like a big decision. It matters, but simpler is usually better.
+
+## Keep It Simple
+
+The best domain names are easy to spell, easy to remember, and directly related to your business. If someone hears your domain once, they should be able to type it correctly.
+
+## Business Name vs Keywords
+
+Using your business name as your domain usually works best. YourBusinessName.com beats ServiceTypeCity.com for building long-term brand recognition.
+
+## Domain Extensions Matter Less Now
+
+Everyone wants .com, but .in, .co, and others work fine for local businesses. Customers rarely type domains directly anymore. They search or click links.
+
+## Avoid These Mistakes
+
+Numbers and hyphens create confusion. Trendy spellings age poorly. Extremely long names are hard to remember."
+              ;;
+
+            "mobile-friendly-website-matters")
+              TITLE="Why Mobile-Friendly Websites Matter for Local Businesses"
+              EXCERPT="Most customers find you on their phones. If your website does not work well on mobile, you lose them immediately."
+              CONTENT="More than half of website visits happen on phones now. For local businesses, that number is even higher. People search for services while standing in the street needing help now.
+
+## What Mobile-Friendly Means
+
+A mobile-friendly website adjusts properly to phone screens. Text is readable without zooming. Buttons are large enough to tap. Information loads quickly. Forms work without frustration.
+
+## The Cost of Poor Mobile Experience
+
+Customers leave immediately if your site does not work on mobile. They click back and call your competitor instead. You never know you lost them.
+
+## Testing Your Site
+
+Pull out your phone right now. Visit your website. Try to find your phone number. Try to use your contact form. Is it easy or frustrating?"
+              ;;
+
+            "website-security-basics-small-businesses")
+              TITLE="Website Security Basics Every Small Business Should Know"
+              EXCERPT="Website security sounds technical, but the basics are straightforward and essential for customer trust."
+              CONTENT="Many small business owners assume website security is only for large companies. Wrong. Security matters for every business website, especially those with contact forms or customer information.
+
+## HTTPS Is Non-Negotiable
+
+Your website should use HTTPS, not HTTP. That little padlock in the browser matters. It encrypts data between your site and visitors. Most hosting providers offer free HTTPS certificates now.
+
+## Keep Software Updated
+
+Outdated website software creates security holes. WordPress, plugins, themes—everything needs regular updates. Set aside time monthly to update everything.
+
+## Strong Passwords Everywhere
+
+Your website admin password should be unique and strong. Same for hosting account, email, domain registrar. Use a password manager if needed.
+
+## Regular Backups
+
+Back up your website regularly. If something breaks or gets hacked, you can restore it. Many hosts offer automatic backups. Enable them."
+              ;;
+
+            "google-business-profile-optimization")
+              TITLE="Google Business Profile Optimization for Local Service Businesses"
+              EXCERPT="Most customers find local businesses through Google. Your Business Profile often matters more than your website."
+              CONTENT="When someone searches for services you offer in your area, Google shows a map with local businesses. Your Google Business Profile determines if you appear and what customers see.
+
+## Claim and Verify Your Profile
+
+First step: claim your Google Business Profile. Google will verify you own the business, usually by phone or postcard. Do this immediately if you have not already.
+
+## Complete Every Section
+
+Google favors complete profiles. Add accurate hours, phone number, website, services, photos. The more complete your profile, the better you rank.
+
+## Choose the Right Categories
+
+Select primary and secondary categories that exactly match your services. This determines which searches show your business.
+
+## Add Quality Photos
+
+Businesses with photos get more engagement. Add photos of your work, your location, your team. Keep them current and professional.
+
+## Respond to Reviews
+
+Every review deserves a response. Thank positive reviewers. Address negative reviews professionally. This shows potential customers you care."
+              ;;
+
+            "handling-negative-customer-reviews")
+              TITLE="How to Handle Negative Customer Reviews Professionally"
+              EXCERPT="Negative reviews happen to every business. How you respond matters more than the review itself."
+              CONTENT="Every service business eventually gets a negative review. The review itself matters less than how you handle it. Potential customers read your responses to judge your character.
+
+## Never Argue or Get Defensive
+
+The worst response is arguing with the reviewer. Even if they are completely wrong, arguing makes you look unprofessional. Future customers judge you by your response.
+
+## Respond Quickly and Professionally
+
+Acknowledge the issue within 24-48 hours. Thank them for feedback. Apologize for their experience, even if you disagree with their perspective.
+
+## Take It Offline
+
+Offer to discuss details privately. Provide a phone number or email. This shows you care about resolution without airing dirty laundry publicly.
+
+## Learn From Patterns
+
+One negative review might be an outlier. Multiple reviews mentioning the same issue means you have a real problem worth addressing."
+              ;;
+
+            "website-loading-speed-customer-retention")
+              TITLE="Website Loading Speed and Customer Retention"
+              EXCERPT="Slow websites lose customers before they even see your content. Speed matters more than you think."
+              CONTENT="If your website takes more than three seconds to load, you are losing customers. They click back and call your competitor. Speed is not just a technical issue—it is a business issue.
+
+## Why Speed Matters
+
+Customers have no patience for slow websites. They assume slow websites mean slow service. Fast websites feel professional and competent.
+
+## Common Speed Problems
+
+Large unoptimized images slow most small business sites. Too many plugins or scripts. Poor hosting. These are all fixable.
+
+## Testing Your Speed
+
+Visit GTmetrix.com or PageSpeed Insights. Enter your website URL. You will see exactly how fast your site loads and what slows it down.
+
+## Quick Fixes
+
+Compress images before uploading. Remove unused plugins. Consider better hosting if your current host is very slow. These simple changes often double your speed."
+              ;;
+
+            "professional-business-email-importance")
+              TITLE="Why Professional Business Email Addresses Matter"
+              EXCERPT="Using Gmail for business email looks unprofessional. Your email address affects how customers perceive your business."
+              CONTENT="Many small businesses use personal email addresses like yourname@gmail.com for business. This seems fine until customers judge your professionalism by it.
+
+## Perception Matters
+
+yourname@yourbusiness.com looks professional. yourname@gmail.com looks like a side hustle. Customers notice this detail and make assumptions about your business.
+
+## Building Trust
+
+Professional email addresses build trust. They show you invested in your business. They make your business feel established and legitimate.
+
+## Cost and Setup
+
+Professional email costs little. Google Workspace or similar services cost around ₹125-300 per month. Setup takes 20 minutes. This is worth the professionalism it creates.
+
+## Consistency Across Communications
+
+Use your professional email everywhere. Website contact page, business cards, email signatures, invoices. Consistency builds recognition."
+              ;;
+
+            "social-media-consistency-local-businesses")
+              TITLE="Social Media Consistency for Local Service Businesses"
+              EXCERPT="You do not need to post constantly. You need to post consistently with purpose."
+              CONTENT="Many local businesses either post frantically or abandon social media completely. Neither works well. Consistency beats frequency.
+
+## Quality Over Quantity
+
+Posting three times per week consistently beats posting daily for two weeks then disappearing for months. Pick a schedule you can actually maintain.
+
+## What to Post
+
+Behind-the-scenes content works well. Completed projects. Customer testimonials. Useful tips related to your service. Seasonal updates. Team introductions.
+
+## Platform Selection
+
+You do not need every platform. Choose one or two where your customers actually are. Master those before adding more.
+
+## The Real Goal
+
+Social media for local businesses is not about going viral. It is about staying visible, building trust, and staying top-of-mind when customers need your services."
+              ;;
+
+            "when-rebrand-your-business")
+              TITLE="When to Rebrand Your Business and When to Avoid It"
+              EXCERPT="Rebranding can help a struggling business, but it can also waste money solving the wrong problem."
+              CONTENT="Business owners sometimes think rebranding will solve their problems. Sometimes they are right. Often they are wrong.
+
+## Good Reasons to Rebrand
+
+Your business expanded beyond your original name. Your current branding looks very outdated. You merged with another business. Your target market changed significantly.
+
+## Bad Reasons to Rebrand
+
+You are bored with your current brand. Sales are slow and you think new logos will fix it. A competitor rebranded so you feel you should too.
+
+## The Cost of Rebranding
+
+Rebranding means changing everything. Website, signage, business cards, marketing materials, social media. It is expensive and time-consuming. Make sure you need it.
+
+## The Alternative
+
+Often you need better marketing, not new branding. Or improved service delivery. Or different pricing. These solve problems that new logos cannot fix."
+              ;;
+
+            "content-strategy-service-businesses")
+              TITLE="Simple Content Strategy for Service Businesses"
+              EXCERPT="Content marketing does not require blogs, videos, and constant posting. Keep it simple and useful."
+              CONTENT="Many service businesses think content marketing means writing blogs nobody reads. Content strategy can be much simpler and more effective.
+
+## What Content Actually Means
+
+Content includes everything you put online. Your service descriptions. Your FAQ section. Your Google Business posts. Your social media updates. All of it is content.
+
+## Focus on Answering Questions
+
+What do customers ask before hiring you? Answer those questions in writing on your website. This helps customers and helps Google show you to the right people.
+
+## Reuse and Repurpose
+
+One good piece of content becomes multiple posts. A service description becomes a social post, an FAQ entry, and an email. Work smarter, not harder.
+
+## Consistency Beats Perfection
+
+Regular simple content beats occasional perfect content. A useful paragraph posted consistently builds results over time."
+              ;;
+
+            "customer-testimonials-credibility")
+              TITLE="Using Customer Testimonials to Build Credibility"
+              EXCERPT="Good testimonials convince skeptical customers better than any marketing copy you write yourself."
+              CONTENT="Potential customers trust other customers more than they trust you. This is why testimonials matter so much for service businesses.
+
+## What Makes Good Testimonials
+
+Specific testimonials work better than generic praise. \"They were great\" means less than \"They showed up on time, cleaned up after themselves, and the project finished under budget.\"
+
+## How to Get Testimonials
+
+Ask satisfied customers directly. Make it easy by sending them a few specific questions to answer. Most happy customers will help if you make it simple.
+
+## Where to Display Them
+
+Website homepage and service pages obviously. Google Business Profile absolutely. Social media periodically. Email signatures occasionally.
+
+## Video Testimonials
+
+Video testimonials build even more trust if customers agree to them. Even simple phone-recorded videos work well. Audio quality matters more than video quality."
+              ;;
+
+            "website-accessibility-basics")
+              TITLE="Website Accessibility Basics for Small Businesses"
+              EXCERPT="Making your website accessible helps more customers and shows you care about serving everyone."
+              CONTENT="Website accessibility means people with disabilities can use your website effectively. This includes visual, hearing, motor, and cognitive disabilities.
+
+## Why It Matters
+
+Accessible websites serve more people. They often rank better in search. They demonstrate your business values inclusivity and quality.
+
+## Basic Accessibility Improvements
+
+Use proper heading structure. Add alt text to images describing what they show. Ensure good color contrast between text and background. Make your site keyboard-navigable.
+
+## Testing Accessibility
+
+Try navigating your website using only your keyboard. Can you reach everything? Try it with a screen reader. Are descriptions clear?
+
+## The Business Case
+
+Making your website accessible is not just ethical. It expands your potential customer base and improves user experience for everyone."
+              ;;
+
+            "local-seo-fundamentals")
+              TITLE="Local SEO Fundamentals for Service Businesses"
+              EXCERPT="Local SEO determines whether customers searching for your services actually find you."
+              CONTENT="Search engine optimization sounds complicated. Local SEO is actually straightforward for service businesses. Focus on the basics that matter.
+
+## Google Business Profile First
+
+This matters more than anything else for local businesses. Complete it fully. Keep it current. Respond to reviews. Post updates regularly.
+
+## Consistent Business Information
+
+Your business name, address, and phone number should match exactly everywhere online. Same format, same details, no variations.
+
+## Local Keywords
+
+Mention your city and service areas naturally in your website content. Do not stuff keywords awkwardly. Write naturally while including location.
+
+## Local Backlinks
+
+Get listed in local business directories. Join local business associations that list members online. Get mentioned by other local businesses and organizations.
+
+## Reviews Matter
+
+More reviews with higher ratings improve local search rankings. Encourage satisfied customers to leave Google reviews."
+              ;;
+
+            "business-photography-matters")
+              TITLE="Why Professional Business Photography Matters"
+              EXCERPT="Stock photos do not build trust. Real photos of your actual business do."
+              CONTENT="Many small businesses use stock photos on their websites. The smiling diverse people wearing suits in an office that does not exist. Customers see through this immediately.
+
+## Real Photos Build Trust
+
+Photos of your actual workspace, your actual team, your actual completed projects build authenticity. Customers want to see the real business they will hire.
+
+## What to Photograph
+
+Your workspace or office. Your team members. Equipment you use. Completed projects or services. Your process in action. The results you deliver.
+
+## Quality Matters But Not Perfection
+
+Professional photography is ideal. But smartphone photos taken with care beat stock photos every time. Good lighting and clean backgrounds help significantly.
+
+## Update Regularly
+
+Photos from 2015 hurt more than they help. Update your photos every year or two to stay current and relevant."
+              ;;
+
+            "maintaining-professional-social-presence")
+              TITLE="Maintaining a Professional Social Media Presence"
+              EXCERPT="Your social media represents your business. Keep it professional without being boring."
+              CONTENT="Social media for business is not the same as personal social media. Different rules apply even if you are the face of your business.
+
+## What Professional Means
+
+Professional does not mean corporate or boring. It means appropriate for business. Friendly but not overly casual. Helpful without being sales-heavy.
+
+## Topics to Avoid
+
+Keep politics, religion, and controversial topics off business accounts. These alienate potential customers unnecessarily.
+
+## Responding to Comments
+
+Respond to questions and comments promptly. Keep responses helpful and polite even when dealing with difficult people.
+
+## Personal Touch vs Over-Sharing
+
+Show personality and humanity. But keep personal problems, complaints, and drama completely separate from business accounts."
+              ;;
+
+            "website-vs-social-media-business")
+              TITLE="Website vs Social Media: What Your Business Actually Needs"
+              EXCERPT="Many businesses choose social media over websites. This is usually a mistake for service businesses."
+              CONTENT="Some business owners skip websites entirely, relying only on Facebook or Instagram. This creates several problems for service businesses.
+
+## Why Websites Still Matter
+
+You control your website completely. Platform rules cannot change overnight and hurt your business. Your website builds long-term value and trust.
+
+## Social Media Limitations
+
+Social platforms change constantly. They limit how you present information. You cannot control the experience. Your content gets buried quickly.
+
+## The Right Approach
+
+Use both strategically. Website as your hub where complete information lives. Social media to stay visible and direct traffic to your website.
+
+## Investment Priority
+
+If you must choose, website first. It is the foundation. Add social media as you have time and resources to maintain it properly."
+              ;;
+
+            "tracking-website-analytics-basics")
+              TITLE="Website Analytics Basics for Small Business Owners"
+              EXCERPT="You need to know if your website is working. Basic analytics tell you what you need without overwhelming complexity."
+              CONTENT="Many business owners either ignore website analytics completely or get lost in data that does not matter. Focus on basics that drive business decisions.
+
+## Key Metrics That Matter
+
+How many people visit your site. How they found you. Which pages they view. How many contact you. These four metrics matter most.
+
+## Google Analytics Setup
+
+Set up Google Analytics 4. It is free. Install it on your website. Let it run for a month before drawing conclusions.
+
+## What to Actually Track
+
+Total visitors over time shows if you are growing visibility. Traffic sources show which marketing works. Conversion tracking shows if visitors become customers.
+
+## Making Decisions From Data
+
+If nobody visits your site, you need better visibility. If many visit but none contact you, your website has conversion problems. Data tells you where to focus improvement efforts."
+              ;;
+
+            "customer-service-response-times")
+              TITLE="Response Times and Customer Service Expectations"
+              EXCERPT="How quickly you respond to inquiries directly affects how many customers you actually get."
+              CONTENT="Customers contact multiple businesses when they need services. The first one to respond often wins the job, even if others are cheaper or better.
+
+## The 24-Hour Rule
+
+Respond to all inquiries within 24 hours. Faster is better. Same-day response dramatically increases your chance of winning the business.
+
+## After-Hours Communication
+
+Set expectations about response times. If you do not work weekends, say so. But consider setting up auto-responses acknowledging receipt.
+
+## Multiple Contact Methods
+
+Offer phone, email, and contact form at minimum. Some customers prefer calling. Others prefer writing. Make both easy.
+
+## Following Up
+
+If you quoted a job, follow up within a few days. Many customers go with whoever stays in touch and shows they want the work."
+              ;;
+
+            "business-listing-accuracy")
+              TITLE="Keeping Your Business Listings Accurate Everywhere"
+              EXCERPT="Inconsistent business information across different websites confuses customers and hurts your search visibility."
+              CONTENT="Your business appears on dozens of websites. Google, Facebook, Yelp, industry directories, local listings. All should show the same information.
+
+## Why Consistency Matters
+
+Google checks if your business information matches across sites. Consistent information builds trust in search algorithms and with customers.
+
+## Common Inconsistencies
+
+Phone number formatted differently. Address abbreviated one place, spelled out another. Different business hours listed on different sites.
+
+## Creating a Master List
+
+Document your official business information once. Exact business name. Full address. Phone number with formatting. Hours. Use this everywhere.
+
+## Regular Audits
+
+Search your business name quarterly. Check the first page of results. Correct any outdated or incorrect listings you find."
+              ;;
+
+            "seasonal-updates-business-website")
+              TITLE="Seasonal Updates for Your Business Website"
+              EXCERPT="Seasonal content keeps your website feeling current and captures seasonal customer needs."
+              CONTENT="Your website should not look the same in December as it does in June. Small seasonal updates keep content feeling fresh and relevant.
+
+## Holiday Hours
+
+Update business hours for holidays well in advance. Nothing frustrates customers more than showing up to closed doors on days you claimed to be open.
+
+## Seasonal Services
+
+Highlight relevant services for the current season. Landscaping businesses promote different services in spring versus fall. Adjust your homepage accordingly.
+
+## Weather-Related Updates
+
+If weather affects your services or operations, mention it. Communicate proactively about delays or changes due to weather conditions.
+
+## Removing Outdated Seasonal Content
+
+Take down holiday promotions after they expire. Remove seasonal messaging when it no longer applies. Outdated content makes your site look neglected."
+              ;;
+
+            "competitor-analysis-online-presence")
+              TITLE="Learning From Competitor Online Presence"
+              EXCERPT="Study what competitors do online, but do not copy them. Learn what works and what you can do differently."
+              CONTENT="Looking at competitor websites and social media helps you understand market expectations and find opportunities to stand out.
+
+## What to Analyze
+
+What services do they highlight? How do they present pricing? What does their website look like? How fast does it load? What do their reviews say?
+
+## Learning Without Copying
+
+The goal is not to copy competitors. It is to understand what customers in your market expect as baseline, then exceed those expectations differently.
+
+## Finding Gaps
+
+Often you can win by doing things competitors ignore. Better response times. Clearer pricing. More helpful website information. Superior customer service.
+
+## Differentiation Matters
+
+Once you understand competitor baselines, determine how you will stand out. What will you do better or differently that customers care about?"
+              ;;
+
+            "website-contact-forms-best-practices")
+              TITLE="Website Contact Form Best Practices"
+              EXCERPT="A broken or frustrating contact form costs you customers. Keep it simple and working perfectly."
+              CONTENT="The contact form is often the last step before a customer reaches out. Making it difficult or broken loses customers at the worst possible moment.
+
+## Keep It Simple
+
+Name, phone, email, message. That is enough. Every additional field reduces form submissions. Only ask for information you actually need immediately.
+
+## Make It Obvious
+
+Contact forms should be easy to find. Put them on every page, or put clear contact buttons on every page leading to your contact page.
+
+## Test It Regularly
+
+Submit your own contact form monthly. Verify you receive submissions. Verify the auto-response works if you use one.
+
+## Mobile-Friendly Forms
+
+Most contact form submissions happen on mobile. Test your form on your phone. Make sure it works perfectly.
+
+## Response Expectations
+
+Tell people when they will hear back. Set expectations about response time. Nothing is worse than submitting a form and wondering if it worked."
+              ;;
+
+            "building-email-list-service-business")
+              TITLE="Building an Email List for Service Businesses"
+              EXCERPT="Email lists let you reach customers directly without depending on social media algorithms or paid advertising."
+              CONTENT="Email remains one of the most effective marketing channels for service businesses. You control the communication completely.
+
+## Why Email Lists Matter
+
+Social media algorithms decide who sees your posts. Email goes directly to subscribers. Nobody can change the rules on you overnight.
+
+## How to Start Collecting Emails
+
+Add an email signup to your website. Offer something valuable in exchange. Industry tips. Seasonal maintenance reminders. Exclusive promotions.
+
+## What to Send
+
+Monthly or quarterly newsletters work for most service businesses. Share useful tips. Announce new services. Send seasonal reminders. Keep it helpful, not just promotional.
+
+## Staying Compliant
+
+Get explicit permission before adding people to your list. Include an unsubscribe option in every email. Respect people who opt out immediately."
+              ;;
+
+            "online-booking-systems-benefits")
+              TITLE="Online Booking Systems for Service Businesses"
+              EXCERPT="Let customers book appointments directly online. This saves time for everyone and increases bookings."
+              CONTENT="Many service businesses still handle all scheduling by phone. Online booking systems reduce administrative work while making it easier for customers to schedule.
+
+## Customer Convenience
+
+Customers can book appointments 24/7, not just during business hours. They can see available times immediately without phone tag.
+
+## Your Time Savings
+
+Less time on the phone handling scheduling. Automatic reminders reduce no-shows. Calendar stays organized automatically.
+
+## Common Concerns
+
+Some owners worry about losing personal touch. But you still talk to customers during appointments. Booking just becomes more efficient.
+
+## Implementation
+
+Many affordable booking systems integrate with websites easily. Start simple. You can always add features later as you learn what matters."
+              ;;
+
+            "business-hours-holiday-communication")
+              TITLE="Communicating Business Hours and Holiday Schedules"
+              EXCERPT="Clear communication about when you are open prevents customer frustration and wasted trips."
+              CONTENT="Nothing frustrates customers more than incorrect information about your hours. Keep this information accurate everywhere.
+
+## Where Hours Should Appear
+
+Website homepage and contact page. Google Business Profile. Facebook page. Voicemail greeting. Any other online listings.
+
+## Holiday Schedule Communication
+
+Post holiday hours at least two weeks in advance. Update everywhere simultaneously. Send email to your list if you have one.
+
+## Temporary Changes
+
+Communicate temporary hour changes immediately. Vacations, emergencies, weather closures. Update online listings and voicemail right away.
+
+## Setting Expectations
+
+If you only respond to emails during business hours, say so. If you do not work weekends, make that clear. Manage expectations upfront."
+              ;;
+
+          esac
+          
+          # Generate slug
+          SLUG="$DATE-$SELECTED_KEY"
+          
+          # Create blog file with content
+          cat > "src/blog/$SLUG.md" << EOF
+---
+title: $TITLE
+excerpt: $EXCERPT
+date: $DATE
+slug: $SLUG
+---
+
+$CONTENT
+EOF
+          
+          echo "✅ Blog post created: $SLUG"
+
+      - name: Generate RSS feed
+        run: |
+          node scripts/generateRSS.js
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/blog/*.md public/rss.xml
+          git commit -m "Auto-generate blog post [skip ci]" || echo "No changes to commit"
+          git push
