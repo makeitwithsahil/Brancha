@@ -175,6 +175,7 @@ export default function Footer() {
     Company: [
       { name: 'About Us', path: '/about' },
       { name: 'How We Work', path: '/process' },
+      { name: 'Blog', path: '/blog' },
       { name: 'Contact', path: '/contact' }
     ],
     Support: [

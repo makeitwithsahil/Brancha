@@ -143,6 +143,7 @@ export default function Navbar() {
     { name: 'Services', path: '/services' },
     { name: 'About', path: '/about' },
     { name: 'Process', path: '/process' },
+    { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' }
   ], []);
 

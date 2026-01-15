@@ -1,0 +1,352 @@
+name: Auto Generate Blog Post
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC (2:30 PM IST)
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-blog:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate blog post from template
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          
+          # Predefined blog templates
+          declare -A TEMPLATES
+          
+          TEMPLATES["trust"]='---
+          title: Building Customer Trust Through Your Online Presence
+          excerpt: Trust begins before the first interaction. Your online presence either builds confidence or creates doubt.
+          date: DATE_PLACEHOLDER
+          slug: SLUG_PLACEHOLDER
+          ---
+          
+          Customers research before they contact you. What they find determines whether they trust you enough to reach out.
+          
+          ## The First Impression
+          
+          Your website, social media, and online listings create an impression before you say a word. If information is inconsistent or outdated, customers wonder about reliability.
+          
+          Trust comes from consistency. Same phone number everywhere. Same message across platforms. Information that matches reality.
+          
+          ## What Customers Look For
+          
+          When people research service businesses, they check specific things. Accurate information matters. Current hours, correct address, working phone number. Basic details that match across all platforms.
+          
+          Professional presentation helps too. Not flashy or trendy. Just well-maintained and intentional. Shows you care about details.
+          
+          Recent activity signals engagement. Updated content, current projects, or recent posts. Signs the business is active and engaged.
+          
+          ## Common Trust Breakers
+          
+          Small problems signal bigger issues. A broken contact form suggests poor maintenance. Outdated information implies neglect. Inconsistent branding creates confusion.
+          
+          These details seem minor but customers notice them. Each inconsistency raises a question about reliability.
+          
+          ## Building Confidence
+          
+          Professional service businesses maintain their online presence like they maintain their workspace. Regular updates, accurate information, working systems.
+          
+          This does not require constant attention. It requires a system for keeping things current and someone responsible for it.
+          
+          When customers find what they need easily and everything works properly, trust builds naturally. They focus on your services instead of questioning your reliability.
+          
+          ## The Business Impact
+          
+          Businesses with trustworthy online presences get better quality inquiries. Customers arrive already confident, ready to discuss specifics rather than validate credibility.
+          
+          This saves time on both sides. Less explaining basics, more meaningful conversations with people ready to work with you.
+          
+          Trust is built through consistency and reliability. Your online presence either demonstrates these qualities or undermines them.'
+          
+          TEMPLATES["systems"]='---
+          title: Why Service Businesses Need Reliable Systems
+          excerpt: Running a service business without systems means constantly managing small fires instead of growing your business.
+          date: DATE_PLACEHOLDER
+          slug: SLUG_PLACEHOLDER
+          ---
+          
+          Most service businesses start without formal systems. The owner handles everything personally. This works initially but creates problems as the business grows.
+          
+          ## What Systems Actually Mean
+          
+          A system is simply a reliable way to handle recurring tasks. Not complicated processes or expensive software. Just documented methods that work consistently.
+          
+          For online presence, this means knowing what gets updated, when, and by whom. Having clear processes for maintaining your website, responding to inquiries, and keeping information current.
+          
+          ## The Cost of No Systems
+          
+          Without systems, everything depends on memory and availability. Tasks get missed when you are busy. Updates happen inconsistently. Quality varies based on how much time you have.
+          
+          Customers notice this inconsistency. Delayed responses, outdated information, or varying service quality. Each instance creates doubt about reliability.
+          
+          ## Building Practical Systems
+          
+          Effective systems start simple. Document current processes. Write down how things currently work. Not how they should work ideally, but what actually happens now.
+          
+          Identify recurring tasks. List what needs to happen regularly. Website updates, information verification, inquiry responses.
+          
+          Assign clear responsibility. Decide who handles what. One person or shared responsibility, but always clear ownership.
+          
+          Set regular schedules. Determine frequency for each task. Weekly reviews, monthly updates, quarterly audits.
+          
+          ## Common System Mistakes
+          
+          Many businesses create systems that are too complex. Detailed procedures that nobody follows because they take too much time.
+          
+          Effective systems match your actual capacity. Better to maintain a simple system consistently than abandon a complicated one.
+          
+          ## The Reliability Advantage
+          
+          Businesses with good systems handle growth better. New staff can follow established processes. Quality stays consistent even when owners are unavailable.
+          
+          For customers, this means reliable service. They know what to expect and when to expect it.
+          
+          Systems free you to focus on actual business growth instead of constantly managing basic operations. This is where service businesses actually scale.'
+          
+          TEMPLATES["website-maintenance"]='---
+          title: When to Update Your Business Website
+          excerpt: Most businesses update their website either too much or not enough. The right timing matters for both customers and your resources.
+          date: DATE_PLACEHOLDER
+          slug: SLUG_PLACEHOLDER
+          ---
+          
+          A common question from business owners is how often they should update their website. The answer depends on what needs updating and why.
+          
+          ## Essential Updates
+          
+          Some updates cannot wait. Contact information changes immediately. New hours, new phone numbers, temporary closures. These affect customer access directly.
+          
+          Service changes matter too. If you add or remove services, customers need to know. Outdated service lists create confusion and wasted inquiries.
+          
+          Pricing updates prevent misunderstandings. If your prices change significantly, update your website. Not every small adjustment, but major changes that affect customer decisions.
+          
+          ## Regular Maintenance
+          
+          Beyond essential updates, websites need regular attention. Technical updates matter for security. Software updates, plugin updates, security patches. These protect both you and your customers.
+          
+          Content freshness helps too. Not constant changes, but periodic updates. Add new photos occasionally. Update testimonials when you get good ones. Refresh case studies or portfolio items.
+          
+          Performance checks catch problems. Broken links, slow loading, mobile issues. Check quarterly to ensure everything works properly.
+          
+          ## What Not to Change
+          
+          Some business owners update too frequently. Constant visual redesigns confuse customers. Frequent major changes make your site feel unstable.
+          
+          Your core brand elements should stay consistent. Logo, colors, overall layout. These create recognition and trust. Change them only when truly necessary.
+          
+          Working features do not need fixing. If your contact form works well, leave it. If your navigation makes sense, keep it. Unnecessary changes waste time and often create new problems.
+          
+          ## Signs You Need Updates
+          
+          Certain signals indicate needed updates. Customer confusion about your services. Inquiries about services you no longer offer. Questions about outdated information.
+          
+          Technical problems matter too. Forms that do not work. Pages that load slowly. Mobile display issues. These affect customer experience directly.
+          
+          Competitive changes sometimes require updates. If competitors significantly improve their online presence, you may need to match expectations. Not copying them, but maintaining competitive standards.
+          
+          ## Creating an Update Schedule
+          
+          A simple schedule prevents both neglect and over-updating. Check essential information monthly. Verify contact details, hours, and services remain current.
+          
+          Review content quarterly. Look for outdated photos, expired promotions, or irrelevant information. Make needed updates without major changes.
+          
+          Perform technical maintenance quarterly. Check links, test forms, review performance. Fix problems promptly.
+          
+          Consider major updates annually. Evaluate if your website still serves your business well. Plan significant changes carefully rather than implementing them impulsively.
+          
+          ## The Balance
+          
+          Good website maintenance balances stability with currency. Keep information accurate and current. Maintain technical health. But avoid constant unnecessary changes that waste resources and confuse customers.
+          
+          Your website should feel reliable and current, not constantly changing or obviously neglected. Find that balance for your business.'
+          
+          TEMPLATES["brand-consistency"]='---
+          title: Why Brand Consistency Matters for Service Businesses
+          excerpt: Consistent branding is not about looking fancy. It is about making your business easy to recognize and remember.
+          date: DATE_PLACEHOLDER
+          slug: SLUG_PLACEHOLDER
+          ---
+          
+          Many service business owners think branding means having a nice logo. That is part of it, but consistency matters more than individual design elements.
+          
+          ## What Consistency Actually Means
+          
+          Brand consistency means customers see the same visual identity and messaging everywhere. Your website, business cards, signage, social media, and advertising all look related.
+          
+          This includes obvious elements like logo and colors. But also typography, image style, tone of voice, and overall presentation. Everything should feel like it comes from the same business.
+          
+          ## Why It Matters
+          
+          Recognition builds over time. When customers see consistent branding across multiple touchpoints, your business becomes more memorable. They start recognizing you before reading your name.
+          
+          Trust develops faster with consistency. Professional, consistent presentation signals attention to detail and reliability. Inconsistent branding suggests disorganization or lack of care.
+          
+          Marketing becomes more efficient. Every exposure reinforces previous ones when branding stays consistent. Inconsistent branding wastes each exposure by failing to build on previous impressions.
+          
+          ## Common Consistency Problems
+          
+          Many businesses use different logos in different places. Maybe you updated your logo but old versions remain on some materials. This confuses recognition.
+          
+          Color variations create problems too. Your brand red looks different on your website, business cards, and signage. Small variations add up to look unprofessional.
+          
+          Message inconsistency undermines positioning. Your website emphasizes premium quality while your social media focuses on low prices. Customers get confused about what you actually offer.
+          
+          ## Building Consistency
+          
+          Start with core elements. Define your exact logo, colors, and typography. Document these precisely so they can be replicated correctly everywhere.
+          
+          Create simple guidelines. Not a massive brand manual, but clear rules anyone can follow. Which logo version for what use. Exact color codes. Approved fonts.
+          
+          Apply consistently across all materials. Website, social media, print materials, signage. Everything uses the same core elements in the same ways.
+          
+          Maintain over time. When creating new materials, follow established guidelines. Resist the temptation to deviate for variety. Consistency creates recognition.
+          
+          ## The Right Level
+          
+          Brand consistency does not mean everything looks identical. Your social media posts can vary in content and style. Your website sections can have different purposes.
+          
+          But core elements stay consistent. Logo usage, color palette, typography, tone. These create the thread that ties everything together.
+          
+          Think of it like a uniform. Police officers wear different accessories and equipment, but the uniform remains recognizable. Your brand works the same way.
+          
+          ## Business Impact
+          
+          Consistent branding makes marketing more effective. Every customer interaction reinforces your identity. Recognition builds faster. Trust develops more readily.
+          
+          Customers remember you more easily. When they need your services, they think of you first because your consistent presence made a stronger impression.
+          
+          Referrals improve too. People can describe your business more easily when your branding creates a clear, consistent image. This makes word-of-mouth marketing more effective.
+          
+          ## Getting Started
+          
+          If your branding lacks consistency now, start fixing it systematically. Document your current best version of logo, colors, and fonts. Apply these consistently going forward. Update old materials gradually as needed.
+          
+          Consistency matters more than perfection. A simple brand applied consistently outperforms a sophisticated brand applied inconsistently. Focus on consistency first.'
+          
+          TEMPLATES["online-reputation"]='---
+          title: Managing Your Business Online Reputation
+          excerpt: Your online reputation forms whether you manage it or not. Taking control prevents problems and builds trust.
+          date: DATE_PLACEHOLDER
+          slug: SLUG_PLACEHOLDER
+          ---
+          
+          Every service business has an online reputation. The question is whether you shape it actively or let it form randomly.
+          
+          ## What Online Reputation Includes
+          
+          Your online reputation encompasses everything people find about your business online. Google reviews obviously matter. So do Facebook reviews, industry-specific platforms, and social media mentions.
+          
+          Your website content contributes too. What you say about yourself matters. Photos, testimonials, case studies all shape perception.
+          
+          Search results create impressions. What appears when someone searches your business name affects how they perceive you before contacting you.
+          
+          ## Why It Matters for Service Businesses
+          
+          Service businesses depend heavily on trust. Customers buy services before experiencing them. They rely on reputation signals to assess whether you deliver.
+          
+          Reviews influence decisions directly. Many customers read reviews before contacting service providers. Positive reviews increase inquiries. Negative reviews reduce them or eliminate them.
+          
+          Reputation affects pricing power too. Businesses with strong reputations command higher prices. Customers pay more willingly when reputation reduces perceived risk.
+          
+          ## Common Reputation Problems
+          
+          Negative reviews happen to everyone eventually. The problem is not having some negative reviews. The problem is having no response strategy or letting negative reviews dominate your profile.
+          
+          Inconsistent information damages reputation subtly. Different details across platforms make you look disorganized. Customers doubt reliability when basic information does not match.
+          
+          Outdated content creates reputation problems. Old photos, expired promotions, or abandoned social accounts signal neglect. Customers wonder if you still operate or care about quality.
+          
+          ## Building Positive Reputation
+          
+          Deliver good service consistently. This sounds obvious but remains fundamental. Online reputation ultimately reflects real performance over time.
+          
+          Request reviews systematically. Many satisfied customers never leave reviews unless asked. Develop a simple system for requesting reviews after successful service delivery.
+          
+          Make leaving reviews easy. Provide direct links. Mention specific platforms where reviews help most. Thank customers who leave reviews.
+          
+          Respond to all reviews. Thank positive reviewers. Address negative reviews professionally. Show potential customers how you handle feedback.
+          
+          ## Handling Negative Reviews
+          
+          Negative reviews require careful handling. Never argue or get defensive. Acknowledge the issue professionally. Offer to resolve problems offline.
+          
+          Some negative reviews come from unreasonable people. You cannot satisfy everyone. But how you respond shows other potential customers your character.
+          
+          Learn from legitimate criticism. If multiple reviewers mention the same issue, address it in your operations. Use negative feedback for improvement.
+          
+          ## Maintaining Reputation Over Time
+          
+          Monitor your online presence regularly. Search your business name monthly. Check review platforms. Look for new mentions or reviews.
+          
+          Keep information current everywhere. Update hours, services, contact details promptly across all platforms. Consistency builds trust.
+          
+          Stay active appropriately. You do not need constant social media posting. But periodic updates show you remain engaged and current.
+          
+          ## Professional Help
+          
+          Some businesses benefit from reputation management support. If negative reviews become overwhelming or inaccurate information spreads, professional help makes sense.
+          
+          But most service businesses can manage reputation themselves with consistent attention. Monitor regularly. Respond appropriately. Deliver good service. Request reviews. This covers most reputation management needs.
+          
+          ## The Long View
+          
+          Online reputation builds gradually over time. Consistent good service generates positive reviews. Appropriate responses build trust. Current information maintains credibility.
+          
+          Small consistent efforts compound into strong reputation over months and years. Start managing your reputation actively rather than hoping it forms favorably on its own.'
+          
+          # Select random template
+          TEMPLATE_KEYS=("trust" "systems" "website-maintenance" "brand-consistency" "online-reputation")
+          SELECTED_KEY=${TEMPLATE_KEYS[$RANDOM % ${#TEMPLATE_KEYS[@]}]}
+          TEMPLATE_CONTENT="${TEMPLATES[$SELECTED_KEY]}"
+          
+          # Generate slug based on template
+          case "$SELECTED_KEY" in
+            "trust")
+              SLUG="$DATE-building-customer-trust-online-presence"
+              ;;
+            "systems")
+              SLUG="$DATE-why-service-businesses-need-reliable-systems"
+              ;;
+            "website-maintenance")
+              SLUG="$DATE-when-to-update-business-website"
+              ;;
+            "brand-consistency")
+              SLUG="$DATE-why-brand-consistency-matters-service-businesses"
+              ;;
+            "online-reputation")
+              SLUG="$DATE-managing-business-online-reputation"
+              ;;
+          esac
+          
+          # Replace placeholders
+          BLOG_CONTENT=$(echo "$TEMPLATE_CONTENT" | sed "s/DATE_PLACEHOLDER/$DATE/g" | sed "s/SLUG_PLACEHOLDER/$SLUG/g")
+          
+          # Create blog file
+          echo "$BLOG_CONTENT" > "src/blog/$SLUG.md"
+          
+          echo "✅ Blog post created: $SLUG"
+
+      - name: Generate RSS feed
+        run: |
+          node scripts/generateRSS.js
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/blog/*.md public/rss.xml
+          git commit -m "Auto-generate blog post [skip ci]" || echo "No changes to commit"
+          git push
