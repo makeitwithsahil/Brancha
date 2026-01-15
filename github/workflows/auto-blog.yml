@@ -4,8 +4,9 @@ on:
   schedule:
     # Run every Monday at 9:00 AM UTC (2:30 PM IST)
     - cron: '0 9 * * 1'
-  workflow_dispatch: # Allow manual trigger
-
+    # Run every Thursday at 9:00 AM UTC (2:30 PM IST)
+    - cron: '0 9 * * 4'
+  workflow_dispatch:
 jobs:
   generate-blog:
     runs-on: ubuntu-latest
