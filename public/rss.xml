@@ -1,26 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Brancha Blog</title>
     <link>https://brancha.in/blog</link>
     <description>Insights and advice for service business owners on building a strong online presence and growing their business.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 16 Jan 2026 10:19:40 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 16 Jan 2026 11:45:28 GMT</lastBuildDate>
     <atom:link href="https://brancha.in/rss.xml" rel="self" type="application/rss+xml"/>
-    
+    <generator>Brancha Blog</generator>
+    <webMaster>support@brancha.in (Brancha)</webMaster>
+    <managingEditor>support@brancha.in (Brancha)</managingEditor>
+    <copyright>Copyright 2026 Brancha. All rights reserved.</copyright>
+    <image>
+      <url>https://brancha.in/og-blog.jpg</url>
+      <title>Brancha Blog</title>
+      <link>https://brancha.in/blog</link>
+      <width>144</width>
+      <height>144</height>
+    </image>
     <item>
-      <title>The Fake 1-Star Reviews That Almost Destroyed Our Restaurant</title>
+      <title><![CDATA[The Fake 1-Star Reviews That Almost Destroyed Our Restaurant]]></title>
       <link>https://brancha.in/blog/2026-01-16-fake-google-reviews-removal</link>
       <guid isPermaLink="true">https://brancha.in/blog/2026-01-16-fake-google-reviews-removal</guid>
-      <description>A Hyderabad restaurant was attacked with fake one-star reviews. Revenue collapsed, Google refused quick help, and the owner had to fight back smartly.</description>
+      <description><![CDATA[A Hyderabad restaurant was attacked with fake one-star reviews. Revenue collapsed, Google refused quick help, and the owner had to fight back smartly.]]></description>
       <pubDate>Fri, 16 Jan 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Brancha</dc:creator>
+      <category>Business Growth</category>
+      <category>Online Presence</category>
     </item>
     <item>
-      <title>Customers Did Not Know What You Actually Do</title>
+      <title><![CDATA[Customers Did Not Know What You Actually Do]]></title>
       <link>https://brancha.in/blog/2026-01-16-no-clear-services</link>
       <guid isPermaLink="true">https://brancha.in/blog/2026-01-16-no-clear-services</guid>
-      <description>People visited the website, spent time scrolling, but still left unsure about what services were actually offered. Confusion quietly pushed them away.</description>
+      <description><![CDATA[People visited the website, spent time scrolling, but still left unsure about what services were actually offered. Confusion quietly pushed them away.]]></description>
       <pubDate>Fri, 16 Jan 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Brancha</dc:creator>
+      <category>Business Growth</category>
+      <category>Online Presence</category>
+    </item>
+    <item>
+      <title><![CDATA[Late Replies Cost Real Customers]]></title>
+      <link>https://brancha.in/blog/2026-01-16-slow-replies</link>
+      <guid isPermaLink="true">https://brancha.in/blog/2026-01-16-slow-replies</guid>
+      <description><![CDATA[Customers reached out with genuine interest, but replies came hours later. By then, they had already chosen a faster, more responsive business.]]></description>
+      <pubDate>Fri, 16 Jan 2026 00:00:00 GMT</pubDate>
+      <dc:creator>Brancha</dc:creator>
+      <category>Business Growth</category>
+      <category>Online Presence</category>
     </item>
   </channel>
 </rss>

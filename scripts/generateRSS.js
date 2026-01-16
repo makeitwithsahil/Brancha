@@ -32,15 +32,6 @@ function parseFrontmatter(content) {
   return { frontmatter, content: markdownContent };
 }
 
-function escapeXml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
-
 function generateRSS() {
   const blogDir = path.join(__dirname, '../src/blog');
   const outputPath = path.join(__dirname, '../public/rss.xml');
@@ -60,24 +51,28 @@ function generateRSS() {
       date: frontmatter.date || new Date().toISOString().split('T')[0],
       slug,
       link: `https://brancha.in/blog/${slug}`,
+      category: frontmatter.category || 'Business Growth'
     };
   });
 
   // Sort by date (newest first)
   posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // Generate RSS XML
+  // Generate RSS XML with CDATA sections for LinkedIn compatibility
   const rssItems = posts.map(post => `
     <item>
-      <title>${escapeXml(post.title)}</title>
+      <title><![CDATA[${post.title}]]></title>
       <link>${post.link}</link>
       <guid isPermaLink="true">${post.link}</guid>
-      <description>${escapeXml(post.excerpt)}</description>
+      <description><![CDATA[${post.excerpt}]]></description>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+      <dc:creator>Brancha</dc:creator>
+      <category>${post.category}</category>
+      <category>Online Presence</category>
     </item>`).join('');
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Brancha Blog</title>
     <link>https://brancha.in/blog</link>
@@ -85,7 +80,17 @@ function generateRSS() {
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="https://brancha.in/rss.xml" rel="self" type="application/rss+xml"/>
-    ${rssItems}
+    <generator>Brancha Blog</generator>
+    <webMaster>support@brancha.in (Brancha)</webMaster>
+    <managingEditor>support@brancha.in (Brancha)</managingEditor>
+    <copyright>Copyright ${new Date().getFullYear()} Brancha. All rights reserved.</copyright>
+    <image>
+      <url>https://brancha.in/og-blog.jpg</url>
+      <title>Brancha Blog</title>
+      <link>https://brancha.in/blog</link>
+      <width>144</width>
+      <height>144</height>
+    </image>${rssItems}
   </channel>
 </rss>`;
 
@@ -99,6 +104,14 @@ function generateRSS() {
   fs.writeFileSync(outputPath, rss.trim());
   console.log(`✅ RSS feed generated: ${outputPath}`);
   console.log(`📝 Total posts: ${posts.length}`);
+  console.log(`🔗 Feed URL: https://brancha.in/rss.xml`);
+  console.log('');
+  console.log('LinkedIn Integration:');
+  console.log('1. Go to your LinkedIn Company Page');
+  console.log('2. Click Admin tools → Edit Page');
+  console.log('3. Add RSS feed: https://brancha.in/rss.xml');
+  console.log('4. Select "Share automatically"');
+  console.log('5. Wait 24-48 hours for first post');
 }
 
 generateRSS();

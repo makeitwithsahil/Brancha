@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build && node scripts/generateRSS.js",
     "preview": "vite preview",
-    "generate-rss": "node scripts/generateRSS.js"
+    "generate-rss": "node scripts/generateRSS.js",
+    "generate-blog": "node scripts/generateBlogPost.js && node scripts/generateRSS.js"
   },
   "dependencies": {
     "framer-motion": "^12.26.2",

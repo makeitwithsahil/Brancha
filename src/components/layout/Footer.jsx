@@ -117,6 +117,7 @@ export default function Footer() {
   const [activeModal, setActiveModal] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -295,8 +296,6 @@ Contact:
 For questions about our use of cookies, contact us at support@brancha.in.`
     }
   }), []);
-
-  const currentYear = new Date().getFullYear();
 
   const modalContent = activeModal && (
     <AnimatePresence mode="wait">
