@@ -1,31 +1,12 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, CheckCircle2, AlertCircle, Layout, ArrowRight, Phone, MessageSquare, Clock, Users, TrendingUp, Target, Shield, ChevronDown } from 'lucide-react';
+import { Sparkles, CheckCircle2, AlertCircle, ArrowRight, Phone, MessageSquare, Target, ChevronDown } from 'lucide-react';
 import SEO from '../components/SEO';
 import { serviceSchema, breadcrumbSchema } from '../utils/schemas';
 
-const useOptimizedAnimations = () => {
-  const prefersReducedMotion = useReducedMotion();
-  
-  return useMemo(() => {
-    if (prefersReducedMotion) {
-      return {
-        fadeInUp: { initial: { opacity: 0 }, whileInView: { opacity: 1 }, viewport: { once: true, margin: '-50px', amount: 0.3 }, transition: { duration: 0.2 } },
-        staggerContainer: { whileInView: { transition: { staggerChildren: 0.03 } }, viewport: { once: true, margin: '-50px', amount: 0.2 } }
-      };
-    }
-
-    return {
-      fadeInUp: { initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-50px', amount: 0.3 }, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
-      staggerContainer: { whileInView: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } }, viewport: { once: true, margin: '-50px', amount: 0.2 } }
-    };
-  }, [prefersReducedMotion]);
-};
-
 export default function Services() {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
-  const { fadeInUp, staggerContainer } = useOptimizedAnimations();
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -281,101 +262,43 @@ export default function Services() {
   ];
 
   const renderMistakeCard = useCallback((mistake, index) => (
-    <motion.article
+    <article
       key={index}
-      variants={fadeInUp}
-      className="group relative p-6 sm:p-7 md:p-8 bg-white border border-[#EFEDE9] rounded-2xl hw-accelerate overflow-hidden cursor-default"
-      whileHover={{
-        y: prefersReducedMotion ? 0 : -4,
-        scale: prefersReducedMotion ? 1 : 1.01,
-        borderColor: 'rgba(226, 73, 59, 0.3)',
-        boxShadow: '0 12px 32px -8px rgba(226, 73, 59, 0.08)'
-      }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative p-6 sm:p-7 md:p-8 bg-white border border-[#EFEDE9] rounded-2xl transition-all duration-300 hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5"
     >
-      <motion.div
-        className="w-11 h-11 sm:w-12 sm:h-12 mb-4 sm:mb-5 rounded-full bg-[#e2493b]/10 flex items-center justify-center text-[#e2493b] hw-accelerate relative overflow-hidden"
-        whileHover={{
-          backgroundColor: '#e2493b',
-          color: '#ffffff',
-          scale: 1.1,
-          rotate: [0, -5, 5, 0]
-        }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      <div
+        className="w-11 h-11 sm:w-12 sm:h-12 mb-4 sm:mb-5 rounded-full bg-[#e2493b]/10 flex items-center justify-center text-[#e2493b] transition-all duration-300 group-hover:bg-[#e2493b] group-hover:text-white"
       >
-        <div className="relative z-10">
-          <AlertCircle className="w-5 h-5" />
-        </div>
+        <AlertCircle className="w-5 h-5" />
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileHover={{ opacity: 0.3, scale: 1.5 }}
-          transition={{ duration: 0.4 }}
-          className="absolute inset-0 bg-[#e2493b] rounded-full blur-md"
-        />
-      </motion.div>
-
-      <h3 className="text-base sm:text-lg font-medium text-[#1F1F1F] mb-3 leading-snug transition-colors duration-400 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
+      <h3 className="text-base sm:text-lg font-medium text-[#1F1F1F] mb-3 leading-snug transition-colors duration-300 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
         {mistake.mistake}
       </h3>
-      <p className="text-sm text-[#6B6B6B] leading-relaxed transition-colors duration-400 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
+      <p className="text-sm text-[#6B6B6B] leading-relaxed transition-colors duration-300 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
         {mistake.reality}
       </p>
-
-      <motion.div
-        initial={{ opacity: 0, x: '-100%' }}
-        whileHover={{ opacity: 0.03, x: '100%' }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e2493b] to-transparent"
-        style={{ pointerEvents: 'none' }}
-      />
-    </motion.article>
-  ), [fadeInUp, prefersReducedMotion]);
+    </article>
+  ), []);
 
   const renderAudienceCard = useCallback((audience, index) => (
-    <motion.article
+    <article
       key={index}
-      variants={fadeInUp}
-      className="group relative p-6 sm:p-7 md:p-8 bg-white border border-[#EFEDE9] rounded-2xl hw-accelerate overflow-hidden"
-      whileHover={{
-        y: prefersReducedMotion ? 0 : -4,
-        scale: prefersReducedMotion ? 1 : 1.01,
-        borderColor: audience.type === "Perfect For" ? 'rgba(226, 73, 59, 0.3)' : 'rgba(107, 107, 107, 0.3)',
-        boxShadow: audience.type === "Perfect For" 
-          ? '0 12px 32px -8px rgba(226, 73, 59, 0.08)' 
-          : '0 12px 32px -8px rgba(107, 107, 107, 0.08)'
-      }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative p-6 sm:p-7 md:p-8 bg-white border border-[#EFEDE9] rounded-2xl transition-all duration-300 hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5"
     >
       <div className="flex items-start gap-4 mb-5">
-        <motion.div
-          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center hw-accelerate relative overflow-hidden ${
-            audience.type === "Perfect For" ? 'bg-[#e2493b]/10 text-[#e2493b]' : 'bg-[#6B6B6B]/10 text-[#6B6B6B]'
+        <div
+          className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+            audience.type === "Perfect For" 
+              ? 'bg-[#e2493b]/10 text-[#e2493b] group-hover:bg-[#e2493b] group-hover:text-white' 
+              : 'bg-[#6B6B6B]/10 text-[#6B6B6B] group-hover:bg-[#6B6B6B] group-hover:text-white'
           }`}
-          whileHover={{
-            backgroundColor: audience.type === "Perfect For" ? '#e2493b' : '#6B6B6B',
-            color: '#ffffff',
-            scale: 1.1,
-            rotate: [0, -5, 5, 0]
-          }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="relative z-10">
-            {audience.icon}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ opacity: 0.3, scale: 1.5 }}
-            transition={{ duration: 0.4 }}
-            className={`absolute inset-0 rounded-full blur-md ${
-              audience.type === "Perfect For" ? 'bg-[#e2493b]' : 'bg-[#6B6B6B]'
-            }`}
-          />
-        </motion.div>
+          {audience.icon}
+        </div>
 
         <div>
-          <h3 className="text-lg sm:text-xl font-medium text-[#1F1F1F] transition-colors duration-400 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
+          <h3 className="text-lg sm:text-xl font-medium text-[#1F1F1F] transition-colors duration-300 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
             {audience.type}
           </h3>
         </div>
@@ -383,13 +306,9 @@ export default function Services() {
 
       <ul className="space-y-3">
         {audience.businesses.map((business, i) => (
-          <motion.li
+          <li
             key={i}
             className="flex items-start gap-3"
-            initial={{ opacity: 0, x: -10 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
           >
             <CheckCircle2 className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
               audience.type === "Perfect For" ? 'text-[#e2493b]' : 'text-[#6B6B6B]'
@@ -397,36 +316,20 @@ export default function Services() {
             <span className="text-sm text-[#6B6B6B] leading-relaxed" style={{ fontWeight: 400 }}>
               {business}
             </span>
-          </motion.li>
+          </li>
         ))}
       </ul>
-
-      <motion.div
-        initial={{ opacity: 0, x: '-100%' }}
-        whileHover={{ opacity: 0.03, x: '100%' }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e2493b] to-transparent"
-        style={{ pointerEvents: 'none' }}
-      />
-    </motion.article>
-  ), [fadeInUp, prefersReducedMotion]);
+    </article>
+  ), []);
 
   const renderFoundationCard = useCallback((pkg, index) => (
-    <motion.article
+    <article
       key={index}
-      variants={fadeInUp}
-      className={`group relative p-6 sm:p-7 md:p-8 bg-white border-2 rounded-2xl hw-accelerate ${
+      className={`group relative p-6 sm:p-7 md:p-8 bg-white border-2 rounded-2xl transition-all duration-300 ${
         pkg.popular
           ? 'border-[#e2493b] shadow-lg shadow-[#e2493b]/10'
-          : 'border-[#EFEDE9]'
+          : 'border-[#EFEDE9] hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5'
       }`}
-      whileHover={{
-        y: prefersReducedMotion ? 0 : -6,
-        scale: prefersReducedMotion ? 1 : 1.02,
-        borderColor: '#e2493b',
-        boxShadow: '0 16px 40px -8px rgba(226, 73, 59, 0.15)'
-      }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       {pkg.popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-[#e2493b] text-white text-[10px] font-bold rounded-full shadow-md uppercase tracking-wider" style={{ fontWeight: 700, letterSpacing: '0.05em' }}>
@@ -458,19 +361,15 @@ export default function Services() {
           </p>
           <ul className="space-y-2">
             {pkg.problems.map((problem, i) => (
-              <motion.li
+              <li
                 key={i}
                 className="flex items-start gap-2"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
               >
                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#e2493b]" />
                 <span className="text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>
                   {problem}
                 </span>
-              </motion.li>
+              </li>
             ))}
           </ul>
         </div>
@@ -481,19 +380,15 @@ export default function Services() {
           </p>
           <ul className="space-y-2">
             {pkg.whatWeDeliver.map((item, i) => (
-              <motion.li
+              <li
                 key={i}
                 className="flex items-start gap-2"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
               >
                 <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#e2493b]" />
                 <span className="text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>
                   {item}
                 </span>
-              </motion.li>
+              </li>
             ))}
           </ul>
         </div>
@@ -526,33 +421,17 @@ export default function Services() {
           </div>
         </div>
       </div>
-
-      <motion.div
-        initial={{ opacity: 0, x: '-100%' }}
-        whileHover={{ opacity: 0.03, x: '100%' }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e2493b] to-transparent"
-        style={{ pointerEvents: 'none' }}
-      />
-    </motion.article>
-  ), [fadeInUp, prefersReducedMotion]);
+    </article>
+  ), []);
 
   const renderMonthlyCard = useCallback((pkg, index) => (
-    <motion.article
+    <article
       key={index}
-      variants={fadeInUp}
-      className={`group relative p-6 sm:p-7 md:p-8 bg-white border-2 rounded-2xl hw-accelerate ${
+      className={`group relative p-6 sm:p-7 md:p-8 bg-white border-2 rounded-2xl transition-all duration-300 ${
         pkg.popular
           ? 'border-[#e2493b] shadow-lg shadow-[#e2493b]/10'
-          : 'border-[#EFEDE9]'
+          : 'border-[#EFEDE9] hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5'
       }`}
-      whileHover={{
-        y: prefersReducedMotion ? 0 : -6,
-        scale: prefersReducedMotion ? 1 : 1.02,
-        borderColor: '#e2493b',
-        boxShadow: '0 16px 40px -8px rgba(226, 73, 59, 0.15)'
-      }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       {pkg.popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-[#e2493b] text-white text-[10px] font-bold rounded-full shadow-md uppercase tracking-wider" style={{ fontWeight: 700, letterSpacing: '0.05em' }}>
@@ -581,19 +460,15 @@ export default function Services() {
           </p>
           <ul className="space-y-2">
             {pkg.whatWeManage.map((item, i) => (
-              <motion.li
+              <li
                 key={i}
                 className="flex items-start gap-2"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
               >
                 <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#e2493b]" />
                 <span className="text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>
                   {item}
                 </span>
-              </motion.li>
+              </li>
             ))}
           </ul>
         </div>
@@ -629,16 +504,8 @@ export default function Services() {
           </div>
         </div>
       </div>
-
-      <motion.div
-        initial={{ opacity: 0, x: '-100%' }}
-        whileHover={{ opacity: 0.03, x: '100%' }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-[#e2493b] to-transparent"
-        style={{ pointerEvents: 'none' }}
-      />
-    </motion.article>
-  ), [fadeInUp, prefersReducedMotion]);
+    </article>
+  ), []);
 
   return (
     <>
@@ -649,203 +516,163 @@ export default function Services() {
         schema={[serviceSchema, breadcrumbSchema]}
       />
 
-      <div className="min-h-screen bg-[#FAF9F7]">
+      <main className="min-h-screen bg-[#FAF9F7]">
         {/* Hero Section */}
-        <section className="pt-32 sm:pt-36 md:pt-40 pb-16 sm:pb-20 md:pb-24 bg-white relative overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <motion.div
+        <section className="pt-28 sm:pt-32 md:pt-36 pb-12 sm:pb-16 md:pb-20 bg-white relative overflow-hidden">
+          <div className="absolute inset-0 -z-10" aria-hidden="true">
+            <div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl"
-              animate={{
-                scale: [1, 1.1, 1],
-                rotate: [0, 90, 0]
-              }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: 'linear'
-              }}
             />
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="max-w-4xl mx-auto text-center" {...fadeInUp}>
+            <div className="max-w-4xl mx-auto text-center">
               <motion.div
-                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-5 sm:mb-6"
-                whileHover={{
-                  scale: prefersReducedMotion ? 1 : 1.05,
-                  boxShadow: '0 4px 16px rgba(226, 73, 59, 0.15)'
-                }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <Sparkles className="w-4 h-4 text-[#e2493b] mr-2" />
-                <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>
-                  How Brancha Works
-                </span>
+                <div
+                  className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-6 sm:mb-8 transition-all duration-300 hover:shadow-md hover:shadow-[#e2493b]/10"
+                >
+                  <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>
+                    How Brancha Works
+                  </span>
+                </div>
               </motion.div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-[#1F1F1F] mb-5 sm:mb-6 leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
+              <motion.h1
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-[#1F1F1F] mb-4 sm:mb-6 leading-tight"
+                style={{ letterSpacing: '-0.02em', fontWeight: 400 }}
+              >
                 Two packages. One complete system to <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>stop losing customers</span>
-              </h1>
+              </motion.h1>
 
-              <p className="text-base sm:text-lg md:text-xl text-[#6B6B6B] leading-relaxed max-w-3xl mx-auto" style={{ fontWeight: 400 }}>
+              <motion.p
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                className="text-base sm:text-lg md:text-xl text-[#6B6B6B] leading-relaxed max-w-3xl mx-auto"
+                style={{ fontWeight: 400 }}
+              >
                 Most businesses fail online because they get a website once, then nothing changes for months. Brancha builds your foundation properly first, then manages everything to bring consistent enquiries.
-              </p>
-            </motion.div>
+              </motion.p>
+            </div>
           </div>
         </section>
 
         {/* Common Mistakes Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-[#FAF9F7]">
+        <section className="py-12 sm:py-16 md:py-20 bg-[#FAF9F7]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+            <div className="text-center mb-10 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
                 Why most businesses <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>waste money online</span>
               </h2>
-              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+              <p className="text-base sm:text-lg text-[#6B6B6B] max-w-3xl mx-auto leading-relaxed" style={{ fontWeight: 400 }}>
                 These mistakes cost you customers every single day
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="grid sm:grid-cols-2 gap-5 sm:gap-6"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true, amount: 0.2 }}
-            >
+            <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
               {commonMistakes.map(renderMistakeCard)}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Who It's For Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-white">
+        <section className="py-12 sm:py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
+            <div className="text-center mb-10 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
                 Is Brancha right for <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>your business?</span>
               </h2>
-              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
+              <p className="text-base sm:text-lg text-[#6B6B6B] max-w-3xl mx-auto leading-relaxed" style={{ fontWeight: 400 }}>
                 We work best with specific types of businesses
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="grid md:grid-cols-2 gap-6 sm:gap-8"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true, amount: 0.2 }}
-            >
+            <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
               {whoBranchaIsFor.map(renderAudienceCard)}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Foundation Package Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-[#FAF9F7]">
+        <section className="py-12 sm:py-16 md:py-20 bg-[#FAF9F7]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
-              <motion.div
-                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-4 sm:mb-5"
-                whileHover={{
-                  scale: prefersReducedMotion ? 1 : 1.05,
-                  boxShadow: '0 4px 16px rgba(226, 73, 59, 0.15)'
-                }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            <div className="text-center mb-10 sm:mb-12">
+              <div
+                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-4 sm:mb-5 transition-all duration-300 hover:shadow-md hover:shadow-[#e2493b]/10"
               >
                 <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>
                   Step 1 — One-Time
                 </span>
-              </motion.div>
+              </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
                 Foundation Package
               </h2>
               <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
                 Stop losing customers by building proper online presence from scratch
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-8"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true, amount: 0.2 }}
-            >
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-6">
               {foundationLevels.map(renderFoundationCard)}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Monthly Package Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-white">
+        <section className="py-12 sm:py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
-              <motion.div
-                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-4 sm:mb-5"
-                whileHover={{
-                  scale: prefersReducedMotion ? 1 : 1.05,
-                  boxShadow: '0 4px 16px rgba(226, 73, 59, 0.15)'
-                }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            <div className="text-center mb-10 sm:mb-12">
+              <div
+                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-4 sm:mb-5 transition-all duration-300 hover:shadow-md hover:shadow-[#e2493b]/10"
               >
                 <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>
                   Step 2 — Ongoing
                 </span>
-              </motion.div>
+              </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
                 Monthly Management Package
               </h2>
               <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
                 Keep customers coming with proper ongoing management
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 pt-8"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true, amount: 0.2 }}
-            >
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-6">
               {monthlyLevels.map(renderMonthlyCard)}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-[#FAF9F7]">
+        <section className="py-12 sm:py-16 md:py-20 bg-[#FAF9F7]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
+            <div className="text-center mb-10 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
                 Investment & Pricing Questions
               </h2>
               <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
                 Clear, honest answers to common questions about cost and commitment
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="max-w-4xl mx-auto space-y-4"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-            >
+            <div className="max-w-4xl mx-auto space-y-4">
               {investmentBreakdown.map((item, index) => (
-                <motion.div
+                <div
                   key={index}
-                  variants={fadeInUp}
-                  className="group bg-white border border-[#EFEDE9] rounded-xl hw-accelerate overflow-hidden cursor-pointer"
-                  whileHover={{
-                    borderColor: 'rgba(226, 73, 59, 0.3)',
-                    boxShadow: '0 8px 24px -4px rgba(226, 73, 59, 0.08)'
-                  }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="group bg-white border border-[#EFEDE9] rounded-xl overflow-hidden transition-all duration-300 hover:border-[#e2493b]/30 hover:shadow-md hover:shadow-[#e2493b]/5"
                 >
                   <button
                     onClick={() => toggleFaq(index)}
                     className="w-full p-6 text-left flex items-center justify-between gap-4"
+                    aria-expanded={openFaqIndex === index}
+                    aria-controls={`faq-answer-${index}`}
                   >
                     <h3 className="text-base font-medium text-[#1F1F1F] transition-colors duration-300 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
                       {item.question}
@@ -854,13 +681,14 @@ export default function Services() {
                       animate={{ rotate: openFaqIndex === index ? 180 : 0 }}
                       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <ChevronDown className="w-5 h-5 text-[#e2493b] flex-shrink-0" />
+                      <ChevronDown className="w-5 h-5 text-[#e2493b] flex-shrink-0" aria-hidden="true" />
                     </motion.div>
                   </button>
 
                   <AnimatePresence initial={false}>
                     {openFaqIndex === index && (
                       <motion.div
+                        id={`faq-answer-${index}`}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -877,41 +705,29 @@ export default function Services() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Comparison Section */}
-        <section className="py-16 sm:py-20 md:py-24 bg-white">
+        <section className="py-12 sm:py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center mb-10 sm:mb-12" {...fadeInUp}>
+            <div className="text-center mb-10 sm:mb-12">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-3" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>
                 How Brancha Compares
               </h2>
               <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
                 Understanding the difference between typical approaches and the Brancha system
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="max-w-5xl mx-auto space-y-6"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-            >
+            <div className="max-w-5xl mx-auto space-y-6">
               {comparisonTable.map((item, index) => (
-                <motion.article
+                <article
                   key={index}
-                  variants={fadeInUp}
-                  className="group grid md:grid-cols-3 gap-6 p-6 bg-[#FAF9F7] border border-[#EFEDE9] rounded-xl hw-accelerate"
-                  whileHover={{
-                    y: prefersReducedMotion ? 0 : -3,
-                    boxShadow: '0 8px 24px -4px rgba(226, 73, 59, 0.08)',
-                    borderColor: 'rgba(226, 73, 59, 0.2)'
-                  }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="group grid md:grid-cols-3 gap-6 p-6 bg-[#FAF9F7] border border-[#EFEDE9] rounded-xl transition-all duration-300 hover:border-[#e2493b]/20 hover:shadow-md hover:shadow-[#e2493b]/5"
                 >
                   <div>
                     <p className="text-xs font-semibold text-[#6B6B6B] mb-2 uppercase tracking-wider" style={{ fontWeight: 600 }}>
@@ -937,31 +753,22 @@ export default function Services() {
                       {item.branchaWay}
                     </p>
                   </div>
-                </motion.article>
+                </article>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 sm:py-20 md:py-24 lg:py-28 relative overflow-hidden bg-[#FAF9F7]">
-          <div className="absolute inset-0 -z-10">
-            <motion.div
+        <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden bg-[#FAF9F7]">
+          <div className="absolute inset-0 -z-10" aria-hidden="true">
+            <div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl"
-              animate={{
-                scale: [1, 1.1, 1],
-                rotate: [0, 90, 0]
-              }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: 'linear'
-              }}
             />
           </div>
 
           <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-            <motion.div className="text-center" {...fadeInUp}>
+            <div className="text-center">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-5 sm:mb-6 leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
                 Still have <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>questions?</span>
               </h2>
@@ -972,52 +779,39 @@ export default function Services() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link to="/contact">
                   <motion.button
-                    className="group relative px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white bg-gradient-to-br from-[#e2493b] to-[#e2493b] rounded-full shadow-xl shadow-[#e2493b]/25 inline-flex items-center gap-2 hw-accelerate overflow-hidden"
+                    className="group relative px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white bg-gradient-to-br from-[#e2493b] to-[#e2493b] rounded-full shadow-xl shadow-[#e2493b]/25 inline-flex items-center gap-2 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-[#e2493b]/35"
                     aria-label="Schedule a call with Brancha"
                     whileHover={{
-                      scale: prefersReducedMotion ? 1 : 1.04,
-                      boxShadow: '0 16px 48px -12px rgba(226, 73, 59, 0.4)'
+                      scale: prefersReducedMotion ? 1 : 1.04
                     }}
                     whileTap={{ scale: 0.98 }}
                     style={{ fontWeight: 500 }}
                   >
-                    <MessageSquare className="w-4 h-4" />
                     <span className="relative z-10">Schedule a Call</span>
-
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-
-                    {!prefersReducedMotion && (
-                      <motion.div
-                        animate={{ x: ['-100%', '200%'] }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                        style={{ pointerEvents: 'none' }}
-                      />
-                    )}
+                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </motion.button>
                 </Link>
 
                 <a href="tel:+919825883015">
                   <motion.button
-                    className="group px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-[#1F1F1F] bg-white border-2 border-[#EFEDE9] rounded-full inline-flex items-center gap-2 hw-accelerate"
+                    className="group px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-[#1F1F1F] bg-white border-2 border-[#EFEDE9] rounded-full inline-flex items-center gap-2 transition-all duration-300 hover:border-[#e2493b] hover:shadow-md hover:shadow-[#e2493b]/10"
                     aria-label="Call Brancha at 98258 83015"
                     whileHover={{
-                      scale: prefersReducedMotion ? 1 : 1.04,
-                      borderColor: '#e2493b',
-                      boxShadow: '0 8px 24px -4px rgba(226, 73, 59, 0.15)'
+                      scale: prefersReducedMotion ? 1 : 1.04
                     }}
                     whileTap={{ scale: 0.98 }}
                     style={{ fontWeight: 500 }}
                   >
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-4 h-4" aria-hidden="true" />
                     <span>Call: 98258 83015</span>
                   </motion.button>
                 </a>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
-      </div>
+      </main>
     </>
   );
 }

@@ -12,6 +12,25 @@
   --deep-coral: #C94A3F;
 }
 
+.low-bandwidth img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.low-bandwidth .animate-spin {
+  animation: none;
+}
+
+.low-power-mode * {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.15s !important;
+}
+
+.low-power-mode .shadow-lg,
+.low-power-mode .shadow-xl {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
 body {
   font-family: "Satoshi", -apple-system, BlinkMacSystemFont, sans-serif;
   transition: 

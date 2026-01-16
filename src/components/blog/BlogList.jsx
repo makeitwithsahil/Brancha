@@ -5,7 +5,7 @@ export default function BlogList({ posts }) {
   if (!posts || posts.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-[#6B6B6B] text-lg">No blog posts yet. Check back soon.</p>
+        <p className="text-[#6B6B6B] text-lg" style={{ fontWeight: 400 }}>No blog posts yet. Check back soon.</p>
       </div>
     );
   }
