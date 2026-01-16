@@ -74,36 +74,33 @@ export function markdownToHtml(markdown) {
   return html;
 }
 
+// Use EAGER loading to ensure modules are available on direct page loads
+const blogModules = import.meta.glob('/src/blog/*.md', { as: 'raw', eager: true });
+
 /**
  * Load all blog posts
  */
 export async function loadBlogPosts() {
-  try {
-    const blogModules = import.meta.glob('/src/blog/*.md', { as: 'raw', eager: false });
-    const posts = [];
+  const posts = [];
 
-    for (const path in blogModules) {
-      try {
-        const content = await blogModules[path]();
-        const { frontmatter } = parseFrontmatter(content);
-        const filename = path.split('/').pop();
-        const slug = frontmatter.slug || filename.replace('.md', '');
+  for (const path in blogModules) {
+    try {
+      const content = blogModules[path];
+      const { frontmatter } = parseFrontmatter(content);
+      const filename = path.split('/').pop();
+      const slug = frontmatter.slug || filename.replace('.md', '');
 
-        posts.push({
-          ...frontmatter,
-          slug,
-          filename,
-        });
-      } catch (err) {
-        console.error(`Error loading blog post from ${path}:`, err);
-      }
+      posts.push({
+        ...frontmatter,
+        slug,
+        filename,
+      });
+    } catch (err) {
+      console.error(`Error loading blog post from ${path}:`, err);
     }
-
-    return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-  } catch (error) {
-    console.error('Error loading blog posts:', error);
-    return [];
   }
+
+  return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
 /**
@@ -111,40 +108,25 @@ export async function loadBlogPosts() {
  */
 export async function loadBlogPost(slug) {
   try {
-    // Use dynamic import with eager: false to ensure modules work at runtime
-    const blogModules = import.meta.glob('/src/blog/*.md', { as: 'raw', eager: false });
-
-    // First, check if we have any modules at all
-    const modulePaths = Object.keys(blogModules);
-    if (modulePaths.length === 0) {
-      console.error('No blog modules found');
-      return null;
-    }
-
-    // Try to find the matching slug
+    // Since we're using eager loading, modules are already loaded
     for (const path in blogModules) {
       const filename = path.split('/').pop();
       const fileSlug = filename.replace('.md', '');
 
       if (fileSlug === slug) {
-        try {
-          const content = await blogModules[path]();
-          const { frontmatter, content: markdownContent } = parseFrontmatter(content);
+        const content = blogModules[path];
+        const { frontmatter, content: markdownContent } = parseFrontmatter(content);
 
-          return {
-            ...frontmatter,
-            slug,
-            content: markdownContent,
-            html: markdownToHtml(markdownContent),
-          };
-        } catch (loadError) {
-          console.error(`Error loading specific blog post ${slug}:`, loadError);
-          return null;
-        }
+        return {
+          ...frontmatter,
+          slug,
+          content: markdownContent,
+          html: markdownToHtml(markdownContent),
+        };
       }
     }
 
-    console.error(`Blog post with slug "${slug}" not found in available modules:`, modulePaths);
+    console.error(`Blog post with slug "${slug}" not found`);
     return null;
   } catch (error) {
     console.error('Error in loadBlogPost:', error);
