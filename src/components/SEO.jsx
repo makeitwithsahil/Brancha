@@ -1,18 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-/**
- * SEO Component - Optimized
- * 
- * ✅ [SEO SAFE] All meta tags and structured data preserved
- * ✅ [SAFE - No visual change] Memoized computations for performance
- * ✅ [SAFE - No visual change] Efficient DOM manipulation
- */
 export default function SEO({
   title,
   description,
   canonical,
-  ogImage = '/og-default.jpg',
+  ogImage = '/favicon.png',
   ogType = 'website',
   noindex = false,
   schema,
@@ -20,11 +13,9 @@ export default function SEO({
 }) {
   const location = useLocation();
   
-  // ✅ [SAFE - No visual change] Memoize static values
   const siteName = useMemo(() => 'Brancha', []);
   const baseUrl = useMemo(() => 'https://brancha.in', []);
   
-  // ✅ [SAFE - No visual change] Memoize computed values
   const fullTitle = useMemo(() => 
     title ? `${title} | ${siteName}` : `${siteName} - Where Brands Grow`,
     [title, siteName]
