@@ -6,11 +6,11 @@ import {
   Linkedin, Instagram, ArrowRight, Clock, Save, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { 
-  contactFormDraft, 
-  packageInterest, 
+import {
+  contactFormDraft,
+  packageInterest,
   journeyTracking,
-  visitorTracking 
+  visitorTracking
 } from '../utils/storage';
 
 export default function Contact() {
@@ -33,7 +33,7 @@ export default function Contact() {
 
   useEffect(() => {
     document.title = 'Contact Brancha - Get Your Free Online Presence Audit';
-    
+
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute("content", 'Contact Brancha for Foundation Package or Monthly Management. Get a free audit to see where you\'re losing customers and how to fix it.');
@@ -45,7 +45,7 @@ export default function Contact() {
       setFormData(draft);
       setDraftLoaded(true);
       setShowDraftNotification(true);
-      
+
       setTimeout(() => setShowDraftNotification(false), 5000);
     }
 
@@ -162,14 +162,14 @@ export default function Contact() {
 
   const createWhatsAppMessage = () => {
     const { name, email, phone, service, message, budget } = formData;
-    
+
     const journey = journeyTracking.get();
     const journeyString = journey.map(j => j.name).join(' → ');
     const isReturning = visitorTracking.isReturning();
     const visitCount = visitorTracking.getVisitCount();
-    
+
     const text = `Hello Brancha Team!%0A%0A*New Inquiry*%0A%0A*Name:* ${encodeURIComponent(name)}%0A*Email:* ${encodeURIComponent(email)}%0A*Phone:* ${phone ? encodeURIComponent(phone) : 'Not provided'}%0A*Interested In:* ${encodeURIComponent(service)}%0A*Budget:* ${budget ? encodeURIComponent(budget) : 'Not specified'}%0A%0A*Details:*%0A${encodeURIComponent(message)}%0A%0A*User Info:*%0A${isReturning ? `Returning visitor (${visitCount} visits)` : 'First-time visitor'}%0AJourney: ${encodeURIComponent(journeyString)}%0A%0ALooking forward to discussing!`;
-    
+
     return `https://wa.me/919219917186?text=${text}`;
   };
 
@@ -196,7 +196,7 @@ export default function Contact() {
     try {
       const journey = journeyTracking.get();
       const isReturning = visitorTracking.isReturning();
-      
+
       // Prepare form data for Web3Forms
       const submitData = {
         access_key: "0e53af2d-694f-4d64-9537-f4f7153813c7",
@@ -229,10 +229,10 @@ export default function Contact() {
       if (result.success) {
         // Clear draft
         contactFormDraft.clear();
-        
+
         // Show success
         setIsSuccess(true);
-        
+
         // Reset form
         setFormData({
           name: '',
@@ -332,7 +332,7 @@ export default function Contact() {
               className="text-base sm:text-lg md:text-xl text-[#6B6B6B] leading-relaxed max-w-3xl mx-auto"
               style={{ fontWeight: 400 }}
             >
-              Share your challenges, and we'll show you exactly how to build a reliable online presence 
+              Share your challenges, and we'll show you exactly how to build a reliable online presence
               that brings consistent enquiries.
             </motion.p>
           </div>
@@ -426,7 +426,7 @@ export default function Contact() {
                   Message Sent Successfully!
                 </h2>
                 <p className="text-base sm:text-lg text-[#6B6B6B] mb-6" style={{ fontWeight: 400 }}>
-                  We've received your inquiry and will respond within 24 hours. 
+                  We've received your inquiry and will respond within 24 hours.
                   You should also receive a confirmation email shortly.
                 </p>
                 <p className="text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>
@@ -538,11 +538,10 @@ export default function Contact() {
                     {budgetRanges.map((range) => (
                       <label
                         key={range}
-                        className={`relative cursor-pointer ${
-                          formData.budget === range
-                            ? 'bg-[#e2493b]/10 border-[#e2493b] text-[#e2493b] shadow-sm'
-                            : 'bg-white border-[#EFEDE9] hover:border-[#e2493b]/30 hover:bg-[#EFEDE9] text-[#1F1F1F]'
-                        } border rounded-xl p-3 text-center transition-all duration-300`}
+                        className={`relative cursor-pointer ${formData.budget === range
+                          ? 'bg-[#e2493b]/10 border-[#e2493b] text-[#e2493b] shadow-sm'
+                          : 'bg-white border-[#EFEDE9] hover:border-[#e2493b]/30 hover:bg-[#EFEDE9] text-[#1F1F1F]'
+                          } border rounded-xl p-3 text-center transition-all duration-300`}
                       >
                         <input
                           type="radio"
@@ -671,9 +670,32 @@ export default function Contact() {
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </Link>
+
             </div>
+            <div className="pt-8 pb-4 flex justify-center">
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSfHmxDru_ZcD7Hiry_vcMrEkaCgZVuH0ekjAIVB9h7OWS7xhA/viewform"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <motion.button
+                  className="group relative px-6 py-3 text-sm font-medium text-[#1F1F1F] bg-white border border-[#EFEDE9] rounded-full inline-flex items-center gap-2 overflow-hidden transition-all duration-300 hover:border-[#e2493b] hover:shadow-lg hover:shadow-[#e2493b]/10"
+                  whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ fontWeight: 500 }}
+                >
+                  <MessageSquare className="w-4 h-4 text-[#e2493b]" />
+                  <span className="relative z-10">Share Feedback</span>
+
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#e2493b]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.button>
+              </a>
+            </div>
+
           </div>
+
         </div>
+
       </section>
     </div>
   );
