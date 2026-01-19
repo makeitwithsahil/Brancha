@@ -322,7 +322,7 @@ export default function Contact() {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-[#1F1F1F] mb-4 sm:mb-6 leading-tight"
               style={{ letterSpacing: '-0.02em', fontWeight: 400 }}
             >
-              Let's <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>talk business</span>
+              Ready to <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>grow?</span>
             </motion.h1>
 
             <motion.p
