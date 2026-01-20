@@ -118,7 +118,7 @@ export default function Contact() {
       icon: <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />,
       title: 'Location',
       detail: 'Vadodara, Gujarat',
-      action: null,
+      action: "https://www.google.com/maps/place/Vadodara,+Gujarat/@22.3222406,73.0906857,12z/data=!3m1!4b1!4m6!3m5!1s0x395fc8ab91a3ddab:0xac39d3bfe1473fb8!8m2!3d22.3000395!4d73.2064994!16zL20vMDJrZnhr?entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D",
       description: 'Serving businesses worldwide — remotely'
     }
   ];
