@@ -73,12 +73,12 @@ export default function Contact() {
   }, [formData]);
 
   const services = [
-    'Foundation Package - Basic (₹12K-₹18K)',
-    'Foundation Package - Pro (₹28K-₹40K)',
-    'Foundation Package - Growth (₹55K-₹75K)',
-    'Monthly Management - Basic (₹5K-₹7K)',
-    'Monthly Management - Pro (₹10K-₹15K)',
-    'Monthly Management - Growth (₹20K-₹30K)',
+    'Foundation Package - Basic',
+    'Foundation Package - Pro',
+    'Foundation Package - Growth',
+    'Monthly Management - Basic',
+    'Monthly Management - Pro',
+    'Monthly Management - Growth',
     'Not Sure / Need Consultation'
   ];
 
