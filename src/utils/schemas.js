@@ -107,9 +107,12 @@ export const organizationSchema = {
     }
   ],
   sameAs: [
-    'https://www.instagram.com/brancha.in',
-    'https://www.linkedin.com/company/brancha',
-    'https://twitter.com/getbrancha'
+    'https://instagram.com/growwithbrancha',
+    'https://linkedin.com/company/brancha',
+    'https://youtube.com/@growwithbrancha',
+    'https://threads.com/@growwithbrancha',
+    'https://www.facebook.com/profile.php?id=61586163604676',
+    'https://x.com/growwithbrancha'
   ],
   foundingDate: '2024',
   founder: [
@@ -228,9 +231,12 @@ export const localBusinessSchema = {
     }
   ],
   sameAs: [
-    'https://www.instagram.com/brancha.in',
-    'https://www.linkedin.com/company/brancha',
-    'https://twitter.com/getbrancha'
+    'https://instagram.com/growwithbrancha',
+    'https://linkedin.com/company/brancha',
+    'https://youtube.com/@growwithbrancha',
+    'https://threads.com/@growwithbrancha',
+    'https://www.facebook.com/profile.php?id=61586163604676',
+    'https://x.com/growwithbrancha'
   ],
   areaServed: [
     {
