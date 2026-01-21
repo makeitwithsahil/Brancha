@@ -97,7 +97,7 @@ export default function SEO({
     setMetaTag('name', 'twitter:title', fullTitle);
     setMetaTag('name', 'twitter:description', description);
     setMetaTag('name', 'twitter:image', ogImageUrl);
-    setMetaTag('name', 'twitter:creator', '@getbrancha');
+    setMetaTag('name', 'twitter:creator', '@growwithbrancha');
 
     // ✅ [SEO SAFE] Additional Meta Tags
     setMetaTag('name', 'format-detection', 'telephone=yes');

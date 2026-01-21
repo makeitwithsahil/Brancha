@@ -127,7 +127,7 @@ export default function Contact() {
     {
       name: 'Instagram',
       icon: <Instagram className="w-5 h-5" />,
-      url: 'https://instagram.com/getbrancha',
+      url: 'https://instagram.com/growwithbrancha',
       color: 'from-purple-500 to-pink-500'
     },
     {

@@ -172,7 +172,7 @@ export default function Footer() {
   }), []);
 
   const socialLinks = useMemo(() => [
-    { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, url: 'https://instagram.com/getbrancha' },
+    { name: 'Instagram', icon: <Instagram className="w-5 h-5" />, url: 'https://instagram.com/growwithbrancha' },
     { name: 'LinkedIn', icon: <Linkedin className="w-5 h-5" />, url: 'https://linkedin.com/company/brancha' }
   ], []);
 
