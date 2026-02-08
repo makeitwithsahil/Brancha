@@ -565,7 +565,7 @@ export default function GymContact() {
                         </button>
 
                         {isServiceDropdownOpen && (
-                          <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl z-10 max-h-64 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto animate-dropdown-open">
                             {serviceOptions.map((option) => (
                               <button
                                 key={option.value}
@@ -603,7 +603,7 @@ export default function GymContact() {
                         </button>
 
                         {isBudgetDropdownOpen && (
-                          <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl z-10">
+                          <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl z-50">
                             {budgetOptions.map((option) => (
                               <button
                                 key={option.value}
@@ -815,8 +815,23 @@ export default function GymContact() {
             }
           }
 
+          @keyframes dropdown-open {
+            from {
+              opacity: 0;
+              transform: translateY(-10px) scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
           .animate-slide-in-fade {
             animation: slide-in-fade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+
+          .animate-dropdown-open {
+            animation: dropdown-open 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           }
 
           .fade-in {
