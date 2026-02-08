@@ -1,0 +1,58 @@
+{
+  "posts": [
+    {
+      "slug": "why-gym-websites-fail-quietly",
+      "title": "Why Gym Websites Fail Quietly",
+      "date": "January 28, 2025",
+      "readTime": "6 min read",
+      "category": "Systems",
+      "summary": "Most gym websites don't crash. They don't throw errors. They just sit there, looking fine, while enquiries never arrive. Here's what's usually breaking without anyone noticing.",
+      "featured": true
+    },
+    {
+      "slug": "how-to-increase-gym-memberships",
+      "title": "How to Increase Gym Memberships",
+      "date": "February 1, 2026",
+      "readTime": "8 min read",
+      "category": "Growth",
+      "summary": "Practical strategies to grow your gym membership without relying on expensive marketing campaigns or aggressive sales tactics.",
+      "featured": false
+    },
+    {
+      "slug": "most-gym-marketing-just-drifts",
+      "title": "Most Gym Marketing Just Drifts",
+      "date": "February 5, 2026",
+      "readTime": "7 min read",
+      "category": "Marketing",
+      "summary": "Why most gym marketing feels aimless and what to do instead. Stop throwing money at ads that don't convert.",
+      "featured": false
+    },
+    {
+      "slug": "whatsapp-enquiries-where-members-disappear",
+      "title": "WhatsApp Enquiries: Where Members Disappear",
+      "date": "February 8, 2026",
+      "readTime": "7 min read",
+      "category": "Systems",
+      "summary": "You get enquiries, you reply, they say they'll visit... then nothing. Here's why you're losing 60-70% of potential members in the first 48 hours.",
+      "featured": false
+    },
+    {
+      "slug": "you-keep-hiring-wrong-trainers",
+      "title": "You Keep Hiring the Wrong Trainers",
+      "date": "February 10, 2026",
+      "readTime": "6 min read",
+      "category": "Operations",
+      "summary": "Every few months you're hiring again. Another trainer quit or turned out terrible. The problem isn't the talent pool—it's how you're hiring.",
+      "featured": false
+    },
+    {
+      "slug": "members-dont-care-about-new-equipment",
+      "title": "Your Members Don't Care About Your New Equipment",
+      "date": "February 12, 2026",
+      "readTime": "6 min read",
+      "category": "Growth",
+      "summary": "You spent ₹3 lakhs on new machines. Members barely notice. Meanwhile, the gym with basic equipment down the street is fully booked. Here's why.",
+      "featured": false
+    }
+  ]
+}

@@ -1,430 +1,676 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, AlertCircle, ArrowRight, TrendingUp } from 'lucide-react';
-import { useEffect, useMemo, useCallback, memo } from 'react';
+import { ArrowRight, Sparkles, CheckCircle2, Zap } from 'lucide-react';
+import { useEffect, memo, useState, useMemo, useRef, useCallback } from 'react';
+import { link } from 'framer-motion/client';
+import SEO from '../components/SEO';
+import { organizationSchema } from '../utils/schemas';
+import { 
+  session, 
+  performanceTracking, 
+  leadIntent, 
+  userPreferences,
+  journeyTracking 
+} from '../utils/storage';
 
-const problems = [
+/* ────────────────────────────────────────────
+   SATOSHI FONT IMPORT  (CDN – Fontsource)
+   ──────────────────────────────────────────── */
+const SATOSHI_LINK = 'https://fonts.cdnfonts.com/css/satoshi?display=swap';
+
+/* ─── DATA ─── */
+const industries = [
   {
-    icon: <AlertCircle className="w-5 h-5" />,
-    title: "Customers can't find you when they're ready to buy",
-    description: "When someone searches for your service right now, they find outdated details or a website that looks unprofessional. They call your competitor instead. You never know you lost them."
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4Z" />
+        <line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" />
+      </svg>
+    ),
+    title: 'Fitness Studios',
+    challenge: 'Sign-ups come in. Half never show.',
+    outcome: 'We turn trials into paying members.',
+    link: '/gym'
   },
   {
-    icon: <AlertCircle className="w-5 h-5" />,
-    title: "Weak online presence means lower prices and margins",
-    description: "If your brand doesn't look credible online, customers don't trust you enough to pay full price. They negotiate harder, ask for discounts, or just walk away to someone who looks more established."
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 21h18M3 10h18M5 6l7-3 7 3M5 10v11M19 10v11M9 21v-6h6v6" />
+      </svg>
+    ),
+    title: 'Real Estate',
+    challenge: 'Ad spend goes up. Results stay hidden.',
+    outcome: 'Every lead tracked to where it came from.',
+    link: '/real-estate'
   },
   {
-    icon: <AlertCircle className="w-5 h-5" />,
-    title: "No system means unpredictable revenue",
-    description: "Without proper online management, enquiries are random. Good months and slow months happen by chance. You can't grow a business when you don't control where customers come from."
-  }
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" />
+      </svg>
+    ),
+    title: 'Healthcare',
+    challenge: 'Patients visit once. Then vanish.',
+    outcome: 'Systems that bring them back.',
+    link: '/healthcare'
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="m6 12v5c3 3 9 3 12 0v-5" />
+      </svg>
+    ),
+    title: 'Education',
+    challenge: 'Admissions take forever. Chaos grows.',
+    outcome: 'Automated systems. No manual work.',
+    link: '/education'
+  },
 ];
 
-const foundationPackages = [
-  {
-    name: "Basic",
-    tagline: "Stop losing customers who are already searching for you",
-    solves: ["Wrong contact details online", "No clear way to reach you", "Website that doesn't build trust"],
-    delivers: ["Complete online presence audit", "Google Business Profile setup and correction", "WhatsApp Business for faster responses", "Brand clarity fixes", "One-page website built to get calls", "QR code for menu or contact card"],
-    result: "Customers who search for you will actually reach you and contact you"
-  },
-  {
-    name: "Pro",
-    tagline: "Get better customers who pay more and negotiate less",
-    solves: ["Customers only asking about price", "Being compared to every competitor", "Website visitors who don't convert"],
-    delivers: ["Everything in Basic", "Clear brand positioning that justifies your pricing", "Professional logo and brand identity", "Menu or service design that increases value perception", "3–5 page website designed to convert visitors", "Sales-focused copywriting throughout", "Competitor research and analysis", "30 days of content direction"],
-    result: "Higher-quality enquiries, better average order value, less price resistance",
-    popular: true
-  },
-  {
-    name: "Growth",
-    tagline: "Build systems that bring predictable customers",
-    solves: ["Ad spending with unclear returns", "No way to track where enquiries come from", "Lost leads because there's no follow-up"],
-    delivers: ["Everything in Pro", "Backend systems for lead capture", "Analytics and conversion tracking", "SEO foundation for organic growth", "Automated email and follow-up sequences", "Professional business photography"],
-    result: "Measurable customer acquisition with clear return on every rupee spent"
-  }
-];
+/* ─── HAND-DRAWN SVGs ─── */
+const HDCircle = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 200 200" fill="none">
+    <path d="M100,12 C140,10 175,38 182,75 C190,118 170,165 130,180 C88,193 38,178 22,140 C6,100 18,48 55,22 C72,12 86,13 100,12Z" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.38" />
+    <path d="M100,20 C136,18 168,44 174,78 C181,114 164,157 128,172 C92,184 48,172 34,138 C20,104 30,54 62,28" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.16" strokeDasharray="4 7" />
+  </svg>
+));
+const HDUnderline = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 440 28" preserveAspectRatio="none" fill="none">
+    <path d="M8,16 C50,20 100,10 160,15 C220,20 270,8 330,14 C380,19 420,12 434,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.45" />
+    <path d="M6,21 C48,24 98,15 158,19 C218,24 268,13 328,18 C378,22 418,16 436,18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.18" strokeDasharray="4 8" />
+  </svg>
+));
+const HDArrow = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 160 90" fill="none">
+    <path d="M12,52 C30,48 55,54 80,50 C105,46 125,44 138,36" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" opacity="0.38" />
+    <path d="M122,22 L140,38 L124,50" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.38" />
+    <path d="M8,58 C28,55 52,60 76,56" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.18" strokeDasharray="3 6" />
+  </svg>
+));
+const HDScribble = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 180 110" fill="none">
+    <path d="M20,58 Q38,32 58,56 Q78,80 98,52 Q118,24 138,54 Q152,72 160,56" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.3" />
+    <path d="M26,66 Q42,44 60,64 Q78,82 96,60 Q114,38 132,60" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.14" strokeDasharray="3 7" />
+  </svg>
+));
+const HDStar = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 120 120" fill="none">
+    <path d="M60,15 L65,48 L96,36 L76,62 L108,78 L72,76 L78,108 L60,82 L42,108 L48,76 L12,78 L44,62 L24,36 L55,48 Z" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M60,26 L64,50 L88,42 L74,60 L98,73 L74,72 L78,98 L60,78 L42,98 L46,72 L22,73 L46,60 L32,42 L56,50 Z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.14" strokeDasharray="4 6" />
+  </svg>
+));
+const HDCoil = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 40 180" fill="none">
+    <path d="M20,8 C36,18 36,38 20,48 C4,58 4,78 20,88 C36,98 36,118 20,128 C4,138 4,158 20,168" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.34" />
+  </svg>
+));
+const HDDots = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 130 130" fill="none">
+    <circle cx="22" cy="22" r="4.5" fill="currentColor" opacity="0.28" /><circle cx="65" cy="18" r="3.2" fill="currentColor" opacity="0.2" />
+    <circle cx="108" cy="28" r="4" fill="currentColor" opacity="0.25" /><circle cx="38" cy="65" r="3" fill="currentColor" opacity="0.18" />
+    <circle cx="90" cy="68" r="3.8" fill="currentColor" opacity="0.22" /><circle cx="18" cy="108" r="3.5" fill="currentColor" opacity="0.2" />
+    <circle cx="65" cy="105" r="4" fill="currentColor" opacity="0.25" /><circle cx="112" cy="112" r="3" fill="currentColor" opacity="0.18" />
+  </svg>
+));
+const HDSparkle = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 100 100" fill="none">
+    <path d="M50,10 L53,44 L50,44 L47,44 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M10,50 L44,47 L44,50 L44,53 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M50,90 L47,56 L50,56 L53,56 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M90,50 L56,53 L56,50 L56,47 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <circle cx="50" cy="50" r="5" fill="currentColor" opacity="0.38" />
+  </svg>
+));
+const HDCheck = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 30 30" fill="none">
+    <path d="M6,16 L13,22 L24,9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.9" />
+    <path d="M7,17 L12,21 L23,10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.28" strokeDasharray="2 4" />
+  </svg>
+));
 
-const monthlyPackages = [
-  {
-    name: "Basic",
-    tagline: "Maintain your presence so customers keep coming",
-    includes: ["Google Business updates and ranking improvements", "Review management to build trust", "Website updates and security", "Seasonal and festival updates", "Monthly performance reports", "Improvement recommendations"],
-    result: "Steady baseline of enquiries without customer loss"
-  },
-  {
-    name: "Pro",
-    tagline: "Generate consistent enquiries every single month",
-    includes: ["Everything in Basic", "Instagram and Facebook management", "Professional content creation", "4–6 reels edited and posted monthly", "SEO improvements for better ranking", "Meta or Google Ads management", "Customer feedback collection and response"],
-    result: "Reliable flow of qualified enquiries that turn into revenue",
-    popular: true
-  },
-  {
-    name: "Growth",
-    tagline: "Control exactly how many customers you get",
-    includes: ["Everything in Pro", "Advanced ad optimization for lower costs", "Email remarketing to lost leads", "Conversion rate optimization", "Competitor monitoring and response", "Monthly strategy and planning calls"],
-    result: "Predictable customer volume at the lowest possible cost per acquisition"
-  }
-];
+/* ─── MOTION VARIANTS ─── */
+const fadeInScale = { initial: { opacity: 0, scale: 0.94 }, animate: { opacity: 1, scale: 1 } };
+const staggerContainer = { animate: { transition: { staggerChildren: 0.11, delayChildren: 0.14 } } };
 
-const ProblemCard = memo(({ problem, index, prefersReducedMotion }) => (
-  <article 
-    className="group relative p-6 sm:p-7 bg-[#FAF9F7] border border-[#EFEDE9] rounded-2xl transition-all duration-300 hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5"
-  >
-    <div 
-      className="w-11 h-11 sm:w-12 sm:h-12 mb-4 rounded-full bg-[#e2493b]/10 flex items-center justify-center text-[#e2493b] transition-all duration-300 group-hover:bg-[#e2493b] group-hover:text-white"
+/* ─── INDUSTRY CARD ─── */
+const IndustryCard = memo(({ industry, isReturningUser, hasVisitedBefore }) => {
+  // ✅ [STORAGE] Track lead interest when user interacts
+  const handleInteraction = useCallback(() => {
+    if (isReturningUser) {
+      leadIntent.markInterest(industry.title);
+    }
+  }, [industry.title, isReturningUser]);
+
+  return (
+    <motion.article
+      variants={fadeInScale}
+      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden hover:border-[#F1464A]/40 transition-all duration-500 cursor-default h-full flex flex-col"
+      style={{ padding: '28px 26px' }}
+      onMouseEnter={handleInteraction}
+      onFocus={handleInteraction}
     >
-      {problem.icon}
-    </div>
-    
-    <h3 className="text-lg sm:text-xl font-medium text-[#1F1F1F] mb-3 leading-snug transition-colors duration-300 group-hover:text-[#e2493b]" style={{ fontWeight: 500 }}>
-      {problem.title}
-    </h3>
-    <p className="text-sm sm:text-base text-[#6B6B6B] leading-relaxed transition-colors duration-300 group-hover:text-[#1F1F1F]" style={{ fontWeight: 400 }}>
-      {problem.description}
-    </p>
-  </article>
-));
-
-const FoundationCard = memo(({ pkg, index, prefersReducedMotion }) => (
-  <article 
-    className={`group relative p-6 sm:p-7 bg-white rounded-2xl transition-all duration-300 ${pkg.popular ? 'border-2 border-[#e2493b] shadow-xl shadow-[#e2493b]/10' : 'border border-[#EFEDE9] hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5'}`}
-  >
-    {pkg.popular && (
-      <div 
-        className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1 sm:py-1.5 bg-gradient-to-r from-[#e2493b] to-[#d34437] text-white text-xs font-semibold rounded-full tracking-wide whitespace-nowrap shadow-lg shadow-[#e2493b]/30"
-        style={{ fontWeight: 600 }}
-      >
-        MOST POPULAR
+      {/* subtle red wash on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#F1464A]/[0.055] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+      {/* star accent */}
+      <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-[0.2] transition-opacity duration-500 pointer-events-none">
+        <HDStar className="text-[#F1464A]" style={{ width: 56, height: 56 }} />
       </div>
-    )}
-    
-    <div className="mb-5 relative z-10">
-      <h4 className="text-xl sm:text-2xl font-medium text-[#1F1F1F] mb-2 transition-colors duration-300 group-hover:text-[#e2493b]" style={{ letterSpacing: '-0.01em', fontWeight: 500 }}>
-        {pkg.name}
-      </h4>
-      <p className="text-xs sm:text-sm text-[#6B6B6B] leading-relaxed italic" style={{ fontWeight: 400 }}>{pkg.tagline}</p>
-    </div>
+      
+      {/* ✅ [STORAGE] Subtle visited indicator - no new content, just a visual cue */}
+      {hasVisitedBefore && (
+        <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-[#F1464A] opacity-30" aria-hidden="true" />
+      )}
 
-    <div className="mb-5 pb-5 border-b border-[#EFEDE9]">
-      <p className="text-xs font-semibold text-[#e2493b] mb-3 tracking-wider uppercase" style={{ fontWeight: 600 }}>What it fixes:</p>
-      <ul className="space-y-2">
-        {pkg.solves.map((item, i) => (
-          <li key={i} className="text-xs sm:text-sm text-[#6B6B6B] flex items-start gap-2" style={{ fontWeight: 400 }}>
-            <span className="text-[#e2493b] mt-0.5 flex-shrink-0">•</span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <div className="mb-5">
-      <p className="text-xs font-semibold text-[#1F1F1F] mb-3 tracking-wider uppercase" style={{ fontWeight: 600 }}>What you get:</p>
-      <ul className="space-y-2.5">
-        {pkg.delivers.map((item, i) => (
-          <li 
-            key={i} 
-            className="flex items-start gap-2.5 transition-transform duration-200 hover:translate-x-1"
-          >
-            <CheckCircle2 className="w-4 h-4 text-[#e2493b] flex-shrink-0 mt-0.5" />
-            <span className="text-xs sm:text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <div className="pt-5 border-t border-[#EFEDE9]">
-      <p className="text-xs font-semibold text-[#1F1F1F] mb-2 tracking-wider uppercase" style={{ fontWeight: 600 }}>Business outcome:</p>
-      <p className="text-xs sm:text-sm text-[#e2493b] font-medium leading-relaxed" style={{ fontWeight: 500 }}>{pkg.result}</p>
-    </div>
-  </article>
-));
-
-const MonthlyCard = memo(({ pkg, index, prefersReducedMotion }) => (
-  <article 
-    className={`group relative p-6 sm:p-7 bg-white rounded-2xl transition-all duration-300 ${pkg.popular ? 'border-2 border-[#e2493b] shadow-xl shadow-[#e2493b]/10' : 'border border-[#EFEDE9] hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5'}`}
-  >
-    {pkg.popular && (
-      <div 
-        className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1 sm:py-1.5 bg-gradient-to-r from-[#e2493b] to-[#e2493b] text-white text-xs font-semibold rounded-full tracking-wide whitespace-nowrap shadow-lg shadow-[#e2493b]/30"
-        style={{ fontWeight: 600 }}
-      >
-        MOST POPULAR
+      <div className="relative z-10 flex flex-col flex-1">
+        {/* icon */}
+        <div className="w-11 h-11 mb-5 rounded-xl bg-[#F1464A]/[0.07] border border-[#F1464A]/[0.12]
+                        flex items-center justify-center text-[#F1464A]
+                        transition-all duration-300 group-hover:bg-[#F1464A] group-hover:text-white group-hover:shadow-md group-hover:shadow-[#F1464A]/25">
+          {industry.icon}
+        </div>
+        {/* title – bold */}
+        <h3 className="font-bold text-[#1F1F1F] mb-2 tracking-tight" style={{ fontSize: 'clamp(15px, 2vw, 18px)' }}>
+          {industry.title}
+        </h3>
+        {/* challenge – italic medium */}
+        <p className="text-[#8A8A8A] mb-2 leading-snug min-h-[2.5rem]" style={{ fontStyle: 'italic', fontWeight: 500, fontSize: 'clamp(13px, 1.6vw, 15px)' }}>
+          {industry.challenge}
+        </p>
+        {/* outcome – medium */}
+        <div className="relative inline-block mb-8 flex-1">
+          <p className="text-[#1F1F1F] leading-snug min-h-[2.5rem]" style={{ fontWeight: 500, fontSize: 'clamp(13px, 1.6vw, 15px)' }}>
+            {industry.outcome}
+          </p>
+          <HDUnderline className="absolute left-0 w-full text-[#F1464A] opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ bottom: -4, height: 10 }} />
+        </div>
+        {/* CTA Button */}
+        <div className="mt-auto">
+          <Link to={industry.link} className="block">
+            <motion.button
+              className="group/btn relative w-full inline-flex items-center justify-center gap-2 text-[#F1464A] font-bold bg-white rounded-lg overflow-hidden border-2 border-[#F1464A]/20 hover:border-[#F1464A] transition-all duration-300"
+              style={{ padding: '12px 20px', fontSize: '14px' }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10">Learn More</span>
+              <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover/btn:translate-x-1" strokeWidth={2.5} />
+              <div className="absolute inset-0 bg-[#F1464A]/[0.05] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+            </motion.button>
+          </Link>
+        </div>
       </div>
-    )}
-    
-    <div className="mb-5 relative z-10">
-      <h4 className="text-xl sm:text-2xl font-medium text-[#1F1F1F] mb-2 transition-colors duration-300 group-hover:text-[#e2493b]" style={{ letterSpacing: '-0.01em', fontWeight: 500 }}>
-        {pkg.name}
-      </h4>
-      <p className="text-xs sm:text-sm text-[#6B6B6B] leading-relaxed italic" style={{ fontWeight: 400 }}>{pkg.tagline}</p>
-    </div>
+    </motion.article>
+  );
+});
 
-    <div className="mb-5">
-      <p className="text-xs font-semibold text-[#1F1F1F] mb-3 tracking-wider uppercase" style={{ fontWeight: 600 }}>Monthly work:</p>
-      <ul className="space-y-2.5">
-        {pkg.includes.map((item, i) => (
-          <li 
-            key={i} 
-            className="flex items-start gap-2.5 transition-transform duration-200 hover:translate-x-1"
-          >
-            <CheckCircle2 className="w-4 h-4 text-[#e2493b] flex-shrink-0 mt-0.5" />
-            <span className="text-xs sm:text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <div className="pt-5 border-t border-[#EFEDE9]">
-      <p className="text-xs font-semibold text-[#1F1F1F] mb-2 tracking-wider uppercase" style={{ fontWeight: 600 }}>Business outcome:</p>
-      <p className="text-xs sm:text-sm text-[#e2493b] font-medium leading-relaxed" style={{ fontWeight: 500 }}>{pkg.result}</p>
-    </div>
-  </article>
-));
-
+/* ══════════════════════════════════════════════════════════════════ */
 export default function Home() {
   const prefersReducedMotion = useReducedMotion();
+  
+  // ✅ [STORAGE] Performance tracking
+  const mountTimeRef = useRef(Date.now());
+  
+  // ✅ [STORAGE] Personalization state
+  const [isReturningUser, setIsReturningUser] = useState(false);
+  const [visitedPages, setVisitedPages] = useState([]);
+  
+  // ✅ [STORAGE] Memoize user preferences for performance
+  const lowPowerMode = useMemo(() => userPreferences.get('lowPowerMode', false), []);
+  const shouldReduceMotion = prefersReducedMotion || lowPowerMode;
 
   useEffect(() => {
-    document.title = 'Brancha - Where Brands Grow | Complete Online Presence for Local Businesses';
+    // inject Satoshi font link once
+    if (!document.getElementById('satoshi-font')) {
+      const link = document.createElement('link');
+      link.id = 'satoshi-font';
+      link.rel = 'stylesheet';
+      link.href = SATOSHI_LINK;
+      document.head.appendChild(link);
+    }
     
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Stop losing customers online. Brancha builds and manages a complete online presence for local businesses worldwide. Get consistent enquiries, not just designs.');
+    // ✅ [STORAGE] Initialize personalization data
+    const returningUser = session.isReturningUser();
+    const visited = session.getVisited();
+    setIsReturningUser(returningUser);
+    setVisitedPages(visited);
+    
+    // ✅ [STORAGE] Mark page as visited
+    session.markVisited('/');
+    
+    // ✅ [STORAGE] Track journey
+    journeyTracking.addPage('Home', '/');
+    
+    // ✅ [STORAGE] Track performance (non-blocking)
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        const loadTime = Date.now() - mountTimeRef.current;
+        const perfData = performance.getEntriesByType('navigation')[0];
+        if (perfData) {
+          performanceTracking.track('Home', {
+            loadTime,
+            componentMountTime: loadTime,
+            domContentLoaded: Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart),
+            isReturningUser: returningUser
+          });
+        }
+      });
     }
   }, []);
 
-  const renderProblemCard = useCallback((problem, index) => (
-    <ProblemCard key={index} problem={problem} index={index} prefersReducedMotion={prefersReducedMotion} />
-  ), [prefersReducedMotion]);
-
-  const renderFoundationCard = useCallback((pkg, index) => (
-    <FoundationCard key={index} pkg={pkg} index={index} prefersReducedMotion={prefersReducedMotion} />
-  ), [prefersReducedMotion]);
-
-  const renderMonthlyCard = useCallback((pkg, index) => (
-    <MonthlyCard key={index} pkg={pkg} index={index} prefersReducedMotion={prefersReducedMotion} />
-  ), [prefersReducedMotion]);
-
   return (
-    <main className="bg-[#FAF9F7] overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative pt-20 sm:pt-24 md:pt-28 pb-12 sm:pb-16 md:pb-20 overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.015] pointer-events-none" aria-hidden="true">
-          <div 
-            className="absolute inset-0" 
-            style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 111 97 / 0.12) 1px, transparent 0)`, backgroundSize: '48px 48px' }}
-          />
+    <main className="bg-[#FAF9F7] overflow-hidden relative" style={{ fontFamily: "'Satoshi', sans-serif" }}>
+      {/* ✅ [SEO] Add SEO component */}
+      <SEO
+        title="Industry Specialists in Conversion Architecture"
+        description="Precision-engineered digital systems for gyms, real estate, healthcare, and education."
+        canonical="/"
+        keywords="digital marketing, fitness marketing, real estate marketing, healthcare marketing, education marketing, conversion optimization"
+        schema={organizationSchema}
+      />
+
+      {/* grain */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.02] mix-blend-overlay" aria-hidden="true">
+        <div className="absolute inset-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundRepeat: 'repeat' }} />
+      </div>
+
+      {/* ══════ HERO ══════ */}
+      <section className="relative" style={{ paddingTop: 'clamp(100px, 16vw, 220px)', paddingBottom: 'clamp(56px, 8vw, 120px)' }}>
+        {/* bg glows */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F1464A]/[0.03] via-transparent to-transparent" />
+        <div className="absolute top-0 right-0 w-[55%] h-[65%] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#F1464A]/[0.04] via-transparent to-transparent" />
+
+        {/* drifting doodles – large screens only */}
+        <div className="absolute top-[10%] left-[3%] hidden xl:block animate-float pointer-events-none" style={{ opacity: 0.11 }}>
+          <HDScribble className="text-[#F1464A]" style={{ width: 120, height: 86 }} />
+        </div>
+        <div className="absolute top-[40%] right-[5%] hidden xl:block animate-float-delayed pointer-events-none" style={{ opacity: 0.09 }}>
+          <HDStar className="text-[#F1464A]" style={{ width: 80, height: 80 }} />
+        </div>
+        <div className="absolute bottom-[12%] left-[8%] hidden lg:block animate-float pointer-events-none" style={{ opacity: 0.08 }}>
+          <HDCircle className="text-[#F1464A]" style={{ width: 90, height: 90 }} />
         </div>
 
-        <div className="max-w-6xl pt-8 mx-auto px-4 sm:px-6 md:px-8 lg:px-10 relative">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 relative">
+          <motion.div
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 44 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center"
+          >
+            {/* ── badge – own block, stacked above headline ── */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.75, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-6"
             >
-              <div 
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e2493b]/5 border border-[#e2493b]/10 mb-6 sm:mb-8"
-              >
-                <TrendingUp className="w-3.5 h-3.5 text-[#e2493b]" aria-hidden="true" />
-                <span className="text-xs sm:text-sm font-medium text-[#e2493b] italic" style={{ letterSpacing: '0.01em', fontWeight: 500 }}>
-                  Where Brands Grow
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#F1464A]/[0.2] bg-white/90 backdrop-blur-sm shadow-sm shadow-[#F1464A]/[0.06]">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#F1464A] animate-pulse" />
+                <span className="text-[11px] font-bold text-[#F1464A] tracking-widest uppercase">
+                  Industry-Focused Solutions
                 </span>
+                <Sparkles className="w-3 h-3 text-[#F1464A]" />
               </div>
             </motion.div>
 
-            <motion.h1 
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }} 
-              className="text-[2.25rem] sm:text-5xl md:text-6xl lg:text-[4rem] font-normal text-[#1F1F1F] mb-4 sm:mb-6 leading-[1.1]" 
-              style={{ letterSpacing: '-0.02em', fontWeight: 400 }}
-            >
-              Stop losing customers
-              <br />
-              <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>start growing consistently</span>
-            </motion.h1>
+            {/* ── headline – block below badge ── */}
+            <div className="relative inline-block mb-5">
+              <h1 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.08]" style={{ fontSize: 'clamp(40px, 8vw, 88px)' }}>
+                Experts build
+                <br />
+                <span className="relative inline-block" style={{ marginTop: 4 }}>
+                  <span className="bg-gradient-to-r from-[#F1464A] via-[#D4433E] to-[#F1464A] bg-clip-text text-transparent">
+                    systems that convert
+                  </span>
+                  <HDUnderline className="absolute left-0 w-full text-[#F1464A]" style={{ bottom: -13, height: 18 }} />
+                </span>
+              </h1>
+            </div>
 
-            <motion.p 
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }} 
-              className="text-base sm:text-lg md:text-xl text-[#6B6B6B] max-w-2xl mx-auto mb-7 sm:mb-9 leading-relaxed" 
-              style={{ fontWeight: 400 }}
+            {/* ── sub – medium weight ── */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.85, delay: 0.42 }}
+              className="text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed mb-8"
+              style={{ fontSize: 'clamp(15px, 2vw, 18px)', fontWeight: 500 }}
             >
-              We build and manage a complete online presence for local businesses — so you get customers, not just designs.
+              Four industries. Four expert teams. Built to get results, not just look good.{' '}
+              <br /><span className="text-[#1F1F1F] font-bold">One focus. One team. Total mastery.</span>
             </motion.p>
 
-            <motion.div 
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.5, delay: 0.26, ease: [0.16, 1, 0.3, 1] }} 
-              className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
+            {/* ── CTA ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.6 }}
+              className="relative inline-block"
             >
-              <Link to="/contact" className="w-full sm:w-auto">
-                <motion.button 
-                  className="group relative w-full sm:w-auto px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white bg-gradient-to-br from-[#f44839] to-[#d23d2c] rounded-full shadow-lg shadow-[#e2493b]/20 flex items-center justify-center gap-2 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-[#e2493b]/30" 
-                  aria-label="Get your free business audit"
-                  whileHover={{ 
-                    scale: prefersReducedMotion ? 1 : 1.03,
-                    transition: { duration: 0.25 }
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ fontWeight: 500 }}
+              <Link to="/contact" onClick={() => leadIntent.markInterest('Contact - Hero CTA')}>
+                <motion.button
+                  className="group relative inline-flex items-center gap-2.5 text-white font-bold bg-gradient-to-r from-[#F1464A] to-[#C94A3F] rounded-full overflow-hidden shadow-lg shadow-[#F1464A]/[0.25] border border-[#F1464A]"
+                  style={{ padding: '14px 36px', fontSize: 'clamp(14px, 1.7vw, 16px)' }}
+                  whileHover={{ scale: shouldReduceMotion ? 1 : 1.04, boxShadow: '0 16px 36px -8px rgba(241,70,74,0.42)' }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <span className="relative z-10">Get Your Free Audit</span>
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="relative z-10">Start Your Project</span>
+                  <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.5} />
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.18] to-transparent" />
                 </motion.button>
               </Link>
-              
-              <Link to="/process" className="w-full sm:w-auto">
-                <motion.button 
-                  className="group relative w-full sm:w-auto px-7 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-[#1F1F1F] bg-transparent border-2 border-[#EFEDE9] rounded-full overflow-hidden transition-all duration-300 hover:border-[#e2493b] hover:bg-[#e2493b]/5" 
-                  aria-label="View our work and case studies"
-                  whileHover={{ 
-                    scale: prefersReducedMotion ? 1 : 1.03,
-                    transition: { duration: 0.25 }
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ fontWeight: 500 }}
-                >
-                  <span className="relative z-10 transition-colors duration-300 group-hover:text-[#e2493b]">How We Work</span>
-                </motion.button>
-              </Link>
+              {/* hand-drawn arrow below CTA */}
+              <div className="absolute -bottom-8 right-[8%] hidden lg:block pointer-events-none" style={{ opacity: 0.17 }}>
+                <HDArrow className="text-[#F1464A]" style={{ width: 100, height: 64, transform: 'rotate(20deg)' }} />
+              </div>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Problems Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
-              Your business is <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>losing money right now</span>
-            </h2>
-            <p className="text-base sm:text-lg text-[#6B6B6B] max-w-3xl mx-auto leading-relaxed" style={{ fontWeight: 400 }}>
-              These problems cost you real customers and real profit every day
-            </p>
-          </div>
+      {/* ══════ INDUSTRIES ══════ */}
+      <section className="relative" style={{ paddingTop: 'clamp(64px, 9vw, 140px)', paddingBottom: 'clamp(64px, 9vw, 140px)' }}>
+        <div className="absolute inset-0 bg-gradient-to-b via-transparent to-transparent pointer-events-none" />
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
-            {problems.map(renderProblemCard)}
-          </div>
-        </div>
-      </section>
-
-      {/* How We Work Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-[#FAF9F7]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-3 sm:mb-4" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
-              How we work
-            </h2>
-            <p className="text-base sm:text-lg text-[#6B6B6B] max-w-3xl mx-auto leading-relaxed" style={{ fontWeight: 400 }}>
-              First, we fix your online presence properly. Then, we manage it every month so customers keep coming.
-            </p>
-          </div>
-
-          {/* Foundation Package */}
-          <div className="mb-16 sm:mb-20">
-            <div className="text-center mb-8 sm:mb-10">
-              <div 
-                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-3 sm:mb-4 transition-all duration-300 hover:shadow-md hover:shadow-[#e2493b]/10"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>Step 1 — One-Time</span>
+        <div className="max-w-5xl mx-auto px-5 sm:px-8">
+          {/* header */}
+          <motion.div
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center mb-10 sm:mb-14"
+          >
+            {/* tag – its own block */}
+            <div className="mb-5">
+              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#F1464A]/[0.18] bg-[#F1464A]/[0.06]">
+                <Zap className="w-3 h-3 text-[#F1464A]" />
+                <span className="text-[11px] font-bold text-[#F1464A] tracking-widest uppercase">Expert Teams</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-2" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>Foundation Package</h3>
-              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>Stop losing customers by building proper online presence from scratch</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              {foundationPackages.map(renderFoundationCard)}
-            </div>
-          </div>
-
-          {/* Monthly Package */}
-          <div>
-            <div className="text-center mb-8 sm:mb-10">
-              <div 
-                className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-3 sm:mb-4 transition-all duration-300 hover:shadow-md hover:shadow-[#e2493b]/10"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>Step 2 — Ongoing</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#1F1F1F] mb-2" style={{ letterSpacing: '-0.015em', fontWeight: 400 }}>Monthly Management Package</h3>
-              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-2xl mx-auto" style={{ fontWeight: 400 }}>Keep customers coming with proper ongoing management</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              {monthlyPackages.map(renderMonthlyCard)}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-8 sm:mb-10 text-center leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
-              Why one-time design <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>doesn't work</span>
+            {/* headline – next block, properly vertical */}
+            <h2 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.1]" style={{ fontSize: 'clamp(32px, 6vw, 70px)' }}>
+              Your industry.
+              <br />
+              <span className="bg-gradient-to-r from-[#F1464A] to-[#C94A3F] bg-clip-text text-transparent">Our expertise.</span>
             </h2>
-            
-            <div className="space-y-5 sm:space-y-6 text-base sm:text-lg text-[#1F1F1F] leading-relaxed" style={{ fontWeight: 400 }}>
-              <p className="transition-colors duration-300 hover:text-[#e2493b]/80">
-                Most businesses get a website made once, then nothing changes for months. Meanwhile, Google details go outdated, customer reviews pile up unanswered, and competitors get stronger every week.
-              </p>
-              
-              <p className="transition-colors duration-300 hover:text-[#e2493b]/80">
-                Brancha builds the foundation properly first. Then we manage your complete online presence every month. This is why our clients get consistent enquiries instead of hoping a one-time website will keep working.
-              </p>
-              
-              <p className="text-[#e2493b] italic" style={{ fontWeight: 500 }}>
-                This is a system that works long-term, not a one-time project. Growing businesses need systems.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden bg-[#FAF9F7]">
-        <div className="absolute inset-0 -z-10" aria-hidden="true">
-          <div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl"
-          />
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-4 sm:mb-5 leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
-              Ready to <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>fix your online presence?</span>
-            </h2>
-            <p className="text-base sm:text-lg text-[#6B6B6B] mb-7 sm:mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
-              Get a free audit to see exactly where you're losing customers and how to fix it.
+            {/* sub */}
+            <p className="text-[#6B6B6B] max-w-xl mx-auto leading-relaxed mt-4" style={{ fontSize: 'clamp(14px, 1.8vw, 18px)', fontWeight: 500 }}>
+              Every expert works in one field. They know the language, understand the rules, and know what gets results.
             </p>
-            <Link to="/contact">
-              <motion.button 
-                className="group relative px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white bg-gradient-to-br from-[#e2493b] to-[#e2493b] rounded-full shadow-xl shadow-[#e2493b]/25 inline-flex items-center gap-2 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-[#e2493b]/35" 
-                aria-label="Get your free business audit now"
-                whileHover={{ 
-                  scale: prefersReducedMotion ? 1 : 1.04,
-                  transition: { duration: 0.25 }
-                }}
-                whileTap={{ scale: 0.98 }}
-                style={{ fontWeight: 500 }}
+          </motion.div>
+
+          {/* cards */}
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: '-60px' }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch"
+          >
+            {industries.map((ind, i) => (
+              <IndustryCard 
+                key={i} 
+                industry={ind} 
+                isReturningUser={isReturningUser}
+                hasVisitedBefore={visitedPages.includes(ind.link)}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════ SERVICES ══════ */}
+      <section className="relative bg-white" style={{ paddingTop: 'clamp(64px, 9vw, 140px)', paddingBottom: 'clamp(64px, 9vw, 140px)' }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#F1464A]/[0.02] via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-[8%] right-[6%] hidden xl:block pointer-events-none" style={{ opacity: 0.08 }}>
+          <HDStar className="text-[#F1464A]" style={{ width: 86, height: 86 }} />
+        </div>
+
+        <div className="max-w-5xl mx-auto px-5 sm:px-8">
+          {/* header */}
+          <motion.div
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center mb-10 sm:mb-14"
+          >
+            <div className="mb-5">
+              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#F1464A]/[0.18] bg-[#F1464A]/[0.06]">
+                <CheckCircle2 className="w-3 h-3 text-[#F1464A]" />
+                <span className="text-[11px] font-bold text-[#F1464A] tracking-widest uppercase">What We Do</span>
+              </div>
+            </div>
+            <h2 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.1]" style={{ fontSize: 'clamp(32px, 6vw, 64px)' }}>
+              Systems that work,
+              <br />
+              <span className="bg-gradient-to-r from-[#F1464A] to-[#C94A3F] bg-clip-text text-transparent">not just pretty designs</span>
+            </h2>
+          </motion.div>
+
+          {/* asymmetric grid */}
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: '-50px' }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-4"
+          >
+            {/* big card */}
+            <motion.div
+              variants={fadeInScale}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-8 relative bg-gradient-to-br from-[#FAF9F7] to-white border border-[#E8E5E0] rounded-2xl group overflow-hidden hover:border-[#F1464A]/[0.3] transition-all duration-500 shadow-md hover:shadow-lg"
+              style={{ padding: 'clamp(28px, 4vw, 48px)' }}
+            >
+              {/* glow mesh */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                <div className="absolute top-0 right-0 w-56 h-56 bg-[#F1464A]/[0.06] rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-44 h-44 bg-[#C94A3F]/[0.05] rounded-full blur-3xl" />
+              </div>
+              <div className="absolute bottom-6 left-6 hidden lg:block pointer-events-none opacity-0 group-hover:opacity-[0.12] transition-opacity duration-500">
+                <HDCircle className="text-[#F1464A]" style={{ width: 110, height: 110 }} />
+              </div>
+
+              <div className="relative z-10">
+                {/* tag */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F1464A]/[0.08] border border-[#F1464A]/[0.16] mb-5">
+                  <HDCheck className="text-[#F1464A]" style={{ width: 15, height: 15 }} />
+                  <span className="text-[11px] font-bold text-[#F1464A] tracking-widest uppercase">Primary Service</span>
+                </div>
+
+                <h3 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.15] mb-4" style={{ fontSize: 'clamp(22px, 3.5vw, 38px)' }}>
+                  Websites built to<br />turn visitors into customers
+                </h3>
+
+                <p className="text-[#6B6B6B] leading-relaxed mb-6 max-w-xl" style={{ fontSize: 'clamp(14px, 1.7vw, 15px)', fontWeight: 500 }}>
+                  Websites built around rules and tracking. RERA for property. DISHA for healthcare. WhatsApp built in. Mobile-first, always.
+                </p>
+
+                {/* bullets */}
+                <div className="space-y-3">
+                  {[
+                    'Google Business Profile setup included',
+                    'Full tracking — from source to closed deal',
+                    'Lightning-fast loading on every device',
+                  ].map((txt, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F1464A] mt-[7px] flex-shrink-0" />
+                      <p className="text-[#1F1F1F]" style={{ fontSize: '14px', fontWeight: 500 }}>{txt}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* stacked small cards */}
+            <div className="lg:col-span-4 flex flex-col gap-4">
+              {/* secondary */}
+              <motion.div
+                variants={fadeInScale}
+                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                className="relative bg-gradient-to-br from-[#FAF9F7] to-white border border-[#E8E5E0] rounded-2xl group overflow-hidden hover:border-[#F1464A]/[0.3] transition-all duration-500 shadow-md hover:shadow-lg flex-1"
+                style={{ padding: 'clamp(24px, 3.5vw, 36px)' }}
               >
-                <span className="relative z-10">Get Your Free Audit</span>
-                <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-4 right-4 hidden lg:block pointer-events-none opacity-0 group-hover:opacity-[0.15] transition-opacity duration-500">
+                  <HDStar className="text-[#F1464A]" style={{ width: 50, height: 50 }} />
+                </div>
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F1464A]/[0.08] border border-[#F1464A]/[0.16] mb-4">
+                    <HDCheck className="text-[#F1464A]" style={{ width: 15, height: 15 }} />
+                    <span className="text-[11px] font-bold text-[#F1464A] tracking-widest uppercase">Core Service</span>
+                  </div>
+                  <h3 className="text-[18px] font-bold text-[#1F1F1F] mb-2 tracking-tight leading-tight">Smart lead capture</h3>
+                  <p className="text-[#6B6B6B] leading-relaxed" style={{ fontSize: '14px', fontWeight: 500 }}>
+                    WhatsApp automation, CRM setup, and multi-channel tracking — all in one place.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* red card */}
+              <motion.div
+                variants={fadeInScale}
+                transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                className="relative bg-gradient-to-br from-[#F1464A] via-[#D4433E] to-[#C94A3F] text-white rounded-2xl overflow-hidden shadow-lg shadow-[#F1464A]/[0.2]"
+                style={{ padding: 'clamp(24px, 3.5vw, 36px)' }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] to-transparent" />
+                <div className="absolute top-4 right-4 pointer-events-none" style={{ opacity: 0.18 }}>
+                  <HDScribble className="text-white" style={{ width: 90, height: 64 }} />
+                </div>
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.14] border border-white/[0.18] mb-4">
+                    <span className="text-[11px] font-bold text-white tracking-widest uppercase">Coming Soon</span>
+                  </div>
+                  <h3 className="text-[18px] font-bold text-white mb-2 tracking-tight leading-tight">Workflow automation</h3>
+                  <p className="text-white/[0.85] leading-relaxed" style={{ fontSize: '14px', fontWeight: 500 }}>
+                    Admissions, patient follow-ups, trial bookings — custom-built for your industry.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════ PHILOSOPHY ══════ */}
+      <section className="relative overflow-hidden" style={{ paddingTop: 'clamp(64px, 9vw, 140px)', paddingBottom: 'clamp(64px, 9vw, 140px)' }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F1464A]/[0.018] to-transparent pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ opacity: 0.035 }}>
+          <HDCircle className="text-[#F1464A]" style={{ width: 600, height: 600 }} />
+        </div>
+        <div className="absolute top-[12%] left-[2%] hidden xl:block pointer-events-none" style={{ opacity: 0.11 }}>
+          <HDCoil className="text-[#F1464A]" style={{ width: 24, height: 130 }} />
+        </div>
+
+        <div className="max-w-3xl mx-auto px-5 sm:px-8 relative">
+          <motion.div
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-90px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* heading */}
+            <div className="relative inline-block mb-8">
+              <h2 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.1]" style={{ fontSize: 'clamp(30px, 5.5vw, 60px)' }}>
+                Focus
+                <br />
+                <span className="bg-gradient-to-r from-[#F1464A] to-[#C94A3F] bg-clip-text text-transparent">drives results</span>
+              </h2>
+              <HDUnderline className="absolute left-0 w-full text-[#F1464A]" style={{ bottom: -6, height: 16 }} />
+              <div className="absolute -right-20 -top-8 hidden xl:block pointer-events-none" style={{ opacity: 0.1 }}>
+                <HDScribble className="text-[#F1464A]" style={{ width: 110, height: 80, transform: 'rotate(-8deg)' }} />
+              </div>
+            </div>
+
+            {/* prose */}
+            <div className="space-y-5">
+              <p className="text-[#4A4A4A] leading-relaxed" style={{ fontSize: 'clamp(16px, 2.1vw, 18px)', fontWeight: 500 }}>
+                Generic agencies build websites without knowing your business. They can't explain why someone picks your gym over another, or what makes a buyer book a viewing.
+              </p>
+              <p className="text-[#4A4A4A] leading-relaxed" style={{ fontSize: 'clamp(16px, 2.1vw, 18px)', fontWeight: 500 }}>
+                We work differently.{' '}
+                <span className="font-bold text-[#F1464A]" style={{ fontStyle: 'italic' }}>Each team focuses on one industry.</span>{' '}
+                Fitness. Real estate. Healthcare. Education. No generalists here.
+              </p>
+
+              {/* blockquote */}
+              <div className="relative pl-5 border-l-[3px] border-[#F1464A] py-2 mt-6">
+                <p className="font-bold text-[#1F1F1F] leading-[1.3]" style={{ fontSize: 'clamp(18px, 2.8vw, 24px)' }}>
+                  Experts deliver results. Generalists just design websites.
+                </p>
+                <div className="absolute -left-2.5 top-2 pointer-events-none">
+                  <HDCheck className="text-[#F1464A]" style={{ width: 18, height: 18 }} />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════ FINAL CTA ══════ */}
+      <section className="relative bg-white overflow-hidden" style={{ paddingTop: 'clamp(64px, 9vw, 140px)', paddingBottom: 'clamp(80px, 11vw, 160px)' }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#F1464A]/[0.04] via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-[12%] left-[10%] hidden xl:block pointer-events-none" style={{ opacity: 0.07 }}>
+          <HDDots className="text-[#F1464A]" style={{ width: 80, height: 80 }} />
+        </div>
+        <div className="absolute bottom-[14%] right-[8%] hidden xl:block pointer-events-none" style={{ opacity: 0.08 }}>
+          <HDSparkle className="text-[#F1464A]" style={{ width: 72, height: 72 }} />
+        </div>
+
+        <div className="max-w-3xl mx-auto px-5 sm:px-8 relative text-center">
+          <motion.div
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-90px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* small scribble accent */}
+            <div className="flex justify-center mb-5">
+              <HDScribble className="text-[#F1464A]" style={{ width: 160, height: 56, opacity: 0.18 }} />
+            </div>
+
+            <h2 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.1] mb-4" style={{ fontSize: 'clamp(32px, 6vw, 64px)' }}>
+              Ready to grow?
+              <br />
+              <span className="bg-gradient-to-r from-[#F1464A] to-[#C94A3F] bg-clip-text text-transparent" style={{ fontStyle: 'italic' }}>
+                Let's talk.
+              </span>
+            </h2>
+
+            <p className="text-[#6B6B6B] mb-8 max-w-xl mx-auto leading-relaxed" style={{ fontSize: 'clamp(14px, 1.8vw, 16px)', fontWeight: 500 }}>
+              Custom systems for fitness, property, healthcare, and education. Real expertise — not guesswork.
+            </p>
+
+            <Link to="/contact" onClick={() => leadIntent.markInterest('Contact - Bottom CTA')}>
+              <motion.button
+                className="group relative inline-flex items-center gap-2.5 text-white font-bold bg-gradient-to-r from-[#F1464A] to-[#C94A3F] rounded-full overflow-hidden shadow-lg shadow-[#F1464A]/[0.25] border border-[#F1464A]"
+                style={{ padding: '15px 40px', fontSize: 'clamp(14px, 1.8vw, 17px)' }}
+                whileHover={{ scale: shouldReduceMotion ? 1 : 1.04, boxShadow: '0 18px 40px -10px rgba(241,70,74,0.45)' }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <span className="relative z-10">Get Started Today</span>
+                <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.5} />
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.18] to-transparent" />
               </motion.button>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
+
+      {/* ── keyframes ── */}
+      <style>{`
+        @import url('${SATOSHI_LINK}');
+        @keyframes float        { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-14px) rotate(1.5deg)} }
+        @keyframes float-delayed{ 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-11px) rotate(-2deg)} }
+        .animate-float         { animation: float 7s ease-in-out infinite; }
+        .animate-float-delayed { animation: float-delayed 9s ease-in-out infinite 1s; }
+      `}</style>
     </main>
   );
 }

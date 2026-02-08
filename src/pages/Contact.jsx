@@ -1,642 +1,786 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo, useMemo, useCallback } from 'react';
 import {
   Mail, Phone, MapPin, Send, CheckCircle,
   MessageSquare, User, Sparkles, Loader2,
-  Linkedin, Instagram, ArrowRight, Clock, Save, X
+  Linkedin, Instagram, ArrowRight, Clock, Save, X,
+  Facebook, Youtube, Twitter
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useTheme } from '../ThemeContext';
 import {
   contactFormDraft,
+  contactFormStatus,
   packageInterest,
   journeyTracking,
-  visitorTracking
+  visitorTracking,
+  userPreferences,
+  session
 } from '../utils/storage';
 
+/* ────────────────────────────────────────────
+   SATOSHI FONT IMPORT  (CDN – Fontsource)
+   ──────────────────────────────────────────── */
+const SATOSHI_LINK = 'https://fonts.cdnfonts.com/css/satoshi?display=swap';
+
+/* ─── HAND-DRAWN SVGs (matching About.jsx) ─── */
+const HDCircle = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 200 200" fill="none">
+    <path d="M100,12 C140,10 175,38 182,75 C190,118 170,165 130,180 C88,193 38,178 22,140 C6,100 18,48 55,22 C72,12 86,13 100,12Z" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.38" />
+    <path d="M100,20 C136,18 168,44 174,78 C181,114 164,157 128,172 C92,184 48,172 34,138 C20,104 30,54 62,28" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.16" strokeDasharray="4 7" />
+  </svg>
+));
+
+const HDUnderline = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 440 28" preserveAspectRatio="none" fill="none">
+    <path d="M8,16 C50,20 100,10 160,15 C220,20 270,8 330,14 C380,19 420,12 434,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.45" />
+    <path d="M6,21 C48,24 98,15 158,19 C218,24 268,13 328,18 C378,22 418,16 436,18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.18" strokeDasharray="4 8" />
+  </svg>
+));
+
+const HDScribble = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 180 110" fill="none">
+    <path d="M20,58 Q38,32 58,56 Q78,80 98,52 Q118,24 138,54 Q152,72 160,56" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.3" />
+    <path d="M26,66 Q42,44 60,64 Q78,82 96,60 Q114,38 132,60" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.14" strokeDasharray="3 7" />
+  </svg>
+));
+
+const HDCoil = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 40 180" fill="none">
+    <path d="M20,8 C36,18 36,38 20,48 C4,58 4,78 20,88 C36,98 36,118 20,128 C4,138 4,158 20,168" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.34" />
+  </svg>
+));
+
+const HDDots = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 130 130" fill="none">
+    <circle cx="22" cy="22" r="4.5" fill="currentColor" opacity="0.28" />
+    <circle cx="65" cy="18" r="3.2" fill="currentColor" opacity="0.2" />
+    <circle cx="108" cy="28" r="4" fill="currentColor" opacity="0.25" />
+    <circle cx="38" cy="65" r="3" fill="currentColor" opacity="0.18" />
+    <circle cx="90" cy="68" r="3.8" fill="currentColor" opacity="0.22" />
+    <circle cx="18" cy="108" r="3.5" fill="currentColor" opacity="0.2" />
+    <circle cx="65" cy="105" r="4" fill="currentColor" opacity="0.25" />
+    <circle cx="112" cy="112" r="3" fill="currentColor" opacity="0.18" />
+  </svg>
+));
+
+const HDSparkle = memo(({ className = '', style = {} }) => (
+  <svg className={`pointer-events-none ${className}`} style={style} viewBox="0 0 100 100" fill="none">
+    <path d="M50,10 L53,44 L50,44 L47,44 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M10,50 L44,47 L44,50 L44,53 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M50,90 L47,56 L50,56 L53,56 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <path d="M90,50 L56,53 L56,50 L56,47 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" opacity="0.32" />
+    <circle cx="50" cy="50" r="5" fill="currentColor" opacity="0.38" />
+  </svg>
+));
+
+/* ─── MOTION VARIANTS ─── */
+const fadeInScale = { initial: { opacity: 0, scale: 0.94 }, animate: { opacity: 1, scale: 1 } };
+const staggerContainer = { animate: { transition: { staggerChildren: 0.11, delayChildren: 0.14 } } };
+
+/* ─── CONTACT METHOD CARD ─── */
+const ContactMethodCard = memo(({ method }) => (
+  <motion.a
+    href={method.action}
+    target={method.action.startsWith('http') ? '_blank' : undefined}
+    rel={method.action.startsWith('http') ? 'noopener noreferrer' : undefined}
+    variants={fadeInScale}
+    transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+    className="group p-7 sm:p-8 bg-white border-2 border-[#E8E8E8] rounded-xl hover:border-[#F1464A] transition-all duration-500"
+  >
+    <div className="w-12 h-12 rounded-xl bg-[#F1464A]/[0.08] flex items-center justify-center mb-5 transition-all duration-300 group-hover:bg-[#F1464A]/[0.14]">
+      <div className="text-[#F1464A]">{method.icon}</div>
+    </div>
+    <h3 className="text-[18px] sm:text-[19px] font-bold text-[#1F1F1F] mb-2 tracking-tight leading-tight">
+      {method.title}
+    </h3>
+    <p className="text-[#F1464A] font-bold mb-1 text-[15px] sm:text-[16px]">
+      {method.detail}
+    </p>
+    <p className="text-[#4A4A4A] leading-[1.7] text-[13px] sm:text-[14px]" style={{ fontWeight: 500 }}>
+      {method.description}
+    </p>
+  </motion.a>
+));
+ContactMethodCard.displayName = 'ContactMethodCard';
+
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    service: '',
-    message: '',
-    budget: ''
-  });
+  const theme = useTheme();
+  
+  // ✅ OPTIMIZATION: Check if user already submitted successfully (persists in localStorage)
+  const hasSubmittedSuccessfully = useMemo(() => {
+    try {
+      return contactFormStatus.isSubmitted();
+    } catch {
+      return false;
+    }
+  }, []);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState('');
-  const [draftLoaded, setDraftLoaded] = useState(false);
-  const [showDraftNotification, setShowDraftNotification] = useState(false);
-  const formRef = useRef(null);
-  const prefersReducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    document.title = 'Contact Brancha - Get Your Free Online Presence Audit';
-
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute("content", 'Contact Brancha for Foundation Package or Monthly Management. Get a free audit to see where you\'re losing customers and how to fix it.');
+  // ✅ OPTIMIZATION: Initialize form data with storage-aware defaults (single computation)
+  const initialFormData = useMemo(() => {
+    // If user already submitted successfully, don't load draft
+    if (hasSubmittedSuccessfully) {
+      return {
+        name: '',
+        email: '',
+        phone: '',
+        service: '',
+        message: '',
+        budget: ''
+      };
     }
 
-    // Load saved draft
-    const draft = contactFormDraft.get();
-    if (draft && !draftLoaded) {
-      setFormData(draft);
-      setDraftLoaded(true);
-      setShowDraftNotification(true);
-
-      setTimeout(() => setShowDraftNotification(false), 5000);
-    }
-
-    // Pre-fill service based on most interested package
-    if (!draft && !formData.service) {
+    try {
+      // Try to load draft first
+      const draft = contactFormDraft.get();
+      if (draft) {
+        return draft;
+      }
+      
+      // Otherwise check for pre-selected package
       const mostInterested = packageInterest.getMostInterested();
       if (mostInterested) {
-        setFormData(prev => ({
-          ...prev,
-          service: mostInterested
-        }));
+        return {
+          name: '',
+          email: '',
+          phone: '',
+          service: mostInterested,
+          message: '',
+          budget: ''
+        };
       }
+    } catch (err) {
+      // Silent fail
     }
-  }, [draftLoaded]);
-
-  // Auto-save draft
-  useEffect(() => {
-    if (formData.name || formData.email || formData.message) {
-      const timer = setTimeout(() => {
-        contactFormDraft.save(formData);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [formData]);
-
-  const services = [
-    'Foundation Package - Basic',
-    'Foundation Package - Pro',
-    'Foundation Package - Growth',
-    'Monthly Management - Basic',
-    'Monthly Management - Pro',
-    'Monthly Management - Growth',
-    'Not Sure / Need Consultation'
-  ];
-
-  const budgetRanges = [
-    'Under ₹20K',
-    '₹20K - ₹40K',
-    '₹40K - ₹60K',
-    '₹60K - ₹1L',
-    '₹1L - ₹2L',
-    '₹2L+',
-    'Not Sure'
-  ];
-
-  const contactMethods = [
-    {
-      icon: <Phone className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Call Us',
-      detail: '+91 98258 83015',
-      action: 'tel:+919825883015',
-      description: 'Mon-Sat, 10 AM - 7 PM IST'
-    },
-    {
-      icon: <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'WhatsApp',
-      detail: '+91 92199 17186',
-      action: 'https://wa.me/919219917186',
-      description: 'Quick responses, anytime'
-    },
-    {
-      icon: <Mail className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Email',
-      detail: 'support@brancha.in',
-      action: 'mailto:support@brancha.in',
-      description: 'We reply within 24 hours'
-    },
-    {
-      icon: <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />,
-      title: 'Location',
-      detail: 'Vadodara, Gujarat',
-      action: "https://www.google.com/maps/place/Vadodara,+Gujarat/@22.3222406,73.0906857,12z/data=!3m1!4b1!4m6!3m5!1s0x395fc8ab91a3ddab:0xac39d3bfe1473fb8!8m2!3d22.3000395!4d73.2064994!16zL20vMDJrZnhr?entry=ttu&g_ep=EgoyMDI2MDExMy4wIKXMDSoASAFQAw%3D%3D",
-      description: 'Serving businesses worldwide — remotely'
-    }
-  ];
-
-  const socialLinks = [
-    {
-      name: 'Instagram',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-        </svg>
-      ),
-      url: 'https://instagram.com/growwithbrancha',
-      color: 'from-[#E4405F] via-[#C13584] to-[#833AB4]',
-      hoverColor: '#E4405F'
-    },
-    {
-      name: 'LinkedIn',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-        </svg>
-      ),
-      url: 'https://linkedin.com/company/brancha',
-      color: 'from-[#0077B5] to-[#00669C]',
-      hoverColor: '#0077B5'
-    },
-    {
-      name: 'YouTube',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-        </svg>
-      ),
-      url: 'https://youtube.com/@growwithbrancha',
-      color: 'from-[#FF0000] to-[#CC0000]',
-      hoverColor: '#FF0000'
-    },
-    {
-      name: 'Threads',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 192 192" fill="none">
-          <path d="M141.537 88.9883C140.71 88.5919 139.87 88.2104 139.019 87.8451C137.537 60.5382 122.616 44.905 97.5619 44.745C97.4484 44.7443 97.3355 44.7443 97.222 44.7443C82.2364 44.7443 69.7731 51.1409 62.102 62.7807L75.881 72.2328C81.6116 63.5383 90.6052 61.6848 97.2286 61.6848C97.3051 61.6848 97.3819 61.6848 97.4576 61.6855C105.707 61.7381 111.932 64.1366 115.961 68.814C118.893 72.2193 120.854 76.925 121.825 82.8638C114.511 81.6207 106.601 81.2385 98.145 81.7233C74.3247 83.0954 59.0111 96.9879 60.0396 116.292C60.5615 126.084 65.4397 134.508 73.775 140.011C80.8224 144.663 89.899 146.938 99.3323 146.423C111.79 145.74 121.563 140.987 128.381 132.296C133.559 125.696 136.834 117.143 138.28 106.366C144.217 109.949 148.617 114.664 151.047 120.332C155.179 129.967 155.42 145.8 142.501 158.708C131.182 170.016 117.576 174.908 97.0135 175.059C74.2042 174.89 56.9538 167.575 45.7381 153.317C35.2355 139.966 29.8077 120.682 29.6052 96C29.8077 71.3178 35.2355 52.0336 45.7381 38.6827C56.9538 24.4249 74.2039 17.11 97.0132 16.9405C119.988 17.1113 137.539 24.4614 149.184 38.788C154.894 45.8136 159.199 54.6488 162.037 64.9503L178.184 60.6422C174.744 47.9622 169.331 37.0357 161.965 27.974C147.036 9.60668 125.202 0.195148 97.0695 0H96.9569C68.8816 0.19447 47.2921 9.6418 32.7883 28.0793C19.8819 44.4864 13.2244 67.3157 13.0007 95.9325L13 96L13.0007 96.0675C13.2244 124.684 19.8819 147.514 32.7883 163.921C47.2921 182.358 68.8816 191.806 96.9569 192H97.0695C122.03 191.827 139.624 185.292 154.118 170.811C173.081 151.866 172.51 128.119 166.26 113.541C161.776 103.087 153.227 94.5962 141.537 88.9883ZM98.4405 129.507C88.0005 130.095 77.1544 125.409 76.6196 115.372C76.2232 107.93 81.9158 99.626 99.0812 98.6368C101.047 98.5234 102.976 98.468 104.871 98.468C111.106 98.468 116.939 99.0737 122.242 100.233C120.264 124.935 108.662 128.946 98.4405 129.507Z" fill="currentColor"/>
-        </svg>
-      ),
-      url: 'https://threads.com/@growwithbrancha',
-      color: 'from-[#1F1F1F] to-[#000000]',
-      hoverColor: '#1F1F1F'
-    },
-    {
-      name: 'Facebook',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-      ),
-      url: 'https://www.facebook.com/profile.php?id=61586163604676',
-      color: 'from-[#1877F2] to-[#0C63D4]',
-      hoverColor: '#1877F2'
-    },
-    {
-      name: 'X',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-        </svg>
-      ),
-      url: 'https://x.com/growwithbrancha',
-      color: 'from-[#1F1F1F] to-[#000000]',
-      hoverColor: '#000000'
-    }
-  ];
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (error) setError('');
-  };
-
-  const handleClearDraft = () => {
-    contactFormDraft.clear();
-    setFormData({
+    
+    // Default empty form
+    return {
       name: '',
       email: '',
       phone: '',
       service: '',
       message: '',
       budget: ''
-    });
-    setShowDraftNotification(false);
-  };
+    };
+  }, [hasSubmittedSuccessfully]);
 
-  const createWhatsAppMessage = () => {
-    const { name, email, phone, service, message, budget } = formData;
+  const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(hasSubmittedSuccessfully);
+  
+  const [error, setError] = useState('');
+  
+  // ✅ OPTIMIZATION: Only show draft notification if we actually loaded a draft AND user hasn't submitted
+  const [showDraftNotification, setShowDraftNotification] = useState(() => {
+    if (hasSubmittedSuccessfully) {
+      return false;
+    }
+    try {
+      const draft = contactFormDraft.get();
+      return !!(draft && (draft.name || draft.email || draft.phone || draft.message));
+    } catch {
+      return false;
+    }
+  });
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const formRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+  
+  // ✅ OPTIMIZATION: Track if user is returning visitor (memoized)
+  const isReturningVisitor = useMemo(() => {
+    try {
+      return session.isReturningUser() || visitorTracking.hasVisited('/contact');
+    } catch {
+      return false;
+    }
+  }, []);
 
-    const journey = journeyTracking.get();
-    const journeyString = journey.map(j => j.name).join(' → ');
-    const isReturning = visitorTracking.isReturning();
-    const visitCount = visitorTracking.getVisitCount();
+  // ✅ OPTIMIZATION: Auto-hide draft notification after 5s
+  useEffect(() => {
+    if (showDraftNotification) {
+      const timer = setTimeout(() => setShowDraftNotification(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDraftNotification]);
 
-    const text = `Hello Brancha Team!%0A%0A*New Inquiry*%0A%0A*Name:* ${encodeURIComponent(name)}%0A*Email:* ${encodeURIComponent(email)}%0A*Phone:* ${phone ? encodeURIComponent(phone) : 'Not provided'}%0A*Interested In:* ${encodeURIComponent(service)}%0A*Budget:* ${budget ? encodeURIComponent(budget) : 'Not specified'}%0A%0A*Details:*%0A${encodeURIComponent(message)}%0A%0A*User Info:*%0A${isReturning ? `Returning visitor (${visitCount} visits)` : 'First-time visitor'}%0AJourney: ${encodeURIComponent(journeyString)}%0A%0ALooking forward to discussing!`;
+  // ✅ OPTIMIZATION: Debounced draft saving (reduces storage writes)
+  // Don't save draft if user already submitted successfully
+  useEffect(() => {
+    if (hasSubmittedSuccessfully) {
+      return; // Don't save drafts after successful submission
+    }
 
-    return `https://wa.me/919219917186?text=${text}`;
-  };
+    // Only save if form has meaningful content
+    if (formData.name || formData.email || formData.phone || formData.message) {
+      const saveTimer = setTimeout(() => {
+        try {
+          contactFormDraft.save(formData);
+        } catch (err) {
+          // Silent fail - not critical
+        }
+      }, 800); // 800ms debounce
+      
+      return () => clearTimeout(saveTimer);
+    }
+  }, [formData, hasSubmittedSuccessfully]);
+
+  // ✅ OPTIMIZATION: Mark page visit once on mount
+  useEffect(() => {
+    try {
+      visitorTracking.markVisited('/contact');
+    } catch {
+      // Silent fail
+    }
+  }, []);
+
+  // ✅ OPTIMIZATION: Memoized form change handler (prevents recreating function on every render)
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (error) {
+      setError('');
+    }
+  }, [error]);
+
+  // ✅ OPTIMIZATION: Memoized service selection handler
+  const handleServiceSelect = useCallback((service) => {
+    setFormData(prev => ({ ...prev, service }));
+    setIsDropdownOpen(false);
+    
+    // Track interest for future personalization
+    try {
+      packageInterest.set(service);
+    } catch {
+      // Silent fail
+    }
+  }, []);
+
+  // ✅ OPTIMIZATION: Memoized validation logic (prevents recreation on every render)
+  const validateForm = useCallback(() => {
+    if (!formData.name.trim()) {
+      setError('Please enter your name');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      setError('Please enter your email address');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+    if (!formData.phone.trim()) {
+      setError('Please enter your phone number');
+      return false;
+    }
+    if (formData.phone.trim().length < 10) {
+      setError('Please enter a valid phone number');
+      return false;
+    }
+    if (!formData.service) {
+      setError('Please select your industry');
+      return false;
+    }
+    if (!formData.message.trim()) {
+      setError('Please tell us about your project');
+      return false;
+    }
+    return true;
+  }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError('');
 
-    // Validation
-    if (!formData.name || !formData.email || !formData.service || !formData.message) {
-      setError('Please fill in all required fields');
-      setIsSubmitting(false);
+    if (!validateForm()) {
       return;
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
-      setIsSubmitting(false);
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      const journey = journeyTracking.get();
-      const isReturning = visitorTracking.isReturning();
-
-      // Prepare form data for Web3Forms
-      const submitData = {
-        access_key: "0e53af2d-694f-4d64-9537-f4f7153813c7",
-        subject: `New Inquiry from ${formData.name}`,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || 'Not provided',
-        service: formData.service,
-        budget: formData.budget || 'Not specified',
-        message: formData.message,
-        // Additional metadata
-        "User Journey": journey.map(j => j.name).join(' → '),
-        "Visitor Type": isReturning ? 'Returning' : 'First-time',
-        "Visit Count": visitorTracking.getVisitCount().toString(),
-        // Bot detection bypass
-        botcheck: false
-      };
-
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(submitData),
+      // Submit to Web3Forms
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: '18b53e4d-37a3-40de-89ea-a49749bc900e',
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service: formData.service,
+          message: formData.message,
+          budget: formData.budget || 'Not specified',
+          subject: `New Contact Form Submission from ${formData.name}`,
+        }),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (result.success) {
-        // Clear draft
-        contactFormDraft.clear();
-
-        // Show success
+      if (data.success) {
         setIsSuccess(true);
+        
+        // ✅ OPTIMIZATION: Store success state in localStorage so it persists permanently
+        try {
+          contactFormStatus.markSubmitted();
+          contactFormDraft.clear();
+        } catch {
+          // Silent fail
+        }
 
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          service: '',
-          message: '',
-          budget: ''
-        });
+        // Also send WhatsApp notification
+        const whatsappMessage = encodeURIComponent(
+          `Hi! I just submitted a contact form.\n\n` +
+          `Name: ${formData.name}\n` +
+          `Email: ${formData.email}\n` +
+          `Phone: ${formData.phone}\n` +
+          `Industry: ${formData.service}\n` +
+          `Budget: ${formData.budget || 'Not specified'}\n\n` +
+          `Message:\n${formData.message}`
+        );
 
-        // Open WhatsApp in new tab
-        setTimeout(() => {
-          window.open(createWhatsAppMessage(), '_blank');
-        }, 500);
-
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          setIsSuccess(false);
-        }, 5000);
+        const whatsappNumber = theme?.contactInfo?.whatsapp?.replace(/\+/g, '').replace(/\s/g, '') || '919219917186';
+        
+        window.open(
+          `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`,
+          '_blank',
+          'noopener,noreferrer'
+        );
       } else {
-        throw new Error(result.message || 'Submission failed. Please try again.');
+        throw new Error('Submission failed');
       }
     } catch (err) {
-      console.error('Form submission error:', err);
-      setError(err.message || 'Failed to submit form. Please try again or contact us directly via WhatsApp.');
+      setError('Something went wrong. Please try again or contact us directly via WhatsApp.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ✅ OPTIMIZATION: Close dropdown when clicking outside (memoized handler)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isDropdownOpen]);
+
+  // ✅ OPTIMIZATION: Memoized contact methods (prevents recreation on every render)
+  const contactMethods = useMemo(() => [
+    {
+      icon: <Mail className="w-5 h-5" strokeWidth={2.2} />,
+      title: 'Email Us',
+      detail: theme?.contactInfo?.email || 'support@brancha.in',
+      description: 'Send us an email anytime',
+      action: `mailto:${theme?.contactInfo?.email || 'support@brancha.in'}`
+    },
+    {
+      icon: <Phone className="w-5 h-5" strokeWidth={2.2} />,
+      title: 'Call Us',
+      detail: theme?.contactInfo?.phone || '+91 98258 83015',
+      description: 'Mon-Sat, 9AM-7PM IST',
+      action: `tel:${theme?.contactInfo?.phone || '+919825883015'}`
+    },
+    {
+      icon: <MessageSquare className="w-5 h-5" strokeWidth={2.2} />,
+      title: 'WhatsApp',
+      detail: 'Chat with us',
+      description: 'Quick response guaranteed',
+      action: `https://wa.me/${theme?.contactInfo?.whatsapp?.replace(/\+/g, '').replace(/\s/g, '') || '919219917186'}`
+    },
+    {
+      icon: <MapPin className="w-5 h-5" strokeWidth={2.2} />,
+      title: 'Visit Us',
+      detail: theme?.contactInfo?.location || 'Vadodara, Gujarat',
+      description: 'Schedule a meeting',
+      action: 'https://maps.app.goo.gl/VNKiP7EzUoVv8nru5'
+    }
+  ], [theme]);
+
+  // ✅ OPTIMIZATION: Memoized social links (prevents recreation on every render)
+  const socialLinks = useMemo(() => {
+    const links = [];
+    
+    if (theme?.social?.linkedin) {
+      links.push({
+        name: 'LinkedIn',
+        url: theme.social.linkedin,
+        icon: <Linkedin className="w-5 h-5" strokeWidth={2} />
+      });
+    }
+    
+    if (theme?.social?.instagram) {
+      links.push({
+        name: 'Instagram',
+        url: theme.social.instagram,
+        icon: <Instagram className="w-5 h-5" strokeWidth={2} />
+      });
+    }
+    
+    if (theme?.social?.facebook) {
+      links.push({
+        name: 'Facebook',
+        url: theme.social.facebook,
+        icon: <Facebook className="w-5 h-5" strokeWidth={2} />
+      });
+    }
+    
+    if (theme?.social?.youtube) {
+      links.push({
+        name: 'YouTube',
+        url: theme.social.youtube,
+        icon: <Youtube className="w-5 h-5" strokeWidth={2} />
+      });
+    }
+    
+    if (theme?.social?.twitter) {
+      links.push({
+        name: 'Twitter',
+        url: theme.social.twitter,
+        icon: <Twitter className="w-5 h-5" strokeWidth={2} />
+      });
+    }
+    
+    return links;
+  }, [theme?.social]);
+
+  // ✅ OPTIMIZATION: Memoized service options (prevents recreation)
+  const serviceOptions = useMemo(() => [
+    'Gym & Fitness Marketing',
+    'Real Estate Marketing',
+    'Healthcare Marketing',
+    'Education Marketing',
+    'Multi-Department Support',
+    'Custom Solution'
+  ], []);
+
   return (
-    <div className="bg-[#FAF9F7]">
+    <main className="relative overflow-hidden bg-[#FAF9F7]" style={{ fontFamily: 'Satoshi, sans-serif' }}>
+      <Helmet>
+        <title>Contact Us | Brancha - Let's Grow Your Brand Together</title>
+        <meta name="description" content="Get in touch with Brancha to discuss your marketing needs. We specialize in Gym, Real Estate, Healthcare, and Education marketing. Let's build something great together." />
+        <link rel="canonical" href="https://brancha.in/contact" />
+      </Helmet>
+
       {/* Draft Notification */}
       {showDraftNotification && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="fixed top-20 sm:top-24 right-4 z-50 max-w-sm"
+          className="fixed top-20 right-4 sm:right-8 z-50 max-w-sm"
         >
-          <div className="bg-white border border-[#EFEDE9] rounded-xl shadow-xl p-4 flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#e2493b]/10 flex items-center justify-center flex-shrink-0">
-              <Save className="w-5 h-5 text-[#e2493b]" />
+          <div className="bg-white border-2 border-[#F1464A]/20 rounded-xl shadow-xl p-4 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[#F1464A]/10 flex items-center justify-center flex-shrink-0">
+              <Save className="w-5 h-5 text-[#F1464A]" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-[#1F1F1F] mb-1" style={{ fontWeight: 500 }}>
+              <h4 className="text-[14px] font-bold text-[#1F1F1F] mb-1">
                 Draft Restored
-              </p>
-              <p className="text-xs text-[#6B6B6B]" style={{ fontWeight: 400 }}>
-                We've loaded your previously saved form data.
+              </h4>
+              <p className="text-[13px] text-[#6B6B6B]" style={{ fontWeight: 500 }}>
+                We've restored your previous message
               </p>
             </div>
             <button
               onClick={() => setShowDraftNotification(false)}
-              className="text-[#6B6B6B] hover:text-[#1F1F1F] transition-colors"
+              className="w-6 h-6 rounded-full hover:bg-[#EFEDE9] flex items-center justify-center flex-shrink-0 transition-colors"
+              aria-label="Dismiss notification"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 text-[#6B6B6B]" />
             </button>
           </div>
         </motion.div>
       )}
 
-      {/* Hero Section */}
-      <section className="pt-28 sm:pt-32 md:pt-36 pb-12 sm:pb-16 md:pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] sm:w-[1000px] sm:h-[1000px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl" />
+      {/* ══════ HERO SECTION ══════ */}
+      <section className="relative" style={{ paddingTop: 'clamp(100px, 16vw, 220px)', paddingBottom: 'clamp(56px, 8vw, 120px)' }}>
+        {/* bg glows */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F1464A]/[0.03] via-transparent to-transparent" />
+        <div className="absolute top-0 right-0 w-[55%] h-[65%] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#F1464A]/[0.04] via-transparent to-transparent" />
+
+        {/* drifting doodles */}
+        <div className="absolute top-[18%] left-[6%] hidden xl:block pointer-events-none animate-float" style={{ opacity: 0.06 }}>
+          <HDCircle className="text-[#F1464A]" style={{ width: 220, height: 220 }} />
+        </div>
+        <div className="absolute top-[32%] right-[4%] hidden xl:block pointer-events-none animate-float-delayed" style={{ opacity: 0.05 }}>
+          <HDCoil className="text-[#F1464A]" style={{ width: 48, height: 220 }} />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 44 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* badge */}
             <motion.div
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.75, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-6"
             >
-              <div className="inline-flex items-center px-4 sm:px-5 py-2 bg-[#e2493b]/10 rounded-full mb-6 sm:mb-8 transition-all duration-300 hover:shadow-md hover:shadow-[#e2493b]/10">
-                <span className="text-xs sm:text-sm font-semibold text-[#e2493b] tracking-wider uppercase" style={{ fontWeight: 600 }}>
-                  Get Started
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#F1464A]/[0.2] bg-white/90 backdrop-blur-sm shadow-sm shadow-[#F1464A]/[0.06]">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#F1464A] animate-pulse" />
+                <span className="text-[11px] font-bold text-[#F1464A] tracking-widest uppercase">
+                  Let's Connect
                 </span>
+                <Sparkles className="w-3 h-3 text-[#F1464A]" />
               </div>
             </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-[#1F1F1F] mb-4 sm:mb-6 leading-tight"
-              style={{ letterSpacing: '-0.02em', fontWeight: 400 }}
-            >
-              Ready to <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>grow?</span>
-            </motion.h1>
+            {/* headline */}
+            <div className="relative inline-block mb-5">
+              <h1 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.08]" style={{ fontSize: 'clamp(40px, 8vw, 88px)' }}>
+                Ready to Grow
+                <br />
+                <span className="relative inline-block" style={{ marginTop: 4 }}>
+                  <span className="bg-gradient-to-r from-[#F1464A] via-[#D4433E] to-[#F1464A] bg-clip-text text-transparent">
+                    Your Brand?
+                  </span>
+                  <HDUnderline className="absolute left-0 w-full text-[#F1464A]" style={{ bottom: -13, height: 18 }} />
+                </span>
+              </h1>
+            </div>
 
+            {/* description */}
             <motion.p
-              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="text-base sm:text-lg md:text-xl text-[#6B6B6B] leading-relaxed max-w-3xl mx-auto"
-              style={{ fontWeight: 400 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.85, delay: 0.42 }}
+              className="text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed mb-8"
+              style={{ fontSize: 'clamp(15px, 2vw, 18px)', fontWeight: 500 }}
             >
-              Share your challenges, and we'll show you exactly how to build a reliable online presence
-              that brings consistent enquiries.
+              We're here to help. Fill out the form below or reach out directly via email, phone, or WhatsApp.
             </motion.p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Contact Methods */}
-      <section className="pb-12 sm:pb-16 md:pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-12 sm:mb-16">
-            {contactMethods.map((method, index) => (
-              <motion.div
-                key={method.title}
-                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
-              >
-                {method.action ? (
-                  <a
-                    href={method.action}
-                    target={method.action.startsWith('http') ? '_blank' : undefined}
-                    rel={method.action.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className="group block p-6 bg-white border border-[#EFEDE9] rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#e2493b]/30 hover:shadow-lg hover:shadow-[#e2493b]/5"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-[#e2493b]/10 flex items-center justify-center mb-4 text-[#e2493b] transition-all duration-300 group-hover:bg-[#e2493b] group-hover:text-white">
-                      {method.icon}
-                    </div>
-                    <h3 className="text-base font-medium text-[#1F1F1F] mb-1" style={{ fontWeight: 500 }}>
-                      {method.title}
-                    </h3>
-                    <p className="text-sm font-medium text-[#e2493b] mb-2" style={{ fontWeight: 500 }}>
-                      {method.detail}
-                    </p>
-                    <p className="text-xs text-[#6B6B6B]" style={{ fontWeight: 400 }}>
-                      {method.description}
-                    </p>
-                  </a>
-                ) : (
-                  <div className="p-6 bg-white border border-[#EFEDE9] rounded-2xl">
-                    <div className="w-12 h-12 rounded-xl bg-[#e2493b]/10 flex items-center justify-center mb-4 text-[#e2493b]">
-                      {method.icon}
-                    </div>
-                    <h3 className="text-base font-medium text-[#1F1F1F] mb-1" style={{ fontWeight: 500 }}>
-                      {method.title}
-                    </h3>
-                    <p className="text-sm font-medium text-[#e2493b] mb-2" style={{ fontWeight: 500 }}>
-                      {method.detail}
-                    </p>
-                    <p className="text-xs text-[#6B6B6B]" style={{ fontWeight: 400 }}>
-                      {method.description}
-                    </p>
-                  </div>
-                )}
-              </motion.div>
+      {/* ══════ CONTACT METHODS ══════ */}
+      <section className="relative" style={{ paddingBottom: 'clamp(60px, 9vw, 120px)' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-8">
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: '-80px' }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"
+          >
+            {contactMethods.map((method, idx) => (
+              <ContactMethodCard key={idx} method={method} />
             ))}
-          </div>
+          </motion.div>
+        </div>
+      </section>
 
-          {/* Social Links */}
-          <div className="flex justify-center gap-3 mb-12 sm:mb-16">
-            {socialLinks.map((social, index) => (
-              <motion.a
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.5 + index * 0.08 }}
-                className="group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg overflow-hidden hover:-translate-y-1"
-                whileHover={{ scale: 1.1, y: -4 }}
-                whileTap={{ scale: 0.95 }}
+      {/* ══════ CONTACT FORM ══════ */}
+      <section className="relative" style={{ paddingBottom: 'clamp(80px, 11vw, 160px)' }}>
+        <div className="max-w-3xl mx-auto px-5 sm:px-8 relative z-10">
+          {isSuccess ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-white border-2 border-[#10b981]/20 rounded-2xl p-10 sm:p-14 text-center shadow-xl"
+            >
+              <div className="w-20 h-20 rounded-full bg-[#10b981]/10 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-10 h-10 text-[#10b981]" strokeWidth={2} />
+              </div>
+              <h3 className="text-[28px] sm:text-[32px] font-bold text-[#1F1F1F] mb-4 tracking-tight">
+                Message Sent Successfully!
+              </h3>
+              <p className="text-[#6B6B6B] text-[15px] sm:text-[16px] leading-[1.7] mb-6" style={{ fontWeight: 500 }}>
+                Thank you for reaching out! We've received your message and will get back to you shortly. You should also receive a confirmation email and WhatsApp message.
+              </p>
+              <div className="flex items-center justify-center gap-2 text-[#10b981] text-[14px] mb-8" style={{ fontWeight: 600 }}>
+                <Clock className="w-4 h-4" />
+                <span>We typically respond within 2-4 hours</span>
+              </div>
+              
+              <motion.button
+                onClick={() => {
+                  // Clear the success flag from localStorage
+                  try {
+                    contactFormStatus.clear();
+                  } catch {
+                    // Silent fail
+                  }
+                  
+                  setIsSuccess(false);
+                  setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    service: '',
+                    message: '',
+                    budget: ''
+                  });
+                }}
+                className="group inline-flex items-center gap-2 px-6 py-3 bg-[#F1464A]/5 border-2 border-[#F1464A]/20 rounded-xl text-[14px] text-[#F1464A] hover:bg-[#F1464A]/10 hover:border-[#F1464A]/30 transition-all font-semibold"
+                whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                {/* Gradient background on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${social.color} opacity-0 group-hover:opacity-100 transition-all duration-300`} />
-                
-                {/* Icon */}
-                <span className="relative z-10 text-[#1F1F1F] group-hover:text-white transition-colors duration-300">
-                  {social.icon}
-                </span>
-
-                {/* Hover ring effect */}
-                <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-white/20 transition-all duration-300 scale-110" />
-              </motion.a>
-            ))}
-          </div>
-
-          {/* Form Section */}
-          <div className="max-w-3xl mx-auto">
-            {isSuccess ? (
-              <motion.div
-                initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16 px-6 bg-gradient-to-br from-[#e2493b]/5 to-transparent rounded-3xl border border-[#e2493b]/20"
-              >
-                <div className="w-20 h-20 rounded-full bg-[#e2493b]/10 flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="w-10 h-10 text-[#e2493b]" />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-medium text-[#1F1F1F] mb-3" style={{ fontWeight: 500 }}>
-                  Message Sent Successfully!
+                <ArrowRight className="w-4 h-4 rotate-180 transition-transform group-hover:-translate-x-1 duration-300" strokeWidth={2.5} />
+                <span>Send Another Message</span>
+              </motion.button>
+            </motion.div>
+          ) : (
+            <div className="bg-white border-2 border-[#E8E8E8] rounded-2xl p-8 sm:p-10 shadow-xl">
+              <div className="text-center mb-8 sm:mb-10">
+                <h2 className="text-[28px] sm:text-[34px] font-bold text-[#1F1F1F] mb-3 tracking-tight leading-tight">
+                  Send Us a Message
                 </h2>
-                <p className="text-base sm:text-lg text-[#6B6B6B] mb-6" style={{ fontWeight: 400 }}>
-                  We've received your inquiry and will respond within 24 hours.
-                  You should also receive a confirmation email shortly.
+                <p className="text-[#6B6B6B] text-[14px] sm:text-[15px]" style={{ fontWeight: 500 }}>
+                  We'll respond within 2-4 hours during business hours
                 </p>
-                <p className="text-sm text-[#6B6B6B]" style={{ fontWeight: 400 }}>
-                  Opening WhatsApp for immediate assistance...
-                </p>
-              </motion.div>
-            ) : (
+              </div>
+
               <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-                {/* Name and Email */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#1F1F1F]" style={{ fontWeight: 500 }}>
-                      Your Name *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B6B6B]">
-                        <User className="w-5 h-5" />
-                      </div>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full pl-12 pr-4 py-3 bg-white border border-[#EFEDE9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e2493b]/20 focus:border-[#e2493b] transition-all duration-300 placeholder:text-[#6B6B6B]"
-                        style={{ fontWeight: 400 }}
-                        placeholder="Your Name"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#1F1F1F]" style={{ fontWeight: 500 }}>
-                      Email Address *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B6B6B]">
-                        <Mail className="w-5 h-5" />
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full pl-12 pr-4 py-3 bg-white border border-[#EFEDE9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e2493b]/20 focus:border-[#e2493b] transition-all duration-300 placeholder:text-[#6B6B6B]"
-                        style={{ fontWeight: 400 }}
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Phone and Service */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#1F1F1F]" style={{ fontWeight: 500 }}>
-                      Phone Number (Optional)
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B6B6B]">
-                        <Phone className="w-5 h-5" />
-                      </div>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full pl-12 pr-4 py-3 bg-white border border-[#EFEDE9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e2493b]/20 focus:border-[#e2493b] transition-all duration-300 placeholder:text-[#6B6B6B]"
-                        style={{ fontWeight: 400 }}
-                        placeholder="+91 ***** *****"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#1F1F1F]" style={{ fontWeight: 500 }}>
-                      What do you need? *
-                    </label>
-                    <div className="relative">
-                      <select
-                        name="service"
-                        value={formData.service}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3 bg-white border border-[#EFEDE9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e2493b]/20 focus:border-[#e2493b] transition-all duration-300 appearance-none"
-                        style={{ fontWeight: 400 }}
-                      >
-                        <option value="" disabled>Select a package</option>
-                        {services.map((service) => (
-                          <option key={service} value={service}>
-                            {service}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <ArrowRight className="w-5 h-5 text-[#6B6B6B] rotate-90" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Budget */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-[#1F1F1F]" style={{ fontWeight: 500 }}>
-                    Budget Range (Optional)
+                {/* Name */}
+                <div>
+                  <label htmlFor="name" className="flex items-center gap-2 text-[#1F1F1F] text-[14px] font-bold mb-2.5" style={{ fontWeight: 600 }}>
+                    <User className="w-4 h-4 text-[#F1464A]" strokeWidth={2.2} />
+                    Your Name
                   </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {budgetRanges.map((range) => (
-                      <label
-                        key={range}
-                        className={`relative cursor-pointer ${formData.budget === range
-                          ? 'bg-[#e2493b]/10 border-[#e2493b] text-[#e2493b] shadow-sm'
-                          : 'bg-white border-[#EFEDE9] hover:border-[#e2493b]/30 hover:bg-[#EFEDE9] text-[#1F1F1F]'
-                          } border rounded-xl p-3 text-center transition-all duration-300`}
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full px-5 py-3.5 text-[15px] text-[#1F1F1F] bg-[#FAF9F7] border-2 border-[#E8E8E8] rounded-xl focus:border-[#F1464A] focus:outline-none transition-colors duration-200"
+                    style={{ fontWeight: 500 }}
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="flex items-center gap-2 text-[#1F1F1F] text-[14px] font-bold mb-2.5" style={{ fontWeight: 600 }}>
+                    <Mail className="w-4 h-4 text-[#F1464A]" strokeWidth={2.2} />
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-5 py-3.5 text-[15px] text-[#1F1F1F] bg-[#FAF9F7] border-2 border-[#E8E8E8] rounded-xl focus:border-[#F1464A] focus:outline-none transition-colors duration-200"
+                    style={{ fontWeight: 500 }}
+                    placeholder="john@example.com"
+                    required
+                  />
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label htmlFor="phone" className="flex items-center gap-2 text-[#1F1F1F] text-[14px] font-bold mb-2.5" style={{ fontWeight: 600 }}>
+                    <Phone className="w-4 h-4 text-[#F1464A]" strokeWidth={2.2} />
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-5 py-3.5 text-[15px] text-[#1F1F1F] bg-[#FAF9F7] border-2 border-[#E8E8E8] rounded-xl focus:border-[#F1464A] focus:outline-none transition-colors duration-200"
+                    style={{ fontWeight: 500 }}
+                    placeholder="+91 99240 35005"
+                    required
+                  />
+                </div>
+
+                {/* Industry Dropdown */}
+                <div ref={dropdownRef}>
+                  <label htmlFor="service" className="flex items-center gap-2 text-[#1F1F1F] text-[14px] font-bold mb-2.5" style={{ fontWeight: 600 }}>
+                    <Sparkles className="w-4 h-4 text-[#F1464A]" strokeWidth={2.2} />
+                    Your Industry / Niche
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="w-full px-5 py-3.5 text-[15px] text-left bg-[#FAF9F7] border-2 border-[#E8E8E8] rounded-xl focus:border-[#F1464A] focus:outline-none transition-colors duration-200 flex items-center justify-between"
+                      style={{ fontWeight: 500 }}
+                    >
+                      <span className={formData.service ? 'text-[#1F1F1F]' : 'text-[#9CA3AF]'}>
+                        {formData.service || 'Select your industry'}
+                      </span>
+                      <svg className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute z-10 w-full mt-2 bg-white border-2 border-[#E8E8E8] rounded-xl shadow-xl overflow-hidden"
                       >
-                        <input
-                          type="radio"
-                          name="budget"
-                          value={range}
-                          checked={formData.budget === range}
-                          onChange={handleChange}
-                          className="sr-only"
-                        />
-                        <span className="text-sm font-medium block" style={{ fontWeight: 500 }}>
-                          {range}
-                        </span>
-                      </label>
-                    ))}
+                        {serviceOptions.map((service) => (
+                          <button
+                            key={service}
+                            type="button"
+                            onClick={() => handleServiceSelect(service)}
+                            className="w-full px-5 py-3 text-left text-[15px] text-[#1F1F1F] hover:bg-[#F1464A]/5 transition-colors duration-200 border-b border-[#E8E8E8] last:border-b-0"
+                            style={{ fontWeight: 500 }}
+                          >
+                            {service}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
                   </div>
+                </div>
+
+                {/* Budget (Optional) */}
+                <div>
+                  <label htmlFor="budget" className="flex items-center gap-2 text-[#1F1F1F] text-[14px] font-bold mb-2.5" style={{ fontWeight: 600 }}>
+                    <span>Budget Range</span>
+                    <span className="text-[#9CA3AF] text-[12px] font-normal">(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="budget"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    className="w-full px-5 py-3.5 text-[15px] text-[#1F1F1F] bg-[#FAF9F7] border-2 border-[#E8E8E8] rounded-xl focus:border-[#F1464A] focus:outline-none transition-colors duration-200"
+                    style={{ fontWeight: 500 }}
+                    placeholder="e.g., ₹50,000 - ₹1,00,000"
+                  />
                 </div>
 
                 {/* Message */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#1F1F1F]" style={{ fontWeight: 500 }}>
-                    Tell us about your business *
+                <div>
+                  <label htmlFor="message" className="flex items-center gap-2 text-[#1F1F1F] text-[14px] font-bold mb-2.5" style={{ fontWeight: 600 }}>
+                    <MessageSquare className="w-4 h-4 text-[#F1464A]" strokeWidth={2.2} />
+                    Your Message
                   </label>
                   <textarea
+                    id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
+                    rows={5}
+                    className="w-full px-5 py-3.5 text-[15px] text-[#1F1F1F] bg-[#FAF9F7] border-2 border-[#E8E8E8] rounded-xl focus:border-[#F1464A] focus:outline-none transition-colors duration-200 resize-none"
+                    style={{ fontWeight: 500 }}
+                    placeholder="Tell us about your project and goals..."
                     required
-                    rows="4"
-                    className="w-full px-4 py-3 bg-white border border-[#EFEDE9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e2493b]/20 focus:border-[#e2493b] transition-all duration-300 resize-none placeholder:text-[#6B6B6B]"
-                    style={{ fontWeight: 400 }}
-                    placeholder="What problems are you facing? Where are you losing customers? What are your goals?"
                   />
                 </div>
 
@@ -645,13 +789,13 @@ export default function Contact() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-red-50 border border-red-200 rounded-xl"
+                    className="p-4 bg-red-50 border-2 border-red-200 rounded-xl"
                   >
                     <div className="flex items-center gap-2 text-red-600">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="text-sm font-medium" style={{ fontWeight: 500 }}>{error}</span>
+                      <span className="text-[14px] font-bold" style={{ fontWeight: 600 }}>{error}</span>
                     </div>
                   </motion.div>
                 )}
@@ -660,8 +804,7 @@ export default function Contact() {
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="group relative w-full px-8 py-4 text-base font-medium text-white bg-gradient-to-br from-[#e2493b] to-[#e2493b] rounded-xl shadow-xl shadow-[#e2493b]/25 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-[#e2493b]/35"
-                  style={{ fontWeight: 500 }}
+                  className="group relative w-full px-8 py-4 text-[16px] font-bold text-white bg-gradient-to-r from-[#F1464A] to-[#C94A3F] rounded-xl shadow-lg shadow-[#F1464A]/[0.25] disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-[#F1464A]/[0.35]"
                   whileHover={!isSubmitting ? { scale: prefersReducedMotion ? 1 : 1.02 } : {}}
                   whileTap={!isSubmitting ? { scale: 0.98 } : {}}
                 >
@@ -674,93 +817,128 @@ export default function Contact() {
                     <>
                       <span className="relative z-10 flex items-center justify-center gap-3">
                         Send Message & Connect on WhatsApp
-                        <ArrowRight className="w-5 h-5" />
+                        <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                       </span>
-
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.18] to-transparent" />
                     </>
                   )}
                 </motion.button>
 
-                <p className="text-xs text-center text-[#6B6B6B] pt-2" style={{ fontWeight: 400 }}>
+                <p className="text-[13px] text-center text-[#6B6B6B] pt-2" style={{ fontWeight: 500 }}>
                   By submitting, you'll receive an email confirmation and WhatsApp message with your inquiry details.
                 </p>
               </form>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Social Links */}
+          {socialLinks.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              className="mt-10 text-center"
+            >
+              <p className="text-[#6B6B6B] mb-4 text-[14px]" style={{ fontWeight: 500 }}>
+                Or connect with us on social media
+              </p>
+              <div className="flex justify-center gap-4 flex-wrap">
+                {socialLinks.map((social, idx) => (
+                  <motion.a
+                    key={`${social.name}-${idx}`}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-full bg-white border-2 border-[#E8E8E8] flex items-center justify-center text-[#1F1F1F] hover:border-[#F1464A] hover:text-[#F1464A] transition-all duration-300"
+                    whileHover={{ scale: prefersReducedMotion ? 1 : 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label={social.name}
+                  >
+                    {social.icon}
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-12 relative overflow-hidden bg-[#FAF9F7]">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] bg-gradient-to-br from-[#e2493b]/5 via-[#e2493b]/2 to-transparent rounded-full blur-3xl" />
+      {/* ══════ FINAL CTA ══════ */}
+      <section className="relative overflow-hidden" style={{ paddingTop: 'clamp(64px, 9vw, 140px)', paddingBottom: 'clamp(80px, 11vw, 160px)' }}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#F1464A]/[0.04] via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-[12%] left-[10%] hidden xl:block pointer-events-none" style={{ opacity: 0.07 }}>
+          <HDDots className="text-[#F1464A]" style={{ width: 80, height: 80 }} />
+        </div>
+        <div className="absolute bottom-[14%] right-[8%] hidden xl:block pointer-events-none" style={{ opacity: 0.08 }}>
+          <HDSparkle className="text-[#F1464A]" style={{ width: 72, height: 72 }} />
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1F1F1F] mb-5 leading-tight" style={{ letterSpacing: '-0.02em', fontWeight: 400 }}>
-              Prefer to explore <span className="italic text-[#e2493b]" style={{ fontWeight: 500 }}>first?</span>
+        <div className="max-w-3xl mx-auto px-5 sm:px-8 relative text-center">
+          <motion.div
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-90px' }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* scribble accent */}
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <HDScribble className="text-[#F1464A]" style={{ width: 160, height: 56, opacity: 0.18 }} />
+            </div>
+
+            <h2 className="font-bold text-[#1F1F1F] tracking-tight leading-[1.1] mb-5 sm:mb-6" style={{ fontSize: 'clamp(34px, 6vw, 64px)' }}>
+              Want to see how
+              <br />
+              <span className="bg-gradient-to-r from-[#F1464A] to-[#C94A3F] bg-clip-text text-transparent" style={{ fontStyle: 'italic' }}>
+                we work?
+              </span>
             </h2>
-            <p className="text-base sm:text-lg text-[#6B6B6B] mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontWeight: 400 }}>
-              Check out our packages and process to understand how we can help stop customer loss and bring consistent enquiries.
+
+            <p className="text-[#6B6B6B] mb-10 sm:mb-12 max-w-xl mx-auto leading-[1.7]" style={{ fontSize: 'clamp(15px, 2.1vw, 17px)', fontWeight: 500 }}>
+              Check out our specialist departments and see how we help businesses in your industry grow.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/services">
-                <motion.button
-                  className="group relative px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white bg-gradient-to-br from-[#e2493b] to-[#e2493b] rounded-full shadow-xl shadow-[#e2493b]/25 inline-flex items-center gap-2 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-[#e2493b]/35"
-                  aria-label="View Brancha packages"
-                  whileHover={{ scale: prefersReducedMotion ? 1 : 1.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ fontWeight: 500 }}
-                >
-                  <span className="relative z-10">View Packages</span>
-                  <ArrowRight className="w-4 h-4" />
-
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#C94A3F] to-[#e2493b] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </motion.button>
-              </Link>
-
-              <Link to="/process">
-                <motion.button
-                  className="group px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-[#1F1F1F] bg-white border-2 border-[#EFEDE9] rounded-full inline-flex items-center gap-2 transition-all duration-300 hover:border-[#e2493b] hover:shadow-md hover:shadow-[#e2493b]/10"
-                  aria-label="View our process"
-                  whileHover={{ scale: prefersReducedMotion ? 1 : 1.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ fontWeight: 500 }}
-                >
-                  <span>See How We Work</span>
-                  <ArrowRight className="w-4 h-4" />
-                </motion.button>
-              </Link>
-
-            </div>
-            <div className="pt-8 pb-4 flex justify-center">
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSfHmxDru_ZcD7Hiry_vcMrEkaCgZVuH0ekjAIVB9h7OWS7xhA/viewform"
-                target="_blank"
-                rel="noopener noreferrer"
+            <Link to="/departments">
+              <motion.button
+                className="group relative inline-flex items-center gap-2.5 text-white font-bold bg-gradient-to-r from-[#F1464A] to-[#C94A3F] rounded-full overflow-hidden shadow-lg shadow-[#F1464A]/[0.25] border border-[#F1464A]"
+                style={{ padding: '15px 40px', fontSize: 'clamp(14px, 1.8vw, 17px)' }}
+                whileHover={{ scale: prefersReducedMotion ? 1 : 1.04, boxShadow: '0 18px 40px -10px rgba(241,70,74,0.45)' }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               >
-                <motion.button
-                  className="group relative px-6 py-3 text-sm font-medium text-[#1F1F1F] bg-white border border-[#EFEDE9] rounded-full inline-flex items-center gap-2 overflow-hidden transition-all duration-300 hover:border-[#e2493b] hover:shadow-lg hover:shadow-[#e2493b]/10"
-                  whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ fontWeight: 500 }}
-                >
-                  <MessageSquare className="w-4 h-4 text-[#e2493b]" />
-                  <span className="relative z-10">Share Feedback</span>
-
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#e2493b]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </motion.button>
-              </a>
-            </div>
-
-          </div>
-
+                <span className="relative z-10">View Our Departments</span>
+                <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.5} />
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.18] to-transparent" />
+              </motion.button>
+            </Link>
+          </motion.div>
         </div>
-
       </section>
-    </div>
+
+      {/* ── keyframes ── */}
+      <style>{`
+        @import url('${SATOSHI_LINK}');
+        
+        @keyframes float {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          33% { transform: translate(12px, -16px) rotate(2deg); }
+          66% { transform: translate(-8px, 14px) rotate(-1.5deg); }
+        }
+        
+        @keyframes float-delayed {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          33% { transform: translate(-14px, 18px) rotate(-2deg); }
+          66% { transform: translate(10px, -12px) rotate(1.5deg); }
+        }
+        
+        .animate-float {
+          animation: float 22s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+          animation: float-delayed 26s ease-in-out infinite;
+        }
+      `}</style>
+    </main>
   );
 }

@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { performanceTracking, session, userPreferences } from '../utils/storage';
 
 export default function SEO({
   title,
@@ -12,6 +13,7 @@ export default function SEO({
   keywords
 }) {
   const location = useLocation();
+  const renderTimeRef = useRef(Date.now());
   
   const siteName = useMemo(() => 'Brancha', []);
   const baseUrl = useMemo(() => 'https://brancha.in', []);
@@ -39,32 +41,58 @@ export default function SEO({
   );
 
   useEffect(() => {
+    const startTime = performance.now();
+
     // ✅ [SEO SAFE] Set document title
     document.title = fullTitle;
 
     // ✅ [SEO SAFE] Set html lang attribute
     document.documentElement.lang = 'en-IN';
 
-    // ✅ [SAFE - No visual change] Helper function to set or update meta tags
+    // ✅ [PERFORMANCE] Cache DOM queries for reused selectors
+    const metaCache = new Map();
+    const linkCache = new Map();
+
+    // ✅ [SAFE - No visual change] Optimized helper function to set or update meta tags
     const setMetaTag = (attr, attrValue, content) => {
-      let element = document.querySelector(`meta[${attr}="${attrValue}"]`);
+      const cacheKey = `${attr}:${attrValue}`;
+      let element = metaCache.get(cacheKey);
+      
       if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attr, attrValue);
-        document.head.appendChild(element);
+        element = document.querySelector(`meta[${attr}="${attrValue}"]`);
+        if (!element) {
+          element = document.createElement('meta');
+          element.setAttribute(attr, attrValue);
+          document.head.appendChild(element);
+        }
+        metaCache.set(cacheKey, element);
       }
-      element.setAttribute('content', content);
+      
+      // Only update if content has changed (performance optimization)
+      if (element.getAttribute('content') !== content) {
+        element.setAttribute('content', content);
+      }
     };
 
-    // ✅ [SAFE - No visual change] Helper function to set or update link tags
+    // ✅ [SAFE - No visual change] Optimized helper function to set or update link tags
     const setLinkTag = (rel, href) => {
-      let element = document.querySelector(`link[rel="${rel}"]`);
+      const cacheKey = `link:${rel}`;
+      let element = linkCache.get(cacheKey);
+      
       if (!element) {
-        element = document.createElement('link');
-        element.setAttribute('rel', rel);
-        document.head.appendChild(element);
+        element = document.querySelector(`link[rel="${rel}"]`);
+        if (!element) {
+          element = document.createElement('link');
+          element.setAttribute('rel', rel);
+          document.head.appendChild(element);
+        }
+        linkCache.set(cacheKey, element);
       }
-      element.setAttribute('href', href);
+      
+      // Only update if href has changed
+      if (element.getAttribute('href') !== href) {
+        element.setAttribute('href', href);
+      }
     };
 
     // ✅ [SEO SAFE] Primary Meta Tags
@@ -122,6 +150,48 @@ export default function SEO({
       document.head.appendChild(schemaScript);
     }
 
+    // ✅ [PERFORMANCE TRACKING] Track SEO setup time
+    const endTime = performance.now();
+    const seoSetupTime = Math.round(endTime - startTime);
+    
+    // Track in performance monitoring (non-blocking)
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        performanceTracking.track('SEO_Setup', {
+          setupTime: seoSetupTime,
+          pageUrl: location.pathname,
+          hasSchema: !!schema
+        });
+      });
+    }
+
+    // ✅ [STORAGE] Mark page as visited for journey tracking
+    session.markVisited(location.pathname);
+
+    // ✅ [PRECONNECT] Add performance hints for external resources
+    // Only on first render to avoid duplicate preconnects
+    if (renderTimeRef.current && Date.now() - renderTimeRef.current < 100) {
+      const lowBandwidth = userPreferences.get('connectionType') === 'slow-2g' || 
+                           userPreferences.get('connectionType') === '2g';
+      
+      // Skip resource hints on slow connections to reduce overhead
+      if (!lowBandwidth) {
+        // Preconnect to Google Fonts if not already done
+        if (!document.querySelector('link[rel="preconnect"][href*="fonts.googleapis"]')) {
+          const preconnect1 = document.createElement('link');
+          preconnect1.rel = 'preconnect';
+          preconnect1.href = 'https://fonts.googleapis.com';
+          document.head.appendChild(preconnect1);
+
+          const preconnect2 = document.createElement('link');
+          preconnect2.rel = 'preconnect';
+          preconnect2.href = 'https://fonts.gstatic.com';
+          preconnect2.crossOrigin = 'anonymous';
+          document.head.appendChild(preconnect2);
+        }
+      }
+    }
+
     // ✅ [SAFE - No visual change] Cleanup function
     return () => {
       // Remove page-specific schema on unmount
@@ -129,6 +199,10 @@ export default function SEO({
       if (schemaScript) {
         schemaScript.remove();
       }
+      
+      // Clear caches
+      metaCache.clear();
+      linkCache.clear();
     };
   }, [
     title,

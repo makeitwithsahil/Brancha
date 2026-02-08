@@ -1,3 +1,10 @@
+/**
+ * SEO Schema Definitions - Production-optimized structured data
+ * All schemas follow Schema.org standards and Google's best practices
+ * @see https://schema.org
+ * @see https://developers.google.com/search/docs/appearance/structured-data
+ */
+
 const baseUrl = 'https://brancha.in';
 
 // ✅ [CRITICAL SEO] Brand Schema - For Brand Recognition
@@ -12,7 +19,8 @@ export const brandSchema = {
     '@type': 'ImageObject',
     url: `${baseUrl}/logo.png`,
     width: 250,
-    height: 60
+    height: 60,
+    caption: 'Brancha Logo'
   },
   image: `${baseUrl}/og-default.jpg`,
   description: 'Brancha is a trusted digital presence management brand serving service businesses across India. We build websites, create brand identities, and provide ongoing digital support.',
@@ -45,7 +53,8 @@ export const organizationSchema = {
     '@type': 'ImageObject',
     url: `${baseUrl}/logo.png`,
     width: 250,
-    height: 60
+    height: 60,
+    caption: 'Brancha Logo'
   },
   image: `${baseUrl}/og-default.jpg`,
   description: 'Brancha is India\'s trusted partner for complete digital presence management. We build and maintain professional websites, brand identities, and provide ongoing digital support for service businesses. Brancha - Where Brands Grow.',
@@ -296,8 +305,8 @@ export const serviceSchema = {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Website Design by Brancha',
-          description: 'Professional website design and development services by Brancha for service businesses in India.',
+          name: 'Website Design & Development by Brancha',
+          description: 'Custom website design and development services by Brancha for service businesses.',
           provider: {
             '@type': 'Organization',
             name: 'Brancha'
@@ -309,19 +318,7 @@ export const serviceSchema = {
         itemOffered: {
           '@type': 'Service',
           name: 'Brand Identity Design by Brancha',
-          description: 'Complete brand identity and visual design services by Brancha.',
-          provider: {
-            '@type': 'Organization',
-            name: 'Brancha'
-          }
-        }
-      },
-      {
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: 'Social Media Design by Brancha',
-          description: 'Professional social media graphics and design by Brancha.',
+          description: 'Complete brand identity design including logos, colors, and style guides by Brancha.',
           provider: {
             '@type': 'Organization',
             name: 'Brancha'
@@ -610,6 +607,21 @@ export const reviewSchema = (review) => ({
   datePublished: review.date
 });
 
+/**
+ * Helper function to safely stringify schema for embedding in HTML
+ * @param {Object} schema - Schema object to stringify
+ * @returns {string} - Safe JSON-LD string
+ */
+export const stringifySchema = (schema) => {
+  try {
+    return JSON.stringify(schema, null, 0);
+  } catch (error) {
+    console.error('Failed to stringify schema:', error);
+    return '{}';
+  }
+};
+
+// Default export for convenience
 export default {
   brandSchema,
   organizationSchema,
@@ -626,5 +638,6 @@ export default {
   servicesPageSchema,
   blogSchema,
   blogPostSchema,
-  reviewSchema
+  reviewSchema,
+  stringifySchema
 };
