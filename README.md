@@ -82,10 +82,6 @@ npm run preview
 # Run linting
 npm run lint
 
-# Generate sitemap & RSS
-npm run generate-sitemap
-npm run generate-rss
-```
 
 ---
 
