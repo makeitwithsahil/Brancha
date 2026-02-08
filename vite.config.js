@@ -11,12 +11,6 @@ export default defineConfig(({ mode }) => ({
       jsxRuntime: 'automatic',
       // Enable Fast Refresh
       fastRefresh: true,
-      // Babel plugins for production optimization
-      babel: {
-        plugins: mode === 'production' ? [
-          ['transform-remove-console', { exclude: ['error', 'warn'] }],
-        ] : [],
-      },
     }),
     tailwindcss(),
     // Gzip compression

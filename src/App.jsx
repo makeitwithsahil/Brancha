@@ -38,7 +38,6 @@ const GymNotFound = lazy(() => import('./pages/gym/GymNotFound'));
 const RealEstateLaunch = lazy(() => import('./pages/real-estate/RealEstateLaunch'));
 const HealthcareLaunch = lazy(() => import('./pages/healthcare/HealthcareLaunch'));
 const EducationLaunch = lazy(() => import('./pages/education/EducationLaunch'));
-const LaunchingSoon = lazy(() => import('./pages/LaunchingSoon'));
 
 /**
  * Loading fallback component
