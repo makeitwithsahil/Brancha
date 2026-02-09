@@ -19,7 +19,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build && npm run generate-sitemap",
+    "build": "vite build && node scripts/injectBuildTimestamp.js && npm run generate-sitemap",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext js,jsx --fix",
@@ -29,7 +29,7 @@
     "clean": "rm -rf dist node_modules/.vite",
     "type-check": "tsc --noEmit",
     "analyze": "vite build --mode analyze",
-    "build:prod": "npm run clean && vite build && npm run generate-sitemap"
+    "build:prod": "npm run clean && vite build && node scripts/injectBuildTimestamp.js && npm run generate-sitemap"
   },
   "dependencies": {
     "framer-motion": "^12.26.2",

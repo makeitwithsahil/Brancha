@@ -2,6 +2,7 @@
  * Storage Utility - Production-grade storage management
  * Handles localStorage, sessionStorage, and cookies with consent awareness
  * Enhanced with journey tracking, preferences, and performance monitoring
+ * FIXED: Cross-domain redirect issues for Vercel deployments
  */
 
 // Storage keys namespace to avoid conflicts
@@ -10,6 +11,28 @@ const STORAGE_PREFIX = 'brancha_';
 // Consent management
 const CONSENT_KEY = `${STORAGE_PREFIX}consent`;
 const INITIALIZED_KEY = `${STORAGE_PREFIX}initialized`;
+
+/**
+ * Get the canonical domain (for cross-domain compatibility)
+ */
+const getCanonicalDomain = () => {
+  const hostname = window.location.hostname;
+  
+  // Always use the main domain for cookies
+  if (hostname.includes('brancha.in') || hostname.includes('brancha.vercel.app')) {
+    return '.brancha.in'; // Leading dot allows subdomains
+  }
+  
+  return hostname;
+};
+
+/**
+ * Check if we're in production
+ */
+const isProduction = () => {
+  return window.location.protocol === 'https:' && 
+         !window.location.hostname.includes('localhost');
+};
 
 /**
  * Check if storage is available
@@ -22,6 +45,7 @@ export const isStorageAvailable = (type = 'localStorage') => {
     storage.removeItem(test);
     return true;
   } catch (e) {
+    console.warn(`${type} not available:`, e.message);
     return false;
   }
 };
@@ -57,6 +81,12 @@ export const setStorageConsent = (consented = true) => {
  */
 export const initializeStorage = () => {
   try {
+    // Check storage availability
+    if (!isStorageAvailable('localStorage')) {
+      console.warn('localStorage not available - storage features disabled');
+      return false;
+    }
+    
     const isInitialized = sessionStorage.getItem(INITIALIZED_KEY);
     
     if (!isInitialized) {
@@ -70,6 +100,16 @@ export const initializeStorage = () => {
       const hasVisited = localStorage.getItem(`${STORAGE_PREFIX}returning_user`);
       if (!hasVisited) {
         localStorage.setItem(`${STORAGE_PREFIX}returning_user`, 'true');
+      }
+      
+      // Log initialization for debugging
+      if (!isProduction()) {
+        console.log('Storage initialized:', {
+          domain: window.location.hostname,
+          protocol: window.location.protocol,
+          localStorage: isStorageAvailable('localStorage'),
+          sessionStorage: isStorageAvailable('sessionStorage')
+        });
       }
     }
     
@@ -119,6 +159,7 @@ export const storage = {
     const { temporary = false, consent = true } = options;
     
     if (consent && !hasStorageConsent()) {
+      console.warn('Storage consent not granted');
       return false;
     }
 
@@ -131,10 +172,22 @@ export const storage = {
       };
       
       const storageType = temporary ? sessionStorage : localStorage;
+      
+      if (!isStorageAvailable(temporary ? 'sessionStorage' : 'localStorage')) {
+        console.warn('Storage not available');
+        return false;
+      }
+      
       storageType.setItem(prefixedKey, JSON.stringify(data));
+      
+      // Debug log in development
+      if (!isProduction()) {
+        console.log(`Storage set: ${key}`, { temporary, consent });
+      }
+      
       return true;
     } catch (e) {
-      console.warn('Storage set failed:', e);
+      console.error('Storage set failed:', e);
       return false;
     }
   },
@@ -149,6 +202,11 @@ export const storage = {
     try {
       const prefixedKey = `${STORAGE_PREFIX}${key}`;
       const storageType = temporary ? sessionStorage : localStorage;
+      
+      if (!isStorageAvailable(temporary ? 'sessionStorage' : 'localStorage')) {
+        return null;
+      }
+      
       const item = storageType.getItem(prefixedKey);
       
       if (!item) return null;
@@ -201,7 +259,7 @@ export const storage = {
 };
 
 /**
- * Cookie utilities
+ * Cookie utilities with cross-domain support
  */
 export const cookies = {
   set: (name, value, days = 365) => {
@@ -210,11 +268,36 @@ export const cookies = {
     try {
       const expires = new Date();
       expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-      const cookie = `${STORAGE_PREFIX}${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+      
+      const isProd = isProduction();
+      const domain = getCanonicalDomain();
+      
+      // Build cookie string with proper settings
+      let cookie = `${STORAGE_PREFIX}${name}=${encodeURIComponent(value)}`;
+      cookie += `;expires=${expires.toUTCString()}`;
+      cookie += `;path=/`;
+      
+      // Only set domain for production on main domain
+      if (isProd && domain.includes('brancha.in')) {
+        cookie += `;domain=${domain}`;
+      }
+      
+      // Use Strict for better security, Secure for HTTPS
+      cookie += `;SameSite=Strict`;
+      if (isProd) {
+        cookie += `;Secure`;
+      }
+      
       document.cookie = cookie;
+      
+      // Debug log
+      if (!isProd) {
+        console.log('Cookie set:', { name, domain, isProd });
+      }
+      
       return true;
     } catch (e) {
-      console.warn('Cookie set failed:', e);
+      console.error('Cookie set failed:', e);
       return false;
     }
   },
@@ -240,7 +323,18 @@ export const cookies = {
 
   remove: (name) => {
     try {
-      document.cookie = `${STORAGE_PREFIX}${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+      const isProd = isProduction();
+      const domain = getCanonicalDomain();
+      
+      let cookie = `${STORAGE_PREFIX}${name}=`;
+      cookie += `;expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+      cookie += `;path=/`;
+      
+      if (isProd && domain.includes('brancha.in')) {
+        cookie += `;domain=${domain}`;
+      }
+      
+      document.cookie = cookie;
       return true;
     } catch (e) {
       console.warn('Cookie remove failed:', e);
@@ -268,19 +362,47 @@ const clearAllStorage = () => {
 };
 
 /**
- * Form persistence helpers
+ * Form persistence helpers - FIXED for production
  */
 export const formStorage = {
   save: (formId, data) => {
-    return storage.set(`form_${formId}`, data, { temporary: true });
+    // Use localStorage instead of sessionStorage for form drafts
+    // This persists across redirects
+    const success = storage.set(`form_${formId}`, data, { 
+      temporary: false,  // Changed from true
+      consent: false     // Don't require consent for form drafts
+    });
+    
+    if (!isProduction()) {
+      console.log('Form saved:', formId, success);
+    }
+    
+    return success;
   },
 
   load: (formId) => {
-    return storage.get(`form_${formId}`, { temporary: true });
+    const data = storage.get(`form_${formId}`, { 
+      temporary: false,  // Changed from true
+      consent: false 
+    });
+    
+    if (!isProduction() && data) {
+      console.log('Form loaded:', formId);
+    }
+    
+    return data;
   },
 
   clear: (formId) => {
-    return storage.remove(`form_${formId}`, { temporary: true });
+    const success = storage.remove(`form_${formId}`, { 
+      temporary: false  // Changed from true
+    });
+    
+    if (!isProduction()) {
+      console.log('Form cleared:', formId);
+    }
+    
+    return success;
   }
 };
 
@@ -502,6 +624,7 @@ export const contactFormStatus = {
 
 /**
  * Contact form draft management (alias for formStorage)
+ * FIXED: Now uses localStorage to persist across redirects
  */
 export const contactFormDraft = {
   save: (data) => {
@@ -560,5 +683,29 @@ export const visitorTracking = {
 
   isReturningUser: () => {
     return session.isReturningUser();
+  }
+};
+
+/**
+ * Debug helper - only available in development
+ */
+export const storageDebug = {
+  logAll: () => {
+    if (isProduction()) return;
+    
+    console.group('Storage Debug');
+    console.log('Domain:', window.location.hostname);
+    console.log('Protocol:', window.location.protocol);
+    console.log('localStorage available:', isStorageAvailable('localStorage'));
+    console.log('sessionStorage available:', isStorageAvailable('sessionStorage'));
+    console.log('All localStorage keys:', Object.keys(localStorage).filter(k => k.startsWith(STORAGE_PREFIX)));
+    console.log('Contact form draft:', contactFormDraft.get());
+    console.log('Cookies:', document.cookie);
+    console.groupEnd();
+  },
+  
+  clearAll: () => {
+    clearAllStorage();
+    console.log('All storage cleared');
   }
 };

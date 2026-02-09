@@ -12,6 +12,7 @@ import {
   userPreferences,
   performanceTracking
 } from './utils/storage';
+import { initializeVersionChecker } from './utils/versionChecker';
 import './App.css';
 
 // Lazy load pages for better performance
@@ -114,6 +115,9 @@ function PerformanceMonitor() {
   useEffect(() => {
     // Initialize storage system
     initializeStorage();
+
+    // Initialize version checker for auto-updates
+    initializeVersionChecker();
 
     // Check for reduced motion preference (accessibility)
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
