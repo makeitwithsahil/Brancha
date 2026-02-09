@@ -251,7 +251,7 @@ export const departmentThemes = {
     },
     socialLinks: {
       instagram: "https://instagram.com/branchaforhealthcare",
-      linkedin: "https://www.linkedin.com/company/brancha-healthcare-department/",
+      linkedin: "https://www.linkedin.com/showcase/brancha-healthcare/about/",
       facebook: "http://facebook.com/profile.php?id=61587654332526",
       youtube: "https://youtube.com/@branchaforhealthcare",
       twitter: "https://x.com/growwithbrancha",
